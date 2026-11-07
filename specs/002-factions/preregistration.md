@@ -39,9 +39,9 @@ destruction, points given, whips, revolts.
 - Every game is checked by exact replay from its logged replies before analysis.
 
 ## Masih's predictions
-(to be added, dated)
+None: Masih chose not to predict (7 Nov, evening).
 
-## Experiment 2: family games (added 8 Nov 2026, 02:40 local time, before any b9q result)
+## Experiment 2: family games (added 8 Nov 2026, 02:34 local time, before any b9q result)
 Batch b9q: seeds 0-4, plain god, `qwen3.5-397b` for every agent, code `ff2` (7f29a33).
 Horizon: the Qwen rate limit allows about 8 stages per world in the time left, so each
 world is stopped after stage 8 (`cloud/do/stop-after.sh`) and every measure is taken at
