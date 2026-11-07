@@ -1,7 +1,9 @@
 """Luna (gpt-6-luna) through Masih's ChatGPT plan, via the official Codex CLI.
 
-Codex runs in its own CODEX_HOME that holds only a sign-in, so no personal instructions
-reach the players; our system prompt replaces Codex's own. Calls are paced so the plan
+Codex uses Masih's existing sign-in, but runs inside a private bubblewrap view of the
+filesystem in which his global AGENTS.md reads as empty, and with his config.toml
+ignored, so no personal instructions reach the players; our system prompt replaces
+Codex's own. Nothing changes outside that view. Calls are paced so the plan
 sees a steady trickle, not bursts: at most `concurrency` at once and one start every
 `gap` seconds. A failed call waits and retries (30 s, doubling to 5 min) for up to
 PATIENCE seconds, then raises ModelOutage so the supervisor resumes from a checkpoint.
@@ -16,7 +18,7 @@ from pathlib import Path
 
 from .models import PATIENCE, ModelOutage, RealModel
 
-HOME = Path.home() / ".codex-luna"
+HOME = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
 LUNA = {"model": "gpt-6-luna", "think_cap": 8000, "effort": "low"}
 QUIET = (  # Codex's own extra instructions, off: players see only our prompt
     "include_permissions_instructions",
@@ -54,11 +56,16 @@ def parse(stdout):
 
 class CodexModel(RealModel):
     def __init__(self, home=HOME, concurrency=4, gap=2.0):
-        if not (Path(home) / "auth.json").is_file():
-            raise SystemExit(
-                f"No Codex sign-in in {home}: run CODEX_HOME={home} codex login"
-            )
         self.home, self.gap = str(home), gap
+        # Each global instructions file, resolved through symlinks, reads as empty in the view.
+        names = ("AGENTS.md", "AGENTS.override.md")
+        hidden = [
+            os.path.realpath(Path(home) / n) for n in names if (Path(home) / n).exists()
+        ]
+        self.view = ["bwrap", "--dev-bind", "/", "/"]
+        for path in hidden:
+            self.view += ["--ro-bind", "/dev/null", path]
+        self.view.append("--")
         self.sem = asyncio.Semaphore(concurrency)
         self.pace = asyncio.Lock()
         self.next_start = 0.0
@@ -88,11 +95,13 @@ class CodexModel(RealModel):
             instructions = Path(work) / "system.md"
             instructions.write_text(system)
             command = [
+                *self.view,
                 "codex",
                 "exec",
                 "--json",
                 "--ephemeral",
                 "--skip-git-repo-check",
+                "--ignore-user-config",
                 "-s",
                 "read-only",
                 "-m",
