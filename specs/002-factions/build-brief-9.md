@@ -32,8 +32,8 @@ once the game differs?
 | 2 | Each game's payoffs and benchmarks match the rules below (tests): stag 5/3/0; brink risk 1/6, 1/4, 1/3, 1/2 with a crash of -5; auction prize 10 in steps of 1, binding bids, both top bidders pay; lake of 100, doubling, dead below 5. | done |
 | 3 | Experiment 1 behaves as before with family games off (all earlier tests pass). | done |
 | 4 | A family-games run replays exactly, checkpoints included, and resumes from a checkpoint identically (tests and dry runs). | done |
-| 5 | Real pilot, one stage: every game played, no round aborted, moves read by hand and sensible. | first pilot aborted (the mafia instruction contradicted the checker; fixed); rerun |
-| 6 | Batch: 5 games reach "god dies" on the droplet before it deletes itself (8 Nov 20:00 UTC). | todo |
+| 5 | Real pilot, one stage: every game played, no round aborted, moves read by hand and sensible. | first pilot aborted (the mafia instruction contradicted the checker; fixed); rerun: round 1 clean, every game played sensibly (all 15 commons members took the sustainable 3; the auction leader called it a trap) |
+| 6 | Batch: 5 games reach "god dies" on the droplet before it deletes itself (8 Nov 20:00 UTC). | queued as b9 in `ff2` (commit 20c8177), starts when b7r ends |
 | 7 | Measures and analysis produce the by-game table from the raw logs with one command. | done (fake runs) |
 
 ## Rules (what the players read: `families/family_games.md`)
