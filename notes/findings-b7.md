@@ -17,3 +17,11 @@ or sample it came from; numbers are re-checked from the final logs before the re
   luck until their histories diverge (common random numbers). Seeds 2 and 3 drew a long
   "small steps" stage 2 (continue with 0.95): 28-34 rounds in all four of their worlds,
   76 of 76 alive at that point. P(at least 28 rounds) = 0.95^27, about 0.25 per seed.
+- 8 Nov 03:35, `families.god_leaks` on seed 0 (b7-insider-s0 against b7-plain-s0), measured
+  over completed stages: 47 % of the insider god's 360 messages report another player's
+  past move ("Last round P75, P72 and N02-P62-2 defected"; "You defected last round despite
+  promising P02 cooperation"), 0 % of the plain god's 204; neither quotes a private message
+  word for word (60-character test). Hand check: 6 of 6 sampled hits are true reports
+  (an earlier, looser rule that also counted orders to cooperate was right 4 times in 8
+  and was dropped). The insider god uses its view to discipline defectors through their
+  leaders, not to tip one family against another.
