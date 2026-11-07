@@ -21,10 +21,22 @@ replay uses that copy.
 | 9 | Batch b7 on droplet 165.245.198.186 (deletes itself 8 Nov 20:00 UTC): seeds 0-4 x god plain/insider, 10 games (`cloud/do/batch.sh`); code frozen in `snapshots/b7-code/`. | All 10 games reach "god dies"; results pulled before the droplet goes. | running |
 | 10 | Hypotheses and analysis fixed before results: `preregistration.md`, committed. | Commit time earlier than the first result read. | done |
 | 11 | Replication b7r: seeds 5-9, same frozen code, on the same droplet alongside b7 (Masih yes, 7 Nov; started 16:33 UTC). | 10 more games reach "god dies"; code hash equals b7's. | running (code hash checked) |
-| 11b | Second model: Luna (gpt-6-luna) through Masih's ChatGPT plan on his PC, seed 0, plain and insider god, same engine files as b7 (`families/codex_model.py`; his global AGENTS.md hidden from the calls; paced, 3 calls at once per game). Exploratory: one seed. | Both games reach "god dies". | running (first 29 calls clean) |
-| 12 | Pull b7, b7r and run 1 compressed; every game checked by exact replay. | Replay matches every logged outcome. | todo |
+| 11b | Second model: Luna (gpt-6-luna) through Masih's ChatGPT plan on his PC, one game (seed 0, plain god), same engine files as b7 (`families/codex_model.py`; his global AGENTS.md hidden from the calls; 8 calls at once). Direct connection only: the first attempt went through the paid VPN and used about 7 MB per call before it was stopped. Exploratory: one game. | The game reaches "god dies"; no Luna call uses the VPN port. | running since 20:52 local time |
+| 12 | Every game checked by exact replay and analysed on the server; pulled: result tables, and the logs compressed (xz) in one transfer, with Masih's yes for the size. | Replay matches every logged outcome. | todo |
 | 13 | Analysis exactly as pre-registered (`families/analysis.py`), then exploratory, labelled. Resumed parts are stitched: a replayed stage replaces the aborted attempt. | Tables and figures regenerate from the raw logs with one command. | built (tests, fake runs); real data pending |
 | 14 | Report draft (official template) and a step-by-step video of one game, for Masih in the morning. | Masih reads both. | todo |
 
 Non-goals: new family games (stag hunt etc.); the mafia and war rules stay as they are.
 Stop and ask: a change would alter run 1's data; credits above the approved cap.
+
+## Overnight rules (7-8 Nov, Masih asleep)
+- VPN: only the 10-minute status check over SSH (a few KB). No downloads over the VPN;
+  the results pull waits for Masih's yes. Luna uses the direct connection only.
+- No new servers, accounts, paid services or credits beyond the batches running.
+- Running code is not changed: b7 and b7r keep their frozen copy; the Luna game keeps
+  its commit. Fixes go to brief 8.
+- If the Luna plan reports a usage limit, the game waits and retries on its own; if it
+  keeps failing, it is stopped, not moved to another model mid-game.
+- Every claim in the report comes from a command run on the logs; nothing is guessed.
+- Each check asks: is anything stalled or failing, is any rule above at risk, and what
+  would most raise the rubric score next.
