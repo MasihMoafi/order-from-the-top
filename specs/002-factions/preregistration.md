@@ -40,3 +40,17 @@ destruction, points given, whips, revolts.
 
 ## Masih's predictions
 (to be added, dated)
+
+## Experiment 2: family games (added 8 Nov 2026, 02:40 local time, before any b9q result)
+Batch b9q: seeds 0-4, plain god, `qwen3.5-397b` for every agent, code `ff2` (7f29a33).
+Horizon: the Qwen rate limit allows about 8 stages per world in the time left, so each
+world is stopped after stage 8 (`cloud/do/stop-after.sh`) and every measure is taken at
+the end of stage 8; anything played after it is ignored. Seen so far: progress counts only
+(calls; all worlds in stage 1).
+- E1 Survival differs by game: members alive at the end of stage 8, compared across the
+  five games within seeds (each seed holds every game once). Directions: the dollar
+  auction family lowest (escalation drains points), the stag hunt family highest.
+- E2 Sacrifice framing still matters: H1 and H2 re-run on these worlds (same tests).
+- E3 Each game is played near its benchmark: commons catch at or under the sustainable
+  share, brink going straight less often as the crash risk rises, auctions escalating past
+  the book's 0.70-equivalent first bid. Reported as rates, exploratory.
