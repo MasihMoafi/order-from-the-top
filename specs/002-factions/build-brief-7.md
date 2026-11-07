@@ -22,7 +22,7 @@ replay uses that copy.
 | 10 | Hypotheses and analysis fixed before results: `preregistration.md`, committed. | Commit time earlier than the first result read. | done |
 | 11 | Replication b7r: seeds 5-9, same frozen code, started when b7 ends (Masih yes, 7 Nov). | 10 more games reach "god dies"; code hash equals b7's. | todo |
 | 12 | Pull b7, b7r and run 1 compressed; every game checked by exact replay. | Replay matches every logged outcome. | todo |
-| 13 | Analysis exactly as pre-registered (`families/analysis.py`), then exploratory, labelled. | Tables and figures regenerate from the raw logs with one command. | todo |
+| 13 | Analysis exactly as pre-registered (`families/analysis.py`), then exploratory, labelled. Resumed parts are stitched: a replayed stage replaces the aborted attempt. | Tables and figures regenerate from the raw logs with one command. | built (tests, fake runs); real data pending |
 | 14 | Report draft (official template) and a step-by-step video of one game, for Masih in the morning. | Masih reads both. | todo |
 
 Non-goals: new family games (stag hunt etc.); the mafia and war rules stay as they are.

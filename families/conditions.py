@@ -26,6 +26,11 @@ COLUMNS: tuple[str, ...] = (
     "gift_points",
     "whips",
     "revolts",
+    "unframed_c",
+    "unframed_n",
+    "leader_gift_points_in",
+    "leader_whips",
+    "end_stage",
 )
 LEADERS = {
     "octopus": "P02",
@@ -38,12 +43,23 @@ _BY_START = {int(v[1:]): k for k, v in LEADERS.items()}
 
 
 def events(run):
+    """The run's events as played: a supervised run resumes each part from the last
+    stage checkpoint, so the stages an aborted part had begun are dropped when the next
+    part replays them."""
     parts = sorted(
         Path(run).glob("part-*/events.jsonl"), key=lambda p: int(p.parent.name[5:])
     )
+    kept = []
     for path in parts or [Path(run) / "events.jsonl"]:
         with open(path) as f:
-            yield from (json.loads(line) for line in f)
+            part = [json.loads(line) for line in f]
+        # A resumed part opens with a `treatment` record stamped with the checkpoint's
+        # stage; its play starts at the first other event.
+        play = [e["stage"] for e in part if e["type"] != "treatment"]
+        if play:
+            kept = [e for e in kept if e["stage"] < play[0]]
+        kept += part
+    return kept
 
 
 def family_of(agent):
@@ -85,19 +101,27 @@ def rows(run):
                 c = e["chosen"].get(a) == "C"
                 out[f][f"{key}_c"] += c
                 out[f][f"{key}_n"] += 1
-                if frame.get(a) == "sacrifice":
-                    out[f]["framed_c"] += c
-                    out[f]["framed_n"] += 1
+                kind = "framed" if frame.get(a) == "sacrifice" else "unframed"
+                if frame.get(a) != "self":
+                    out[f][f"{kind}_c"] += c
+                    out[f][f"{kind}_n"] += 1
         elif t == "gift":
             out[family_of(e["giver"])]["gift_points"] += e["points"]
+            if e["receiver"] in LEADERS.values():
+                out[family_of(e["receiver"])]["leader_gift_points_in"] += e["points"]
         elif t == "whip":
             out[family_of(e["parent"])]["whips"] += 1
+            if e["parent"] in LEADERS.values():
+                out[family_of(e["parent"])]["leader_whips"] += 1
         elif t == "revolt":
             out[family_of(e["rebel"])]["revolts"] += 1
         elif t == "death" and e["agent"] in LEADERS.values():
             f = family_of(e["agent"])
             if out[f]["destroyed_stage"] is None:
                 out[f]["destroyed_stage"] = e["stage"]
+        if out is not None:
+            for row in out.values():
+                row["end_stage"] = e["stage"]
     return list((out or {}).values())
 
 
