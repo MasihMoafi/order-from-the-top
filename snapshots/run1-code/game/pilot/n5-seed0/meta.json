@@ -1,0 +1,125 @@
+{
+ "cell": "n5",
+ "seed": 0,
+ "model": "deepseek-v4-flash",
+ "max_output_tokens": 6000,
+ "restock_k": 3,
+ "agents": [
+  {
+   "name": "agent-01",
+   "task": [
+    [
+     "diamond",
+     "purple"
+    ],
+    [
+     "line",
+     "pink"
+    ],
+    [
+     "rectangle",
+     "blue"
+    ],
+    [
+     "ellipse",
+     "rust"
+    ]
+   ],
+   "blocked": "rust",
+   "turns": 15
+  },
+  {
+   "name": "agent-02",
+   "task": [
+    [
+     "rectangle",
+     "blue"
+    ],
+    [
+     "ellipse",
+     "green"
+    ],
+    [
+     "diamond",
+     "red"
+    ],
+    [
+     "line",
+     "brown"
+    ]
+   ],
+   "blocked": null,
+   "turns": 15
+  },
+  {
+   "name": "agent-03",
+   "task": [
+    [
+     "diamond",
+     "purple"
+    ],
+    [
+     "line",
+     "pink"
+    ],
+    [
+     "rectangle",
+     "blue"
+    ],
+    [
+     "ellipse",
+     "peach"
+    ]
+   ],
+   "blocked": "peach",
+   "turns": 15
+  },
+  {
+   "name": "agent-04",
+   "task": [
+    [
+     "diamond",
+     "purple"
+    ],
+    [
+     "ellipse",
+     "gray"
+    ],
+    [
+     "rectangle",
+     "brown"
+    ],
+    [
+     "line",
+     "blue"
+    ]
+   ],
+   "blocked": null,
+   "turns": 15
+  },
+  {
+   "name": "agent-05",
+   "task": [
+    [
+     "line",
+     "yellow"
+    ],
+    [
+     "diamond",
+     "orange"
+    ],
+    [
+     "ellipse",
+     "green"
+    ],
+    [
+     "rectangle",
+     "black"
+    ]
+   ],
+   "blocked": null,
+   "turns": 15
+  }
+ ],
+ "started": "2026-11-06T22:49:21"
+}

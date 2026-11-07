@@ -1,0 +1,27 @@
+# Full Five Families game on a GitHub runner, so Masih's laptop can be off.
+name: five-families
+on:
+  workflow_dispatch:
+    inputs:
+      name: {description: run folder name, default: full}
+      args: {description: run.py arguments, default: "--families all --stages 99"}
+jobs:
+  game:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.13"}
+      - run: sudo apt-get install -y -qq ripgrep && python -m venv .venv && .venv/bin/pip install -q httpx pytest
+      - run: .venv/bin/python -m pytest families/tests -q
+      - name: game
+        timeout-minutes: 330
+        env:
+          ADAPTION_API_KEY: ${{ secrets.ADAPTION_API_KEY }}
+        run: families/supervise.sh "families/out/${{ inputs.name }}" ${{ inputs.args }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ inputs.name }}
+          path: families/out/${{ inputs.name }}*

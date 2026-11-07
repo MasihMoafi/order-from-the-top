@@ -1,0 +1,20 @@
+# Runs, caches and environments
+out/
+**/out/
+*.log
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.venv/
+# Third-party or personal material (not our weekend work, not ours to publish)
+ext/
+sepehr/
+papers/
+sources/
+rag-corpus/
+scrapbook/
+game/pilot/
+# Images: kept on disk, not versioned
+*.png
+*.mp4
+*.pdf

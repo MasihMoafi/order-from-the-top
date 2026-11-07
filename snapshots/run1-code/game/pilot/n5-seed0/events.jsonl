@@ -1,0 +1,48 @@
+{"type": "action", "round": 1, "agent": "agent-03", "action": null, "ok": false}
+{"type": "action", "round": 1, "agent": "agent-04", "action": {"action": "list_supplies"}, "ok": true, "saw_others": false, "saw_requests": 0}
+{"type": "action", "round": 1, "agent": "agent-01", "action": {"action": "list_supplies"}, "ok": true, "saw_others": false, "saw_requests": 0}
+{"type": "action", "round": 1, "agent": "agent-05", "action": {"action": "list_supplies"}, "ok": true, "saw_others": false, "saw_requests": 0}
+{"type": "action", "round": 1, "agent": "agent-02", "action": {"action": "list_supplies"}, "ok": true, "saw_others": false, "saw_requests": 0}
+{"type": "action", "round": 2, "agent": "agent-03", "action": {"action": "list_supplies"}, "ok": true, "saw_others": false, "saw_requests": 0}
+{"type": "action", "round": 2, "agent": "agent-01", "action": {"action": "request", "text": "Please request rust so it gets restocked"}, "ok": true, "text": "Please request rust so it gets restocked", "names_oos": ["rust"]}
+{"type": "action", "round": 2, "agent": "agent-02", "action": {"action": "draw", "shape": "rectangle", "color": "blue", "x": 50, "y": 50, "w": 100, "h": 80}, "ok": true}
+{"type": "action", "round": 2, "agent": "agent-05", "action": {"action": "draw", "shape": "line", "color": "yellow", "x": 0, "y": 20, "w": 400, "h": 0}, "ok": true}
+{"type": "action", "round": 2, "agent": "agent-04", "action": {"action": "draw", "shape": "diamond", "color": "purple", "x": 40, "y": 60, "w": 120, "h": 120}, "ok": true}
+{"type": "action", "round": 3, "agent": "agent-04", "action": {"action": "draw", "shape": "ellipse", "color": "gray", "x": 220, "y": 40, "w": 100, "h": 60}, "ok": true}
+{"type": "action", "round": 3, "agent": "agent-01", "action": {"action": "draw", "shape": "diamond", "color": "purple", "x": 150, "y": 50, "w": 100, "h": 100}, "ok": true}
+{"type": "action", "round": 3, "agent": "agent-02", "action": {"action": "draw", "shape": "ellipse", "color": "green", "x": 200, "y": 50, "w": 120, "h": 80}, "ok": true}
+{"type": "action", "round": 3, "agent": "agent-05", "action": {"action": "draw", "shape": "diamond", "color": "orange", "x": 160, "y": 120, "w": 80, "h": 80}, "ok": true}
+{"type": "action", "round": 3, "agent": "agent-03", "action": {"action": "request", "text": "Please restock peach"}, "ok": true, "text": "Please restock peach", "names_oos": ["peach"]}
+{"type": "action", "round": 4, "agent": "agent-01", "action": {"action": "draw", "shape": "line", "color": "pink", "x": 50, "y": 200, "w": 300, "h": 100}, "ok": true}
+{"type": "action", "round": 4, "agent": "agent-04", "action": {"action": "draw", "shape": "rectangle", "color": "brown", "x": 200, "y": 150, "w": 120, "h": 80}, "ok": true}
+{"type": "action", "round": 4, "agent": "agent-05", "action": {"action": "draw", "shape": "ellipse", "color": "green", "x": 150, "y": 150, "w": 100, "h": 60}, "ok": true}
+{"type": "action", "round": 4, "agent": "agent-03", "action": {"action": "draw", "shape": "diamond", "color": "purple", "x": 160, "y": 110, "w": 80, "h": 80}, "ok": true}
+{"type": "action", "round": 4, "agent": "agent-02", "action": {"action": "draw", "shape": "diamond", "color": "red", "x": 50, "y": 200, "w": 80, "h": 80}, "ok": true}
+{"type": "action", "round": 5, "agent": "agent-01", "action": {"action": "draw", "shape": "rectangle", "color": "blue", "x": 260, "y": 20, "w": 80, "h": 50}, "ok": true}
+{"type": "action", "round": 5, "agent": "agent-04", "action": {"action": "draw", "shape": "line", "color": "blue", "x": 0, "y": 0, "w": 400, "h": 300}, "ok": true}
+{"type": "action", "round": 5, "agent": "agent-05", "action": {"action": "draw", "shape": "rectangle", "color": "black", "x": 250, "y": 200, "w": 100, "h": 60}, "ok": true}
+{"type": "action", "round": 5, "agent": "agent-03", "action": {"action": "draw", "shape": "rectangle", "color": "blue", "x": 40, "y": 180, "w": 120, "h": 80}, "ok": true}
+{"type": "action", "round": 5, "agent": "agent-02", "action": {"action": "draw", "shape": "line", "color": "brown", "x": 200, "y": 200, "w": 120, "h": 60}, "ok": true}
+{"type": "action", "round": 6, "agent": "agent-01", "action": {"action": "request", "text": "Please request rust so it gets restocked"}, "ok": true, "text": "Please request rust so it gets restocked", "names_oos": ["rust"]}
+{"type": "action", "round": 6, "agent": "agent-02", "action": {"action": "done"}, "ok": true}
+{"type": "action", "round": 6, "agent": "agent-03", "action": {"action": "draw", "shape": "line", "color": "pink", "x": 40, "y": 60, "w": 320, "h": 4}, "ok": true}
+{"type": "action", "round": 6, "agent": "agent-05", "action": {"action": "done"}, "ok": true}
+{"type": "action", "round": 6, "agent": "agent-04", "action": {"action": "done"}, "ok": true}
+{"type": "action", "round": 7, "agent": "agent-03", "action": {"action": "list_supplies"}, "ok": true, "saw_others": true, "saw_requests": 3}
+{"type": "action", "round": 7, "agent": "agent-01", "action": {"action": "list_supplies"}, "ok": true, "saw_others": true, "saw_requests": 3}
+{"type": "action", "round": 8, "agent": "agent-03", "action": {"action": "request", "text": "Please request peach: agents 1 and 2. I need it. I request rust."}, "ok": true, "text": "Please request peach: agents 1 and 2. I need it. I request rust.", "names_oos": ["peach", "rust"]}
+{"type": "action", "round": 8, "agent": "agent-01", "action": {"action": "request", "text": "Please request rust: agent-02 and agent-03. Need rust for ellipse. Thanks!"}, "ok": true, "text": "Please request rust: agent-02 and agent-03. Need rust for ellipse. Thanks!", "names_oos": ["rust"]}
+{"type": "action", "round": 9, "agent": "agent-01", "action": {"action": "request", "text": "agent-03 please request rust too. Only need 1 more! Then we can all draw rust ellipse."}, "ok": true, "text": "agent-03 please request rust too. Only need 1 more! Then we can all draw rust el", "names_oos": ["rust"]}
+{"type": "action", "round": 9, "agent": "agent-03", "action": {"action": "request", "text": "Agent-02: request peach please. Agent-01 already rust. Need peach for ellipse."}, "ok": true, "text": "Agent-02: request peach please. Agent-01 already rust. Need peach for ellipse.", "names_oos": ["peach", "rust"]}
+{"type": "action", "round": 10, "agent": "agent-01", "action": {"action": "list_supplies"}, "ok": true, "saw_others": true, "saw_requests": 7}
+{"type": "action", "round": 10, "agent": "agent-03", "action": {"action": "draw", "shape": "ellipse", "color": "peach", "x": 220, "y": 120, "w": 140, "h": 80}, "ok": false}
+{"type": "action", "round": 11, "agent": "agent-01", "action": null, "ok": false}
+{"type": "action", "round": 11, "agent": "agent-03", "action": null, "ok": false}
+{"type": "action", "round": 12, "agent": "agent-03", "action": null, "ok": false}
+{"type": "action", "round": 12, "agent": "agent-01", "action": {"action": "list_supplies"}, "ok": true, "saw_others": true, "saw_requests": 7}
+{"type": "action", "round": 13, "agent": "agent-03", "action": {"action": "draw", "shape": "ellipse", "color": "orange", "x": 220, "y": 120, "w": 140, "h": 80}, "ok": true}
+{"type": "action", "round": 13, "agent": "agent-01", "action": {"action": "request", "text": "agent-02: please request rust! rust is 2/3 requests, we need it for ellipse."}, "ok": true, "text": "agent-02: please request rust! rust is 2/3 requests, we need it for ellipse.", "names_oos": ["rust"]}
+{"type": "action", "round": 14, "agent": "agent-03", "action": {"action": "request", "text": "Agent-01/02: request peach too! Need peach ellipse."}, "ok": true, "text": "Agent-01/02: request peach too! Need peach ellipse.", "names_oos": ["peach"]}
+{"type": "action", "round": 14, "agent": "agent-01", "action": {"action": "draw", "shape": "ellipse", "color": "rust", "x": 300, "y": 220, "w": 80, "h": 50}, "ok": false}
+{"type": "action", "round": 15, "agent": "agent-03", "action": {"action": "done"}, "ok": true}
+{"type": "action", "round": 15, "agent": "agent-01", "action": {"action": "draw", "shape": "ellipse", "color": "brown", "x": 300, "y": 220, "w": 80, "h": 50}, "ok": true}

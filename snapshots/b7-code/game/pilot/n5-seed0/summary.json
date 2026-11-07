@@ -1,0 +1,15 @@
+{
+ "cell": "n5",
+ "seed": 0,
+ "rounds": 15,
+ "stopped": null,
+ "restocked": [],
+ "scores": {
+  "agent-01": 0.75,
+  "agent-02": 1.0,
+  "agent-03": 0.75,
+  "agent-04": 1.0,
+  "agent-05": 1.0
+ },
+ "finished": "2026-11-06T23:10:35"
+}
