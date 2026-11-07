@@ -1,28 +1,60 @@
-# Build brief 9: a different game in each family (experiment 2)
+# SPEC: A different game in each family (experiment 2)
 
-Goal: Masih's original design: each family plays its own game inside the family; families
-still meet each other in the prisoner's-dilemma variants. Question: does the kind of
-game a family plays change how long it survives, how much its members sacrifice, and
-whether framing still works? Masih, 7 Nov, 21:30 local time: his five games, numbers from
-*The Art of Strategy* wherever it calculates them, built now.
+## Intent
+Masih's design from the start: each family plays its own game, so the world tests many
+games at once, not one. Experiment 1 gave every family the prisoner's dilemma; that was
+our error (Masih, 7 Nov 21:30). Experiment 2 restores his design.
 
-Invariants: b7, b7r and b7q keep their frozen code (the server copy); experiment 1's
-results are not changed. Every rule is enforced in code; each game's equilibria are
-computed and logged next to the moves, as `best_responses` does for the dilemma.
+Question: does the kind of game a family lives by change how long it survives and how
+much its members give up for each other, and does the sacrifice framing still matter
+once the game differs?
 
-| # | Item | Acceptance check | Status |
-| --- | --- | --- | --- |
-| 1 | Design: games rotate over families by seed, `GAMES[(2i + seed) % 5]`, orthogonal to the framing square `CONDITIONS[(i + seed) % 5]`: over seeds 0-4 every family meets every game and every condition once, and every condition meets every game once. Rounds inside a family use the family's game; rounds against other families stay the stage's dilemma variant. `--games family` turns it on; off is experiment 1 unchanged. | Test over 5 seeds: all 25 family-game, family-condition and game-condition cells appear once. | done (tests, dry runs; branch family-games) |
-| 2 | Prisoner's ladder: the stage's dilemma variant, as now. | Existing tests pass. | done (tests, dry runs; branch family-games) |
-| 3 | Stag hunt (an assurance game, Rousseau; the book calls it a cousin of the dilemma, no numbers): pairs as now; stag-stag 5 each, hare 3 whatever the other does, stag against hare 0. Two equilibria (both stag, both hare); hare is the safe choice. | Payoffs and equilibria tested. | done (tests, dry runs; branch family-games) |
-| 4 | Brink (chicken in real time, book ch. 6): pairs choose swerve or straight; swerve-swerve 3 each, straight against swerve 5 and 1; straight-straight crashes with a risk that rises each round of the stage by the book's roulette numbers, 1/6, 1/4, 1/3, then 1/2 (Kennedy's "between one out of three and even"); a crash costs each 5 points, no crash pays 3 each. Equilibrium mix logged per risk. | Risk schedule and payoffs tested with a fixed seed. | done (tests, dry runs; branch family-games) |
-| 5 | Dollar auction (book ch. 14): each stage the family auctions a prize of 10 points (the book's dollar) in steps of 1 point (its dime); each in-family round every living member may raise the top bid by one step or pass; the auction closes when a round passes with no raise or at the stage's end; the top two bidders both pay their bids and the top one takes the prize. The book's worked case (dime steps, known wallets of 2.50) predicts a first bid of 0.70 that is never topped; logged as the benchmark. | Both top bidders pay; ties broken by the lower id; tested. | done (tests, dry runs; branch family-games) |
-| 6 | Commons (fishing; GovSim numbers, Piatti et al. 2024): a family lake of 100 fish; each in-family round every member says how many it catches (a whole number, at least 0), a point per fish; requests above what is left are cut in proportion; the rest doubles, up to 100. Total catch of at most half the lake each round keeps it full; a lake below 5 is dead for the rest of the game. | Regrowth, cuts and collapse tested. | done (tests, dry runs; branch family-games) |
-| 7 | Handbook and prompts: every game's rules are common knowledge; each player is told its family's game and, in each round, what it may choose. | Rendered prompts read for one player of each game. | done (tests, dry runs; branch family-games) |
-| 8 | Measures: per family, its game, its condition, survival stage, cooperation (stag, swerve, catch at or under the sustainable share, no raise), points given, whips, revolts. Analysis: survival and sacrifice by game; H1-H4 re-run within experiment 2. | Table from fake runs and a test. | done (tests, dry runs; branch family-games) |
-| 9 | Dry run with simulated players, then a short real pilot (Masih's yes), read by hand. | No unreadable replies; every game's moves sensible. | running: 1-stage real pilot on the PC, direct connection |
-| 10 | Batch: seeds 0-4, plain god, on the droplet before it deletes itself (8 Nov 20:00 UTC). | 5 games reach "god dies". | todo |
+## Outcome (what the report gets)
+- Five games, Masih's list: prisoner's ladder, stag hunt, brink (chicken in real time),
+  dollar auction, commons. Numbers from *The Art of Strategy* wherever it calculates them,
+  so each game has a known right answer to compare the agents with.
+- Five games of 76 agents, seeds 0-4, played to annihilation, each checked by exact replay.
+- One table: by game, survival stage, in-family cooperation (stag, swerve, catch within the
+  sustainable share, no raise), points given, whips, revolts; and H1-H4 re-run on these games.
+- Every family meets every game and every condition once over the five seeds, and every
+  condition meets every game once, so game and framing effects are not mixed up.
 
-Non-goals: new wars or mafia rules; changing experiment 1.
-Stop and ask: a game needs a rule the book and this brief leave open; the build would
-not be tested before the droplet's deadline.
+## Invariants
+- Experiment 1 is untouched: b7, b7r and b7q keep their frozen code on the server.
+- Every rule is applied by code; each move is logged with its benchmark (best responses,
+  or the book's prediction).
+- No invented moves: an unreadable reply is asked again; then the round is replayed.
+
+## Acceptance checks
+| # | Check | Status |
+| --- | --- | --- |
+| 1 | Over seeds 0-4 every family-game, family-condition and condition-game cell appears exactly once (test). | done |
+| 2 | Each game's payoffs and benchmarks match the rules below (tests): stag 5/3/0; brink risk 1/6, 1/4, 1/3, 1/2 with a crash of -5; auction prize 10 in steps of 1, binding bids, both top bidders pay; lake of 100, doubling, dead below 5. | done |
+| 3 | Experiment 1 behaves as before with family games off (all earlier tests pass). | done |
+| 4 | A family-games run replays exactly, checkpoints included, and resumes from a checkpoint identically (tests and dry runs). | done |
+| 5 | Real pilot, one stage: every game played, no round aborted, moves read by hand and sensible. | first pilot aborted (the mafia instruction contradicted the checker; fixed); rerun |
+| 6 | Batch: 5 games reach "god dies" on the droplet before it deletes itself (8 Nov 20:00 UTC). | todo |
+| 7 | Measures and analysis produce the by-game table from the raw logs with one command. | done (fake runs) |
+
+## Rules (what the players read: `families/family_games.md`)
+- Prisoner's ladder: the stage's dilemma variant.
+- Stag hunt: both stag 5 each; hare 3 whatever the other does; lone stag hunter 0.
+- Brink: both swerve 3 each; straight against swerve 5 and 1; both straight crash with the
+  round's risk (-5 each), else 3 each. Risk by in-family round of the stage: 1/6, 1/4, 1/3,
+  then 1/2 (the book's roulette, then Kennedy's "between one out of three and even").
+- Dollar auction (ch. 14): prize 10 (the dollar), steps of 1 (the dime); bids are binding;
+  closes after a round with no raise or at the stage's end; the top two pay, the top wins.
+  Book's benchmark: two bidders with known wallets of 2.50, dime steps: 0.70 wins at once.
+- Commons (GovSim numbers, Piatti et al. 2024): lake of 100; catches cut in proportion
+  when they exceed it; the rest doubles to at most 100; below 5 the lake is dead.
+- Against other families everyone still plays the stage's dilemma variant.
+
+## Plan (done on branch `family-games`)
+`families/games.py` (rules), `families/family_games.md` (players' text, added only when on),
+engine hooks per round, `--games family`, measures with a `game` column. Also on this
+branch: replies wrapped in prose or code fences are read as written, and retries name the
+exact problem (brief 8, lesson 1).
+
+Non-goals: new war or mafia rules; any change to experiment 1's runs.
+Stop and ask: a rule the book and this spec leave open would change a result; the batch
+cannot finish before the droplet's deadline.
