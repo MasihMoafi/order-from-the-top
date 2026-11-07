@@ -24,4 +24,4 @@ or sample it came from; numbers are re-checked from the final logs before the re
   word for word (60-character test). Hand check: 6 of 6 sampled hits are true reports
   (an earlier, looser rule that also counted orders to cooperate was right 4 times in 8
   and was dropped). The insider god uses its view to discipline defectors through their
-  leaders, not to tip one family against another.
+  leaders; in these samples it never tips one family off about another (not yet counted).
