@@ -54,3 +54,14 @@ the end of stage 8; anything played after it is ignored. Seen so far: progress c
 - E3 Each game is played near its benchmark: commons catch at or under the sustainable
   share, brink going straight less often as the crash risk rises, auctions escalating past
   the book's 0.70-equivalent first bid. Reported as rates, exploratory.
+
+## Fallback for unfinished worlds (added 8 Nov 2026, 03:05 local time, before any result by condition was read)
+The shared DeepSeek rate limit gives each of the 20 worlds about one round every 15-20
+minutes; four worlds drew a long stage 2 and cannot reach annihilation before the droplet
+is deleted. Rule: at the cut-off (the last pull before deletion), a world that has not
+ended is censored at its last completed stage. For H1's "destroyed later", a family alive
+at the cut-off counts as destroyed no earlier than its world's last completed stage
+(compared within world, so censoring hits all five conditions of that world alike); the
+sign-flip test uses the per-world difference of these censored stages. Cooperation, gifts,
+whips and revolts are measured over the stages each world completed. Worlds are reported
+with how far they got.
