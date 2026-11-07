@@ -1,7 +1,8 @@
 # Pre-registration: batch b7 and its replication
 
-Written Sat 7 Nov 2026, about 20:30 local time (17:00 UTC), while b7 was in stage 2 and
-before any outcome was read. The git commit that adds this file is its timestamp.
+Written Sat 7 Nov 2026, 20:00 local time (16:30 UTC), while b7 was in stage 2. Seen so
+far: progress totals only (calls, 2 deaths, gifts, whips over all games); no measure by
+condition or by god. The git commit that adds this file is its timestamp.
 Masih's own predictions are added below, dated, also before results.
 
 ## Design
