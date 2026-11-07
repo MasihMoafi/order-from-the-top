@@ -39,3 +39,14 @@ def test_a_resumed_part_replaces_the_stages_its_aborted_parts_began(tmp_path):
 def test_sign_flip_is_exact_for_small_samples():
     assert sign_flip([1, 1, 1, 1], random.Random(0)) == 2 / 16
     assert sign_flip([1, -1], random.Random(0)) == 1.0
+
+
+def test_a_world_cut_off_mid_stage_is_measured_to_its_last_finished_stage():
+    from families.conditions import completed
+
+    evs = [
+        {"type": "move", "stage": 1},
+        {"type": "stage_end", "stage": 1},
+        {"type": "move", "stage": 2},  # stage 2 never finished
+    ]
+    assert completed(evs) == evs[:2]

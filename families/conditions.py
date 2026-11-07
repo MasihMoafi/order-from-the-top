@@ -73,9 +73,16 @@ def family_of(agent):
     return _BY_START.get(2 + (int(agent[1:]) - 2) // 15 * 15)
 
 
+def completed(evs):
+    """Events of the stages the world completed (pre-registered censoring rule): a world
+    cut off mid-stage is measured up to its last finished stage."""
+    done = max((e["stage"] for e in evs if e["type"] == "stage_end"), default=0)
+    return [e for e in evs if e["stage"] <= done]
+
+
 def rows(run):
     frame, out = {}, None
-    for e in events(run):
+    for e in completed(events(run)):
         t = e["type"]
         if t == "stage_start" and out is None:
             config = e["configuration"]

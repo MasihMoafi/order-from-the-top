@@ -55,7 +55,7 @@ the end of stage 8; anything played after it is ignored. Seen so far: progress c
   share, brink going straight less often as the crash risk rises, auctions escalating past
   the book's 0.70-equivalent first bid. Reported as rates, exploratory.
 
-## Fallback for unfinished worlds (added 8 Nov 2026, 03:05 local time, before any result by condition was read)
+## Fallback for unfinished worlds (added 8 Nov 2026, 03:03 local time, before any result by condition was read)
 The shared DeepSeek rate limit gives each of the 20 worlds about one round every 15-20
 minutes; four worlds drew a long stage 2 and cannot reach annihilation before the droplet
 is deleted. Rule: at the cut-off (the last pull before deletion), a world that has not
