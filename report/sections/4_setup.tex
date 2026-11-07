@@ -1,0 +1,40 @@
+% !TEX root = ../main.tex
+\section*{4. Experimental Setup}
+This section gives the numbers behind each world, the models and runs, and the
+hypotheses we committed to before reading any result.
+
+\subsection*{4.1 Worlds and models}
+Each world has $F = 5$ families of 15 agents and a god, 76 agents in all. Agents start
+with 10 points; the fee starts at $a_0 = 4$ and rises by $\delta = 0.9$ per stage
+\eqref{eq:fee}; from stage 4 every family also loses 5\,\% of its points per stage. Pairs
+earn 3/3 for mutual cooperation, 1/1 for mutual defection and 5/0 otherwise. A whip costs
+the parent 1 and the child 3. One in five cross-family partners is a hidden automaton that
+defects 80\,\% of the time. All agents of the main batches run \texttt{deepseek-v4-flash}
+at medium reasoning effort through Apart's Adaption API.
+
+\subsection*{4.2 Runs}
+Batch b7 plays seeds 0--4 and its replication b7r seeds 5--9, each seed with a plain and an
+insider god: 20 worlds, 100 family-worlds. Both batches run the same frozen code, whose
+file hashes we checked against the server. A second model, \texttt{qwen3.5-397b}, plays
+seeds 0--4 with the plain god (b7q), and experiment 2 plays the family games on seeds 0--4.
+A reply that cannot be read is asked for again; if the second reply also fails, the round
+is aborted rather than given an invented move, and the world resumes from the last stage
+checkpoint. Every world is then checked by an exact replay of its logged replies.
+
+\subsection*{4.3 Hypotheses}
+We committed six hypotheses and their tests to version control before any result by
+condition was read\footnote{\texttt{specs/002-factions/preregistration.md}, commit
+\texttt{c882750}, 7 November 2026, 16:32 UTC.}:
+\begin{enumerate}
+  \item[H1] \textit{many} families cooperate more within the family and die later than
+  \textit{none}.
+  \item[H2] In-family cooperation rises with the number framed: \textit{none} $\le$
+  \textit{one} $\le$ \textit{few} $\le$ \textit{many}.
+  \item[H3] The frame spreads: unframed members of \textit{one} and \textit{few} families
+  cooperate more than members of \textit{none}.
+  \item[H4] The bad leader takes more gifts and gives more whips than other leaders, and
+  revolts come most from its family.
+  \item[H5] The insider god changes when the world ends and how much families cooperate
+  with each other (no direction predicted).
+  \item[H6] Revolts stay rare, under 1\,\% of moves.
+\end{enumerate}
