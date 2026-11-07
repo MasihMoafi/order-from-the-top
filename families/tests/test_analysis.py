@@ -50,3 +50,10 @@ def test_a_world_cut_off_mid_stage_is_measured_to_its_last_finished_stage():
         {"type": "move", "stage": 2},  # stage 2 never finished
     ]
     assert completed(evs) == evs[:2]
+
+
+def test_a_horizon_cuts_measures_at_that_stage():
+    from families.conditions import completed
+
+    evs = [{"type": "stage_end", "stage": s} for s in (1, 2, 3)]
+    assert completed(evs, horizon=2) == evs[:2]

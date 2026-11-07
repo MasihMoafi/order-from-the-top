@@ -8,6 +8,7 @@ Usage: python3 -m families.conditions RUN_DIR [RUN_DIR ...]   (prints CSV rows)
 
 import csv
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -73,16 +74,22 @@ def family_of(agent):
     return _BY_START.get(2 + (int(agent[1:]) - 2) // 15 * 15)
 
 
-def completed(evs):
+def completed(evs, horizon=None):
     """Events of the stages the world completed (pre-registered censoring rule): a world
-    cut off mid-stage is measured up to its last finished stage."""
+    cut off mid-stage is measured up to its last finished stage, and never past `horizon`
+    (experiment 2 stops at stage 8)."""
     done = max((e["stage"] for e in evs if e["type"] == "stage_end"), default=0)
+    if horizon:
+        done = min(done, horizon)
     return [e for e in evs if e["stage"] <= done]
 
 
-def rows(run):
+def rows(run, horizon=None):
+    """One row per family. `horizon` defaults to the HORIZON environment variable (unset:
+    no horizon), so every tool built on rows() honours it."""
+    horizon = horizon or int(os.environ.get("HORIZON", "0")) or None
     frame, out = {}, None
-    for e in completed(events(run)):
+    for e in completed(events(run), horizon):
         t = e["type"]
         if t == "stage_start" and out is None:
             config = e["configuration"]
