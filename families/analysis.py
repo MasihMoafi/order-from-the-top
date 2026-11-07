@@ -240,6 +240,28 @@ def report(runs, seed=0):
             if st
             else f"| {c} | - |"
         )
+    games_seen = sorted({r["game"] for g in gs for r in g["by"].values()})
+    if games_seen != ["ladder"]:  # experiment 2: each family its own game
+        out += [
+            "",
+            (
+                "By family game (experiment 2; in-family C: stag, swerve, catch within "
+                "the sustainable share, or no raise):"
+            ),
+            "",
+            "| game | families | in-family C | mean stage destroyed | gift points | whips | revolts |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+        ]
+        for game in games_seen:
+            rs = [r for g in gs for r in g["by"].values() if r["game"] == game]
+            st = [stage(r) for r in rs if stage(r) is not None]
+            c = sum(r["in_c"] for r in rs)
+            n = sum(r["in_n"] for r in rs)
+            out.append(
+                f"| {game} | {len(rs)} | {f'{100 * c / n:.1f} %' if n else '-'} "
+                f"| {statistics.fmean(st):.2f} | {sum(r['gift_points'] for r in rs):.0f} "
+                f"| {sum(r['whips'] for r in rs)} | {sum(r['revolts'] for r in rs)} |"
+            )
     return "\n".join(out)
 
 

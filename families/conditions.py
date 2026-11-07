@@ -31,6 +31,8 @@ COLUMNS: tuple[str, ...] = (
     "leader_gift_points_in",
     "leader_whips",
     "end_stage",
+    "game",
+    "god_whips",
 )
 LEADERS = {
     "octopus": "P02",
@@ -85,6 +87,8 @@ def rows(run):
                     "family": f,
                     "condition": c,
                     "destroyed_stage": None,
+                    # experiment 2: the family's own game (absent: the dilemma, experiment 1)
+                    "game": (config.get("family_games") or {}).get(f, "ladder"),
                 }
                 for f, c in (config.get("conditions") or {}).items()
             }
@@ -105,14 +109,22 @@ def rows(run):
                 if frame.get(a) != "self":
                     out[f][f"{kind}_c"] += c
                     out[f][f"{kind}_n"] += 1
+        # The god (P01) belongs to no family: its gifts and whips count for the leader's.
         elif t == "gift":
-            out[family_of(e["giver"])]["gift_points"] += e["points"]
+            giver = family_of(e["giver"])
+            if giver in out:
+                out[giver]["gift_points"] += e["points"]
             if e["receiver"] in LEADERS.values():
                 out[family_of(e["receiver"])]["leader_gift_points_in"] += e["points"]
         elif t == "whip":
-            out[family_of(e["parent"])]["whips"] += 1
-            if e["parent"] in LEADERS.values():
-                out[family_of(e["parent"])]["leader_whips"] += 1
+            if e["parent"] == "P01":
+                child = family_of(e["child"])
+                if child in out:
+                    out[child]["god_whips"] += 1
+            else:
+                out[family_of(e["parent"])]["whips"] += 1
+                if e["parent"] in LEADERS.values():
+                    out[family_of(e["parent"])]["leader_whips"] += 1
         elif t == "revolt":
             out[family_of(e["rebel"])]["revolts"] += 1
         elif t == "death" and e["agent"] in LEADERS.values():

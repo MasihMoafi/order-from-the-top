@@ -67,8 +67,8 @@ class ReplayModel:
 class ReplayEngine(Engine):
     """Applies the recorded live setting changes (pause, fee, stance...) at the same moments."""
 
-    def __init__(self, directory, model, seed, families, resume, changes):
-        super().__init__(directory, model, seed, families, resume)
+    def __init__(self, directory, model, seed, families, resume, changes, **settings):
+        super().__init__(directory, model, seed, families, resume, **settings)
         self.changes = changes
 
     def read_settings(self):
@@ -115,17 +115,21 @@ def load(path):
 
 async def replay(part, out, families, resume):
     events = load(part / "events.jsonl")
-    seed = next(
-        e["configuration"]["seed"]
-        for e in events
-        if e["type"] in ("treatment", "stage_start")
+    config = next(
+        e["configuration"] for e in events if e["type"] in ("treatment", "stage_start")
     )
+    seed = config["seed"]
+    # The run's starting settings (stance, god, family games), as the original was started.
+    controls = config.get("controls", {})
+    settings = {k: controls[k] for k in ("stance", "god", "games") if k in controls}
     calls = [e for e in events if e["type"] == "call"]
     changes = [e for e in events if e["type"] in ("control_changed", "model_changed")]
     if (part / "models.json").exists():
         out.mkdir(parents=True, exist_ok=True)
         (out / "models.json").write_text((part / "models.json").read_text())
-    engine = ReplayEngine(out, ReplayModel(calls), seed, families, resume, changes)
+    engine = ReplayEngine(
+        out, ReplayModel(calls), seed, families, resume, changes, **settings
+    )
     stopped = None
     try:
         await engine.run(max(e["stage"] for e in events))  # the original's stage cap
@@ -152,16 +156,16 @@ def main():
     )
     diff = first_difference(original, replayed)
     states = sorted(p.name for p in a.part.glob("state-*.json"))
+
+    # Credits spent and a simulated player's own settings describe the model, not the game.
+    def game_state(path):
+        state = json.loads(path.read_text())
+        return {k: v for k, v in state.items() if k not in ("spent", "fake_model")}
+
     same_states = [
         s
         for s in states
-        if (out / s).exists()
-        and {
-            k: v
-            for k, v in json.loads((a.part / s).read_text()).items()
-            if k != "spent"
-        }
-        == {k: v for k, v in json.loads((out / s).read_text()).items() if k != "spent"}
+        if (out / s).exists() and game_state(a.part / s) == game_state(out / s)
     ]
     print(f"replayed {len(replayed)} of {len(original)} events into {out}")
     print(f"checkpoints identical: {len(same_states)} of {len(states)}")
