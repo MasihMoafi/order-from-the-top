@@ -1,0 +1,75 @@
+% ======================================================================
+%  Apart Research hackathon report -- main file
+%
+%  Compile with pdfLaTeX (Overleaf default):  pdflatex -> bibtex -> pdflatex x2
+%
+%  Layout:
+%    apartreport.sty   all formatting (fonts, colours, headings, lists, box)
+%    sections/         one file per section -- write your report there
+%    figures/          put images here; \includegraphics{name} finds them
+%    tables/           one file per table; \input{tables/name} where needed
+%    references.bib    your bibliography; cite with \cite{key}
+% ======================================================================
+\documentclass[11pt,letterpaper]{article}
+\usepackage{apartreport}
+\hypersetup{pdftitle={Who Gives Way: Sacrifice Framing, a Compromised Leader and an All-Seeing God in a 76-Agent Hierarchy}}
+
+\begin{document}
+
+% ======================================================================
+%  Title block: 3 pt rule, title, 1 pt rule, authors, abstract
+% ======================================================================
+\begin{singlespace}
+\vspace*{17pt}
+\hrule height 3pt
+\vspace{22pt}
+{\centering\fontsize{20}{24.7}\selectfont\bfseries
+  Who Gives Way: Sacrifice Framing, a Compromised Leader and an All-Seeing God in a 76-Agent Hierarchy\footnote{Research conducted at the
+    \href{https://apartresearch.com/sprints/swarm-alignment-2026}{\uline{Swarm Alignment Hackathon}},
+    November 2026}\par}
+\vspace{32pt}
+\hrule height 1pt
+\vspace{22pt}
+
+% ---------- authors: 3 x 2 grid, centred (delete a row or column if not needed) ----------
+{\centering
+\begin{tabular}{@{}c@{}}
+Masih Moafi \\
+\textit{[Affiliation]}
+\end{tabular}\par}
+
+\vspace{10pt}
+{\centering \textbf{With}\\ Apart Research\par}
+
+% ---------- abstract ----------
+\vspace{22pt}
+{\centering\fontsize{14}{17.3}\selectfont\bfseries Abstract\par}
+\vspace{10pt}
+\begin{adjustwidth}{0.99in}{1.13in}
+\justifying
+\input{sections/abstract}
+\end{adjustwidth}
+\vspace{32pt}
+\end{singlespace}
+
+% ======================================================================
+%  Guidance box -- DELETE THIS LINE BEFORE SUBMITTING
+% ======================================================================
+% (template guidance box removed)
+
+% ======================================================================
+%  Body
+% ======================================================================
+\input{sections/1_introduction}
+\input{sections/2_related_work}
+\input{sections/3_methods}
+\input{sections/4_results}
+\input{sections/5_discussion}
+\input{sections/6_conclusion}
+\input{sections/code_and_data}
+\input{sections/author_contributions}
+\input{sections/references}
+\input{sections/appendix}
+\input{sections/llm_usage}
+
+\end{document}

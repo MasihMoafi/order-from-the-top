@@ -1,0 +1,93 @@
+% ======================================================================
+%  apartreport.sty -- formatting for the Apart Research hackathon report
+%
+%  Reproduces the look of the official Google Docs template:
+%    - Old Standard TT, 11 pt, 1.15 line spacing, US Letter, 1 in margins
+%    - headings 14 pt bold #434343 (sections), 13 pt bold #666666 (subsections)
+%    - lists with the label 0.25 in in and the text 0.5 in in
+%    - the yellow guidance box, blue underlined links, 10 pt footnotes
+%  You should not need to edit this file.
+% ======================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{apartreport}[2026/11/06 Apart Research hackathon report formatting]
+
+% ---------- encoding and fonts ----------
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{textcomp}
+\RequirePackage{lmodern}               % scalable math/fallback fonts
+\IfFileExists{OldStandard.sty}{\RequirePackage[lining]{OldStandard}}{\typeout{OldStandard missing: Latin Modern stands in; Overleaf has it}}   % Old Standard TT, the template font
+\RequirePackage{helvet}                % Arial substitute (guidance box only)
+
+% ---------- page ----------
+\RequirePackage[letterpaper,margin=1in]{geometry}
+\pagestyle{empty}                      % the template has no header, footer or page numbers
+
+% ---------- colours (hex values from the template) ----------
+\RequirePackage{xcolor}
+\definecolor{headinggray}{HTML}{434343}     % section headings
+\definecolor{subheadinggray}{HTML}{666666}  % subsection headings
+\definecolor{linkblue}{HTML}{1155CC}        % hyperlinks
+\definecolor{infoyellow}{HTML}{FFF2CC}      % guidance box fill
+
+% ---------- spacing ----------
+\RequirePackage{setspace}
+\setstretch{1.15}                      % Google Docs default line spacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}              % paragraphs are separated with \blankline, as in the template
+\raggedright                           % body text is left-aligned; the abstract is justified
+\newcommand{\blankline}{\par\vspace{\baselineskip}}   % one empty line, like pressing Enter twice
+
+% ---------- headings ----------
+\RequirePackage{titlesec}
+\titleformat{\section}{\color{headinggray}\bfseries\fontsize{14}{17.3}\selectfont}{}{0pt}{}
+\titlespacing*{\section}{0pt}{10pt}{8pt}
+\titleformat{\subsection}{\color{subheadinggray}\bfseries\fontsize{13}{16}\selectfont}{}{0pt}{}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+% ---------- lists ----------
+\RequirePackage{enumitem}
+\setlist{nosep,leftmargin=0.5in,labelwidth=0.25in,labelsep=0pt,align=left}
+\setlist[enumerate]{label=\arabic*.}
+\setlist[itemize]{label=-}
+\newlist{alphlist}{enumerate}{1}       % "(a) (b) ..." lists; labels are italic in the template
+\setlist[alphlist]{label=\textit{(\alph*)},nosep,leftmargin=0.5in,labelwidth=0.25in,labelsep=0pt,align=left}
+
+% ---------- figures, tables, maths ----------
+\RequirePackage{graphicx}
+\graphicspath{{figures/}}              % \includegraphics{name} looks in figures/
+\RequirePackage{booktabs}
+\RequirePackage{caption}
+\captionsetup{labelfont=bf}
+\RequirePackage{amsmath,amssymb}
+
+% ---------- misc ----------
+\RequirePackage{array}
+\RequirePackage{ragged2e}              % \justifying (abstract)
+\RequirePackage{changepage}            % adjustwidth (abstract, tips block)
+\RequirePackage[normalem]{ulem}        % \uline
+\renewcommand{\footnotesize}{\fontsize{10}{12.4}\selectfont}   % footnotes are 10 pt
+
+% ---------- guidance box: yellow, 1 pt border, Arial 12 pt, extends into both margins ----------
+\RequirePackage{tcolorbox}
+\newtcolorbox{infobox}{colback=infoyellow,colframe=black,boxrule=1pt,sharp corners,
+  boxsep=0pt,left=5pt,right=5pt,top=22pt,bottom=20pt,
+  grow to left by=0.27in,grow to right by=0.42in,
+  before skip=15pt,after skip=0pt,
+  fontupper=\sffamily\fontsize{12}{13.8}\selectfont\setstretch{1},
+  before upper=\setlength{\parskip}{18pt}}
+
+% ---------- bibliography: numbered "1." labels laid out like the template's lists ----------
+\RequirePackage[numbers,sort&compress]{natbib}
+\renewcommand{\bibsection}{}           % the heading is written in sections/references.tex
+\renewcommand{\bibnumfmt}[1]{\makebox[0.5in][l]{\hspace{0.25in}#1.}}
+\setlength{\bibsep}{0pt}
+\renewcommand\NAT@bibsetnum[1]{%
+  \setlength{\labelsep}{0pt}\setlength{\labelwidth}{0.5in}\setlength{\leftmargin}{0.5in}%
+  \setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}%
+  \setlength{\itemsep}{\bibsep}\setlength{\parsep}{\z@}}
+
+% ---------- links (loaded last) ----------
+\RequirePackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=linkblue,linkcolor=black,citecolor=black,pdfcreator={LaTeX}}
+\endinput

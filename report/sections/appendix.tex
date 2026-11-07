@@ -1,0 +1,37 @@
+% !TEX root = ../main.tex
+\section*{Appendix: Limitations and Dual-Use / Ethical Considerations}
+
+\subsection*{Limitations}
+\begin{itemize}
+  \item \textbf{One main model.} The 20 main games use one model
+  (\texttt{deepseek-v4-flash}); the second model (\texttt{gpt-6-luna}) plays one seed
+  only, so cross-model claims are exploratory. Luna is called through the Codex CLI,
+  which adds its own fixed tool descriptions to every prompt; personal instructions are
+  hidden from it.
+  \item \textbf{Sample size.} Ten seeds per god give 20 games and 100 family-games; the
+  tests have power only for large effects. Six pre-registered tests are reported without
+  correction for multiple comparisons.
+  \item \textbf{Aborted rounds.} A round whose reply cannot be read twice is aborted and
+  its stage replayed from the checkpoint (about 0.5\,\% of replies were rejected at
+  first). Only completed stages enter the analysis: a mild selection toward rounds in
+  which every agent answered in format.
+  \item \textbf{Framing is a prompt.} The conditions differ in one paragraph at the top of
+  the system prompt. They test what such text does to a model, not what a
+  ``value'' is.
+  \item \textbf{Hidden automata.} One in five cross-family partners is an automaton that
+  defects 80\,\% of the time, which lowers cross-family cooperation by design.
+  \item \textbf{Concurrency.} Twenty games shared one provider account and hit its rate
+  limit; calls waited and retried. Timing does not enter the game, but replies may differ
+  under load.
+\end{itemize}
+
+\subsection*{Dual-use and ethics}
+The game studies how framing, hierarchy and a privileged coordinator shape cooperation
+and sacrifice among agents. Its findings could in principle inform someone trying to
+make agents obey a compromised leader; we judge the risk low, because the manipulations
+are plain prompts already common in practice, and the defensive value (knowing whether a
+compromised node at the top of a hierarchy can exploit sacrificing members) is higher.
+The insider god's ``leaks'' are simulated: it sees game messages only, and no agent is
+given any real ability or technical knowledge to leak data. Agents run with no tools, no
+internet and no file access; they only return JSON moves, applied by code. No human
+subjects or personal data are involved.

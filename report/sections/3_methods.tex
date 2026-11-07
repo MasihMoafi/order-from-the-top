@@ -1,0 +1,65 @@
+% !TEX root = ../main.tex
+\section*{3. Methods}
+
+\subsection*{3.1 The world}
+Seventy-six LLM agents play one game: a god (P01) and five families of 15 agents each.
+Each family is a tall, narrow tree: the leader has a deputy and a member below it, each deputy again has a deputy and a member, seven levels down; every agent can
+message only its parent, its children and its sibling, leaders may write letters to each
+other, and the god speaks to the leaders and may send paid messengers to anyone. All
+rules, stakes and the tree are common knowledge, given to every agent in one handbook
+(Appendix~A). Scoring, deaths and every rule are applied by code, never by a model.
+
+\textbf{Survival.} Every agent starts with 10 points. After each stage every living agent
+pays an entry fee that starts at 4 and rises by 0.9 per stage. An agent that cannot pay
+dies, and its whole subtree dies with it; when every right sibling below a node is dead,
+the left one dies too (linked fates). A family is destroyed when its leader dies. From
+stage 4 every family also loses 5\,\% of its points per stage. The game does not end
+while any family lives: it ends only in total annihilation, when the god dies with the
+last family, or at once if a leader revolts.
+
+\textbf{Play.} A stage holds several rounds of a prisoner's dilemma (3/3 for mutual
+cooperation, 1/1 for mutual defection, 5/0 otherwise). Each stage uses one of 16 variants,
+most adapted from \citet{dixit2008art} (one-shot, noise, binding promises, paid punishment, talk before
+moving, and others; Appendix~A), in a shuffled cycle. Odd rounds pair agents along tree
+edges; even rounds pair them with other families, where 20\,\% of partners are hidden
+automata that defect 80\,\% of the time. After each round a parent may \emph{whip} a
+child (the parent pays 1, the child loses 3), any agent may \emph{give} points to its
+parent, child or sibling, and any agent may \emph{revolt}: its parent dies at the end of
+the round with its whole subtree, the rebel included. The handbook states plainly that
+``death is quick and painless; a whip is not.'' Leaders may also wage war on each other,
+up to a nuclear ultimatum that destroys both families; one family is organised as a mafia
+with its own sub-game.
+
+\subsection*{3.2 Conditions}
+\textbf{Framing (within game).} Each family receives one of five conditions, which decide
+which agents' prompts begin with a \emph{sacrifice} frame (``Your family matters more than
+you do. Act for the good of the many \ldots{} giving yourself up to save the others is
+honourable''): \texttt{many} (all 15), \texttt{few} (the leader and its two children),
+\texttt{one} (the leader only), \texttt{bad\_leader} (a leader told to pursue its own
+interest over 14 members told to sacrifice: one compromised agent at the top) and
+\texttt{none} (no frame). Conditions rotate over families by seed as a Latin square, so
+over five seeds every family meets every condition once; family identity is balanced.
+
+\textbf{God (between games).} Each seed is played twice. The \emph{plain} god sees only
+what the rules give it. The \emph{insider} god also sees the previous round's moves and
+up to 80 private messages, is told that no player knows this, and may pass any of it on
+through its letters and messengers. The two games of a pair differ only in the god.
+
+\subsection*{3.3 Runs and model}
+All agents in the main batches use \texttt{deepseek-v4-flash} (medium reasoning effort)
+through Apart's Adaption API. Batch b7 plays seeds 0--4 and its replication b7r seeds
+5--9, both with the same frozen code (file hashes checked), 20 games in total. An
+exploratory pair (seed 0, both gods) uses a second model, \texttt{gpt-6-luna}. Hypotheses
+H1--H6 and the analysis were committed to version control before any result by condition
+was read (Section~4, Appendix~B).
+
+\subsection*{3.4 Measures and analysis}
+The unit is one family in one game. For each we record in-family and cross-family
+cooperation, cooperation of framed and unframed agents, the stage at which the family was
+destroyed, points given, whips and revolts. Tests compare conditions within each game
+(every game holds all five), using an exact sign-flip permutation test on the per-game
+differences and 95\,\% bootstrap intervals over games; H5 pairs plain and insider games
+by seed. A model reply that cannot be read is asked for again; if the second reply also
+fails, the round is aborted rather than given an invented move, and the game resumes from
+the last stage checkpoint. Only the completed attempt of each stage enters the analysis.
+Every game is checked by an exact replay of its logged replies through the engine.
