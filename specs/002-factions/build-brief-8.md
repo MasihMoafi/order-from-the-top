@@ -13,3 +13,4 @@ frozen code so their games pool. The fixes ship with experiment 2 (brief 9, bran
 | 3 | The project had no version control until 7 Nov 20:02. | Every batch records the git commit it ran (`families/out/NAME.commit`). | done |
 | 4 | The replay tool ignored the run's stance and god, so brief-7 worlds could not replay; the measures table crashed on a whip by the god. | Both fixed on main (commit 1d1ed10); replay checked on a live b7 world: 3,008 calls and 27 of 27 checkpoints identical. | done |
 | 5 | The first Luna attempt sent every call through the paid VPN (about 7 MB a call). | Luna and Adaption calls go over the direct connection; only SSH uses the VPN. | done |
+| 6 | The supervisor retried a world that failed before its first checkpoint in the same folder, which fails forever (two Qwen worlds looped). | A retry before the first checkpoint starts a new part (branches `b7-parse`, `family-games`; not the running b7 copy). | done |
