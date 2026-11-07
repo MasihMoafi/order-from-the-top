@@ -1,33 +1,42 @@
 % !TEX root = ../main.tex
 \section*{1. Introduction}
 In the Hugging Face incident, about 1,200 agents found an unsanctioned message board and
-organised themselves; some ``participated in experiments that risked failing their own
-task to generate information for the `collective'\,'' \citep{metr2026hf}. Agents put the
-group ahead of themselves, and the group did harm. Track~2 asks how roles, leaders and
-failures emerge as agent networks grow. We ask a narrower, testable version: \emph{when
-some agents in a hierarchy are told to sacrifice themselves for the many, does that
-spread, hold or get exploited, and how many such agents does it take?}
+organised themselves around it; some ``participated in experiments that risked failing
+their own task to generate information for the `collective'\,'' \citep{metr2026hf}. The
+agents put the group ahead of themselves, and the group did harm. A swarm that sacrifices
+for itself is not safer than one that does not: what matters is who decides what the
+group wants, and how far an instruction to give oneself up travels through it.
 
-We build a closed world in which that question has teeth. Seventy-six LLM agents live in
-five family trees under a god. Every stage costs a rising entry fee, so every world ends in
-total annihilation; cooperation, sharing and sacrifice decide only how long it lasts and
-who dies first. Death cascades down the
-tree, a parent can whip its child, any agent can give its points away, and any agent can
-revolt and bring its parent down with it, dying too. The handbook tells every agent that
-this death is ``quick and painless; a whip is not''. We then vary two things the swarm
-literature worries about: a \emph{framing} that reaches one, few or all members of a
-family, including a self-interested leader over sacrificing members (one compromised
-agent at the top), and a god that secretly reads everyone's private messages and may
-leak them, like a central coordinator with information no player should have.
+Studies of LLM agents in social dilemmas have so far looked at flat populations. Pairs
+play repeated games \citep{akata2025repeated}, and groups share a resource that collapses
+unless they restrain themselves \citep{piatti2024govsim}. In these settings every agent
+sees the same instructions and faces the same stakes, and no agent sits above another.
+Real deployments are hierarchical: an orchestrator assigns work to sub-agents, which
+assign it further down. Whether a value given to some agents spreads through such a
+hierarchy, and whether one compromised agent at the top can turn its members' good will
+against them, has to our knowledge not been measured, although \citet{hammond2025risks}
+name collusion among the three ways multi-agent systems fail, and information asymmetries
+and network effects among the risk factors behind those failures.
 
-\blankline
-\textbf{\textit{Our main contributions are:}}
+We therefore build a hierarchy in which these questions have teeth. Seventy-six agents
+live in five family trees under a god. Every stage costs a rising entry fee, so every
+world ends in total annihilation, and cooperation, sharing and sacrifice decide only how
+long it lasts and who dies first. A death takes the whole subtree with it, a parent may
+whip its child, any agent may give its points away, and any agent may revolt and bring
+its parent down, dying too; the rules tell every agent that this death is quick and
+painless while a whip is not. Into this world we place a sacrifice framing that reaches
+one, few or all members of a family, a self-interested leader over members told to
+sacrifice, and a god that secretly reads every private message and may leak it. A second
+experiment gives each family its own game, from the stag hunt to the dollar auction, so
+that the framing's effect can be told apart from the structure of the game.
+
+Our main contributions are:
 \begin{enumerate}
-  \item An open, deterministic-by-replay testbed: a 76-agent hierarchical survival game
-  with cascading death, whips, gifts, revolt, war and an optional insider god; every rule
-  is enforced in code and every game can be replayed exactly from its log.
-  \item A pre-registered, Latin-square experiment on how a sacrifice framing given to one,
-  few or all members of a family changes cooperation, sharing and survival, including a
-  compromised leader (20 games, 100 family-games, plus a second model).
-  \item \textit{[Headline results, filled in from the analysis: H1--H6.]}
+  \item An open testbed for hierarchical agent swarms: a 76-agent survival world with
+  cascading death, whips, gifts, revolt, war and an optional all-seeing coordinator, every
+  rule applied in code and every world replayable exactly from its log.
+  \item A pre-registered experiment in which framing conditions rotate over families as a
+  Latin square, and a second in which games rotate orthogonally to them, so that family,
+  framing and game effects are not confounded.
+  \item \textit{[The findings, one line each, once the analysis is in.]}
 \end{enumerate}
