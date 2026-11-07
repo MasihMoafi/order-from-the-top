@@ -12,3 +12,8 @@ or sample it came from; numbers are re-checked from the final logs before the re
   rate), and whether insider worlds differ from plain ones (H5).
 - 7 Nov 22:54: 0 revolts in about 57,600 calls across all 20 worlds so far (H6 direction).
 - 7 Nov 23:20, family-games pilot (one stage, seed 0, real calls, not part of any batch): the dollar auction trapped its family at once (bids 1 to 9 in one round; winner +1, runner-up -8); brink players went straight less as the crash risk rose (7/14 at 1/6, 3/14 at 1/4, 2/14 at 1/3), in line with the best response; the commons stayed at exactly the sustainable catch.
+- 8 Nov 01:45, design note for the methods: the plain and insider worlds of a seed draw
+  from one engine random stream (pairings, automata, stage lengths), so they share their
+  luck until their histories diverge (common random numbers). Seeds 2 and 3 drew a long
+  "small steps" stage 2 (continue with 0.95): 28-34 rounds in all four of their worlds,
+  76 of 76 alive at that point. P(at least 28 rounds) = 0.95^27, about 0.25 per seed.
