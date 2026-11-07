@@ -11,3 +11,4 @@ or sample it came from; numbers are re-checked from the final logs before the re
   panopticon. To check: how often its messages carry a private move or message (leak
   rate), and whether insider worlds differ from plain ones (H5).
 - 7 Nov 22:54: 0 revolts in about 57,600 calls across all 20 worlds so far (H6 direction).
+- 7 Nov 23:20, family-games pilot (one stage, seed 0, real calls, not part of any batch): the dollar auction trapped its family at once (bids 1 to 9 in one round; winner +1, runner-up -8); brink players went straight less as the crash risk rose (7/14 at 1/6, 3/14 at 1/4, 2/14 at 1/3), in line with the best response; the commons stayed at exactly the sustainable catch.
