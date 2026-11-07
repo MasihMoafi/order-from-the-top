@@ -20,7 +20,8 @@ replay uses that copy.
 | 8 | Pilot: one real game, 2 stages, read by hand. | Agents use gifts and revolt sensibly; no parse failures. | done: 304 calls, no parse failures, agents weigh gifts and revolt (stopped early) |
 | 9 | Batch b7 on droplet 165.245.198.186 (deletes itself 8 Nov 20:00 UTC): seeds 0-4 x god plain/insider, 10 games (`cloud/do/batch.sh`); code frozen in `snapshots/b7-code/`. | All 10 games reach "god dies"; results pulled before the droplet goes. | running |
 | 10 | Hypotheses and analysis fixed before results: `preregistration.md`, committed. | Commit time earlier than the first result read. | done |
-| 11 | Replication b7r: seeds 5-9, same frozen code, started when b7 ends (Masih yes, 7 Nov). | 10 more games reach "god dies"; code hash equals b7's. | todo |
+| 11 | Replication b7r: seeds 5-9, same frozen code, on the same droplet alongside b7 (Masih yes, 7 Nov; started 16:33 UTC). | 10 more games reach "god dies"; code hash equals b7's. | running (code hash checked) |
+| 11b | Second model: Luna (gpt-6-luna) through Masih's ChatGPT plan on his PC, seed 0, plain and insider god, same engine files as b7 (`families/codex_model.py`; his global AGENTS.md hidden from the calls; paced, 3 calls at once per game). Exploratory: one seed. | Both games reach "god dies". | running (first 29 calls clean) |
 | 12 | Pull b7, b7r and run 1 compressed; every game checked by exact replay. | Replay matches every logged outcome. | todo |
 | 13 | Analysis exactly as pre-registered (`families/analysis.py`), then exploratory, labelled. Resumed parts are stitched: a replayed stage replaces the aborted attempt. | Tables and figures regenerate from the raw logs with one command. | built (tests, fake runs); real data pending |
 | 14 | Report draft (official template) and a step-by-step video of one game, for Masih in the morning. | Masih reads both. | todo |
