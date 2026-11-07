@@ -33,7 +33,7 @@ once the game differs?
 | 3 | Experiment 1 behaves as before with family games off (all earlier tests pass). | done |
 | 4 | A family-games run replays exactly, checkpoints included, and resumes from a checkpoint identically (tests and dry runs). | done |
 | 5 | Real pilot, one stage: every game played, no round aborted, moves read by hand and sensible. | done: 561 calls, 0 rejected, 0 aborted (third run; the first hit the mafia bug, the second stopped when the engine was edited under it). Commons held at the sustainable 3 each; the auction escalated 1 to 9 in one round and closed 9 against 8; going straight in brink fell from 7/14 to 2/14 as the risk rose; 40/42 hunted the stag. |
-| 6 | Batch: 5 games reach "god dies" on the droplet before it deletes itself (8 Nov 20:00 UTC). | queued as b9 in `ff2` (commit 20c8177), starts when b7r ends |
+| 6 | Batch: 5 games reach "god dies" on the droplet before it deletes itself (8 Nov 20:00 UTC). | queued as b9 in `ff2` (commit 20c8177); starts once at most 5 b7 worlds are still running |
 | 7 | Measures and analysis produce the by-game table from the raw logs with one command. | done (fake runs) |
 
 ## Rules (what the players read: `families/family_games.md`)
