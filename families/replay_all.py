@@ -48,27 +48,32 @@ def check(part, resume, out):
         (out / s).exists() and game_state(part / s) == game_state(out / s)
         for s in states
     )
-    # A part that ended mid-round (abort, outage) replays up to that round and stops there.
+    # Verdicts. IDENTICAL: every event and checkpoint. TO ITS CUT: a part that ended
+    # mid-round (abort, outage, still running) replays every completed round, checkpoints
+    # included, up to that round. ABORTED: an attempt that never completed a round; its
+    # stage was replayed in the next part, so none of its events enter the analysis (the
+    # calls cancelled by the abort were never made, so it cannot replay).
     cut = bool(stopped) and bool(diff) and diff.startswith("original has")
-    ok = (diff is None or cut) and same == len(states)
     note = f"{len(replayed)}/{len(original)} events, {same}/{len(states)} checkpoints"
-    return ok, note if ok else f"{note}; {diff or stopped}"
+    if diff is None and same == len(states):
+        return "IDENTICAL", note
+    if cut and states and same == len(states):
+        return "IDENTICAL TO ITS CUT", note
+    if stopped and not states:
+        return "ABORTED", note
+    return "DIFFERENT", f"{note}; {diff or stopped}"
 
 
 def main(out_root, runs):
-    total = good = 0
+    tally = {}
     for run in runs:
         for part, resume in parts(run):
             out = Path(out_root) / Path(run).name / part.name
-            ok, note = check(part, resume, out)
-            total += 1
-            good += int(ok)
-            print(
-                f"{'IDENTICAL' if ok else 'DIFFERENT'} {Path(run).name}/{part.name}: {note}",
-                flush=True,
-            )
-    print(f"{good} of {total} parts replay identically")
-    return 0 if good == total else 1
+            verdict, note = check(part, resume, out)
+            tally[verdict] = tally.get(verdict, 0) + 1
+            print(f"{verdict} {Path(run).name}/{part.name}: {note}", flush=True)
+    print("; ".join(f"{v}: {n}" for v, n in sorted(tally.items())))
+    return 1 if tally.get("DIFFERENT") else 0
 
 
 if __name__ == "__main__":
