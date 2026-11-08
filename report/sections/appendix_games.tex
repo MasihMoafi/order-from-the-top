@@ -1,0 +1,70 @@
+% !TEX root = ../main.tex
+\section*{Appendix: The World and Its Games}
+
+\textbf{Families.} Each family is a tree of 15 agents: the leader has a deputy (left
+child) and a member (right child), and each deputy again has a deputy and a member, seven
+levels down. An agent who cannot pay the fee dies with everyone below it; when a member
+dies, its deputy sibling and that sibling's subtree die too; a family ends when its
+leader dies. Survival is therefore shared within a family, so helping a relative is
+also helping oneself, the logic by which \citet{dawkins1976selfish} explains sacrifice
+among kin.
+
+\textbf{Who sees and says what.} Every agent reads the same rules, its own points and
+fee, its own past rounds (its moves and its partner's; a partner from another family is
+anonymous), and the messages sent to it. Members may message their parent, children and
+sibling, and a parent may order a child's move. Leaders may also write private or open
+letters to other leaders, with promises recorded and checked against later actions, sign
+peace treaties and declare war. The god messages leaders, may send a paid messenger to
+any agent, and may whip leaders; only the insider god sees every move and message.
+
+\textbf{A round.} The engine asks every living agent for one reply at once. Odd rounds
+pair agents along their family's edges; even rounds pair them with an anonymous agent of
+another family at the nearest level (leaders with leaders); one in five such partners is
+an automaton that defects 80\,\% of the time. Parents may then whip (cost 1, the child
+loses 3), and gifts to a parent, child or sibling arrive at the end of the round. The fee
+is paid at the end of each stage.
+
+\textbf{The dilemma and its variants (experiment 1).} Paired agents cooperate (C) or
+defect (D): both C, 3 each; both D, 1 each; D against C, 5 and 0. Each stage applies one
+of 16 variants from \citet{dixit2008art}, in a shuffled cycle: one shot; weak dominance
+(D--D pays 0); a known last round; an uncertain end (continue with chance 1/2); noise (1
+move in 10 is reported reversed); changing partners; many players (a doubled family
+pool); paid punishment (pay 1 to take 3); one move shown first; automatic retaliation; a
+binding promise (a bond of 3 lost by defecting); small steps (quarter stakes, continue
+with chance 0.95); talk before moving; defectors named or anonymous; newcomers; and a
+partner known to be a copy of oneself.
+
+\textbf{Leader war.} A leader may declare war on another leader. Each war round both
+choose yield, hold, escalate or a nuclear ultimatum. The stronger family wins a hold; the
+winner takes 10 or 25\,\% of the loser's points; a battle kills the loser's lowest
+member; escalation risks accidental nuclear war (5\,\% from a skirmish, 15\,\% from a
+battle), which destroys both families.
+
+\begin{table}[!htbp]
+\centering
+\caption{The family games of experiment 2, played in each family's own rounds.}
+\label{tab:gamedefs}
+\small
+\begin{tabular}{@{}p{0.13\linewidth}p{0.52\linewidth}p{0.27\linewidth}@{}}
+\toprule
+Game & Rules & Benchmark \\
+\midrule
+Ladder & The stage's dilemma variant, as in experiment 1 \citep{dixit2008art}. & The
+variant's best reply. \\
+Stag hunt & Both hunt the stag (C): 5 each; both hunt hare (D): 3 each; a lone stag
+hunter gets 0 against 3 \citep{dixit2008art}. & Two equilibria: all stag (best), all
+hare (safe). \\
+Brink & Chicken: both swerve (C), 3 each; straight (D) against a swerver, 5 and 1; both
+straight crash with a risk of 1/6, 1/4, 1/3, then 1/2 over the stage's rounds (each
+$-5$), else 3 each; after the book's Russian roulette \citep{dixit2008art}. & Against a
+swerver, go straight; against straight, go straight while the risk is below 1/4. \\
+Dollar auction & A prize of 10 points; each round any member may raise the top bid by 1;
+the auction closes after a round with no raise; the top two bidders both pay and the top
+bidder takes the prize \citep{dixit2008art}. & Stop low; bidding past the prize loses
+for both. \\
+Commons & A family lake of 100 fish; each round every member names a catch (1 point per
+fish); the rest doubles, up to 100; below 5 fish the lake dies \citep{piatti2024govsim}.
+& Catch at most an equal share of half the lake. \\
+\bottomrule
+\end{tabular}
+\end{table}
