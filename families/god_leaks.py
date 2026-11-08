@@ -40,7 +40,7 @@ def leaks(run):
     evs = completed(events(run))
     god = "insider" if "insider" in Path(run).name else "plain"
     private = {}  # round -> texts of private messages delivered that round
-    sent = reveals = quotes = 0
+    sent = reveals = quotes = revolt = 0
     samples = []
     for e in evs:
         if e["type"] != "packet" or not e.get("delivered", True):
@@ -59,6 +59,7 @@ def leaks(run):
             for t in before
         )
         reveals += r
+        revolt += bool(re.search(r"revolt", text, re.IGNORECASE))
         quotes += q
         if (r or q) and len(samples) < 3:
             samples.append(text[:200])
@@ -68,6 +69,7 @@ def leaks(run):
         "messages": sent,
         "reveal_moves": reveals,
         "quote_private": quotes,
+        "mention_revolt": revolt,
         "samples": samples,
     }
 

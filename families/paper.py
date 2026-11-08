@@ -176,16 +176,18 @@ def main(pulled, report):
         )
     ]
     numbers.append(macro("NFinished", len(finished)))
-    by_god = {"plain": [0, 0], "insider": [0, 0]}
+    by_god = {"plain": [0, 0, 0], "insider": [0, 0, 0]}
     for w in exp1:
         row = leaks(w)
         by_god[row["god"]][0] += row["messages"]
         by_god[row["god"]][1] += row["reveal_moves"]
-    for god, (n, r) in by_god.items():
+        by_god[row["god"]][2] += row["mention_revolt"]
+    for god, (n, r, v) in by_god.items():
         name = "Insider" if god == "insider" else "Plain"
         numbers += [
             macro(f"God{name}Msgs", f"{n:,}"),
             macro(f"God{name}Reveal", f"{100 * r / n:.0f}" if n else "--"),
+            macro(f"God{name}Revolt", f"{100 * v / n:.0f}" if n else "--"),
         ]
     md += (
         f"\n\nWorlds ended in annihilation: {len(finished)} of {len(exp1)}.\n"
@@ -200,6 +202,7 @@ def main(pulled, report):
         figures.main(report / "figures" / "exp2", exp2)
         md += "\n\n## Experiment 2\n\n" + analysis.report(exp2)
         from .conditions import completed
+
         PRIZE = 10  # the auction prize: families/games.py on branch family-games
 
         brink, commons, closes = {}, [0, 0], []
