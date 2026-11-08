@@ -1,31 +1,38 @@
 #!/usr/bin/env bash
-# Pull finished batches from the droplet in one compressed transfer: each world's event logs,
-# settings and supervisor log (enough to replay it exactly), not its per-round checkpoints.
-# Usage: cloud/do/pull.sh HOST DEST DIR:PATTERN [DIR:PATTERN ...]
-#   e.g. cloud/do/pull.sh root@1.2.3.4 families/out/pulled ff:b7 ff:b7r ff:b7q ff2:b9
+# Pull batches from the droplet, incrementally: each part's events.jsonl is compressed on the
+# droplet (xz, only when it changed since the last pull), then rsync fetches the compressed
+# files that are new or changed, with the settings and supervisor logs. A finished part is
+# fetched once; a refresh fetches only parts still growing. Locally the logs are unpacked
+# beside their .xz. Usage: cloud/do/pull.sh HOST DEST DIR:PATTERN [DIR:PATTERN ...]
+#   e.g. cloud/do/pull.sh root@1.2.3.4 families/out/pulled ff:b7 ff:b7r ff3:b7q ff2:b9q
 set -euo pipefail
 host="$1"; dest="$2"; shift 2
 mkdir -p "$dest"
-name="pull-$(date -u +%Y%m%dT%H%M)"
-bash "$(dirname "$0")/remote.sh" "$host" "bash -s -- $name $*" <<'REMOTE'
+here="$(dirname "$0")"
+bash "$here/remote.sh" "$host" "bash -s -- $*" <<'REMOTE'
 set -euo pipefail
-name="$1"; shift
-cd ~
-list=$(mktemp)
 for spec in "$@"; do
   dir="${spec%%:*}"; pat="${spec#*:}"
-  (cd "$dir/families/out" && ls -d "$pat"-*-s? 2>/dev/null | while read run; do
-     find "$run" -name events.jsonl -o -name control.json -o -name models.json | sed "s#^#$dir/families/out/#"
-     ls "$run.supervise.log" 2>/dev/null | sed "s#^#$dir/families/out/#"
-   done) >> "$list"
-  ls "$dir/families/out/$pat.commit" 2>/dev/null >> "$list" || true
+  for f in "$dir"/families/out/"$pat"-*-s?/part-*/events.jsonl; do
+    [ -f "$f" ] || continue
+    [ -f "$f.xz" ] && [ "$f.xz" -nt "$f" ] && continue
+    nice -n 15 xz -T2 -9 -k -c "$f" > "$f.xz.tmp" && mv "$f.xz.tmp" "$f.xz"
+  done
 done
-tar -cf - -T "$list" | xz -T0 -9 > "$name.tar.xz"
-ls -l "$name.tar.xz" | awk '{print "archive bytes", $5}'
+echo compressed
 REMOTE
 key="$HOME/.ssh/do_swarm_ed25519"
 proxy='ProxyCommand=nc -w 45 -x 127.0.0.1:10808 -X 5 %h %p'
-rsync -a --partial -e "ssh -i $key -o IdentitiesOnly=yes -o BatchMode=yes -o '$proxy'" \
-  "$host:$name.tar.xz" "$dest/"
-tar -xJf "$dest/$name.tar.xz" -C "$dest"
-echo "pulled into $dest ($name.tar.xz kept for the record)"
+for spec in "$@"; do
+  dir="${spec%%:*}"; pat="${spec#*:}"
+  rsync -am --partial -e "ssh -i $key -o IdentitiesOnly=yes -o BatchMode=yes -o ServerAliveInterval=15 -o '$proxy'" \
+    --include "$pat-*-s?/" --include "$pat-*-s?/part-*/" --include "$pat-*-s?/part-*/events.jsonl.xz" \
+    --include "$pat-*-s?/part-*/control.json" --include "$pat-*-s?/part-*/models.json" \
+    --include "$pat-*-s?.supervise.log" --include "$pat.commit" --exclude '*' \
+    "$host:$dir/families/out/" "$dest/"
+done
+n=0
+while read -r f; do
+  if [ ! -f "${f%.xz}" ] || [ "$f" -nt "${f%.xz}" ]; then xz -dkf "$f"; n=$((n + 1)); fi
+done < <(find "$dest" -name events.jsonl.xz)
+echo "pulled into $dest; unpacked $n changed logs; $(du -sh "$dest" | cut -f1) on disk"
