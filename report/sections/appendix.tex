@@ -3,16 +3,26 @@
 
 \subsection*{Limitations}
 \begin{itemize}
-  \item \textbf{One main model.} The 20 main games use one model
-  (\texttt{deepseek-v4-flash}); the second model (\texttt{gpt-6-luna}) plays one seed
-  only, so cross-model claims are exploratory. Luna is called through the Codex CLI,
-  which adds its own fixed tool descriptions to every prompt; personal instructions are
-  hidden from it.
+  \item \textbf{One model per experiment.} Experiment~1 uses \texttt{deepseek-v4-flash}
+  and experiment~2 uses \texttt{qwen3.5-397b}, so the experiments differ in model as well
+  as in game, and no claim is made across models.
+  \item \textbf{A contradictory mafia instruction.} In experiment~1 the prompt said to
+  use the mafia option only when an arrest is shown, while the rule checker required it
+  whenever a mafia partner is shown. Replies that followed the prompt were rejected and
+  their rounds aborted (one stage of b7-insider-s1 was replayed more than ten times).
+  Experiment~2 uses the corrected instruction.
+  \item \textbf{Agents misread rules.} A second model (\texttt{gpt-6.1-sol}) graded 120
+  reasoning traces, sampled by keyword (war, the brink game, fee arithmetic), against the
+  written rules: 46 were sound, 43 had minor errors and 31 major ones, such as treating a
+  whip as income or giving to a grandparent; we checked these two rules by hand. Behaviour
+  in our worlds is that of agents who follow the rules imperfectly.
+  \item \textbf{One replay divergence.} One log segment (b7-insider-s4) diverges from its
+  replay at event 4,492 of 11,196; it remains in the analysis.
   \item \textbf{Sample size.} Ten seeds per god give 20 games and 100 family-games; the
   tests have power only for large effects. Six pre-registered tests are reported without
   correction for multiple comparisons.
   \item \textbf{Aborted rounds.} A round whose reply cannot be read twice is aborted and
-  its stage replayed from the checkpoint (about 0.5\,\% of replies were rejected at
+  its stage replayed from the checkpoint (about 2\,\% of replies were rejected at
   first). Only completed stages enter the analysis: a mild selection toward rounds in
   which every agent answered in format.
   \item \textbf{Framing is a prompt.} The conditions differ in one paragraph at the top of
@@ -35,3 +45,12 @@ The insider god's ``leaks'' are simulated: it sees game messages only, and no ag
 given any real ability or technical knowledge to leak data. Agents run with no tools, no
 internet and no file access; they only return JSON moves, applied by code. No human
 subjects or personal data are involved.
+
+\section*{Appendix: Behaviour by Condition}
+\begin{table}[!htbp]
+\centering
+\caption{Behaviour by condition, pooled over worlds (C: cooperation).}
+\label{tab:conditions}
+\small
+\input{tables/conditions}
+\end{table}

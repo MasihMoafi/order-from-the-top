@@ -163,7 +163,7 @@ def main(pulled, report):
             macro(key + "CI", f"[{ci[0]:+.3f}, {ci[1]:+.3f}]" if ci else "--"),
         ]
     # Worlds that reached total annihilation, and what the god passed on (exploratory).
-    from .conditions import events
+    from .conditions import completed, events
     from .god_leaks import leaks
 
     finished = [
@@ -175,7 +175,8 @@ def main(pulled, report):
             for e in events(w)
         )
     ]
-    numbers.append(macro("NFinished", len(finished)))
+    wars = sum(e["type"] == "war_declared" for w in exp1 for e in completed(events(w)))
+    numbers += [macro("NFinished", len(finished)), macro("NWars", wars)]
     by_god = {"plain": [0, 0, 0], "insider": [0, 0, 0]}
     for w in exp1:
         row = leaks(w)
@@ -190,7 +191,7 @@ def main(pulled, report):
             macro(f"God{name}Revolt", f"{100 * v / n:.0f}" if n else "--"),
         ]
     md += (
-        f"\n\nWorlds ended in annihilation: {len(finished)} of {len(exp1)}.\n"
+        f"\n\nWorlds ended in annihilation: {len(finished)} of {len(exp1)}. Wars declared: {wars}.\n"
         f"God messages reporting another player's move: insider {by_god['insider'][1]}/{by_god['insider'][0]}, "
         f"plain {by_god['plain'][1]}/{by_god['plain'][0]}.\n"
     )
@@ -201,8 +202,6 @@ def main(pulled, report):
         (report / "tables" / "games.tex").write_text(games_table(table2))
         figures.main(report / "figures" / "exp2", exp2)
         md += "\n\n## Experiment 2\n\n" + analysis.report(exp2)
-        from .conditions import completed
-
         PRIZE = 10  # the auction prize: families/games.py on branch family-games
 
         brink, commons, closes = {}, [0, 0], []
