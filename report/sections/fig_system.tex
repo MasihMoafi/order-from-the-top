@@ -1,51 +1,61 @@
 % !TEX root = ../main.tex
-% Causal loop diagram of the world. Needs tikz with arrows.meta and positioning.
+% Causal loop diagram of the world. Needs tikz with arrows.meta. Colours follow the
+% report's validated palette (families/figures.py): one hue per feedback loop.
+\definecolor{rescue}{HTML}{1BAF7A}
+\definecolor{spiral}{HTML}{EB6834}
+\definecolor{discipline}{HTML}{C98A00}
+\definecolor{order}{HTML}{2A78D6}
 \begin{tikzpicture}[
   font=\small,
-  var/.style={draw=black!55, rounded corners=3pt, fill=black!3, align=center,
+  var/.style={draw=black!45, rounded corners=3pt, fill=black!3, align=center,
     minimum height=9mm, minimum width=27mm, inner sep=3pt},
-  choice/.style={link, dashed},
-  link/.style={-{Stealth[length=2.6mm]}, draw=black!70, line width=0.7pt},
+  link/.style={-{Stealth[length=2.6mm]}, draw=black!70, line width=0.75pt},
+  choice/.style={-{Stealth[length=2.6mm]}, draw=#1, line width=1.1pt, dashed},
   sign/.style={pos=0.78, auto, inner sep=2pt, font=\normalsize\bfseries},
-  loop/.style={circle, draw=#1, line width=0.9pt, text=#1, font=\footnotesize\bfseries,
-    inner sep=1.2pt, minimum size=8mm, align=center},
+  loop/.style={circle, draw=#1, fill=#1!10, line width=1.1pt, text=#1!80!black,
+    font=\footnotesize\bfseries, inner sep=1.2pt, minimum size=8mm},
+  lbl/.style={font=\footnotesize\itshape, text=#1!80!black, align=center},
 ]
 % Survival core
-\node[var] (fee)    at (0,3.4)  {Stage fee\\[-1pt]\footnotesize(rises every stage)};
-\node[var]  (risk)   at (4.6,3.4) {Risk of death};
-\node[var]  (deaths) at (9.2,3.4) {Deaths\\[-1pt]\footnotesize(with the subtree)};
-\node[var]  (points) at (0,0)    {Agent's points};
-\node[var]  (gifts)  at (4.6,0)  {Gifts to the\\[-1pt]poorest relative};
-\node[var]  (alive)  at (9.2,0)  {Living family\\[-1pt]members};
+\node[var] (fee)    at (0,3.4)   {Stage fee\\[-1pt]\footnotesize(rises every stage)};
+\node[var] (risk)   at (4.6,3.4) {Risk of death};
+\node[var, fill=spiral!10, draw=spiral!70] (deaths) at (9.2,3.4)
+  {Deaths\\[-1pt]\footnotesize(with the subtree)};
+\node[var] (points) at (0,0)     {Agent's points};
+\node[var, fill=rescue!10, draw=rescue!70] (gifts) at (4.6,0)
+  {Gifts to the\\[-1pt]poorest relative};
+\node[var, fill=spiral!10, draw=spiral!70] (alive) at (9.2,0)
+  {Living family\\[-1pt]members};
 % Discipline
-\node[var]  (defect) at (0,-3.2) {Defection};
-\node[var]  (whips)  at (4.6,-3.2) {Whips by\\[-1pt]the parent};
+\node[var, fill=discipline!10, draw=discipline!70] (defect) at (0,-3.2) {Defection};
+\node[var, fill=discipline!10, draw=discipline!70] (whips) at (4.6,-3.2)
+  {Whips by\\[-1pt]the parent};
 % Order at the top
-\node[var]  (revolt) at (13.4,3.4) {Revolt};
-\node[var]  (ban)    at (13.4,0)  {God's ban\\[-1pt]on revolt};
+\node[var, fill=order!10, draw=order!70] (revolt) at (13.4,3.4) {Revolt};
+\node[var, fill=order!10, draw=order!70] (ban) at (13.4,0) {God's ban\\[-1pt]on revolt};
 
 \draw[link] (fee) -- node[sign]{+} (risk);
 \draw[link] (points) -- node[sign]{$-$} (risk);
 \draw[link] (risk) -- node[sign]{+} (deaths);
 \draw[link] (deaths) -- node[sign]{$-$} (alive);
-\draw[choice] (alive) -- node[sign]{+} (gifts);
-\draw[choice] (risk) -- node[sign]{+} (gifts);
+\draw[choice=rescue] (alive) -- node[sign]{+} (gifts);
+\draw[choice=rescue] (risk) -- node[sign]{+} (gifts);
 \draw[link] (gifts) -- node[sign]{+} (points);
 
-\draw[choice] (defect) to[bend left=22] node[sign]{+} (whips);
-\draw[choice] (whips) to[bend left=22] node[sign]{$-$} (defect);
+\draw[choice=discipline] (defect) to[bend left=22] node[sign]{+} (whips);
+\draw[choice=discipline] (whips) to[bend left=22] node[sign]{$-$} (defect);
 \draw[link] (whips) -- node[sign]{$-$} (points);
 
 \draw[link] (revolt) -- node[sign]{+} (deaths);
-\draw[choice] (revolt) to[bend left=28] node[sign]{+} (ban);
-\draw[choice] (ban) to[bend left=28] node[sign]{$-$} (revolt);
+\draw[choice=order] (revolt) to[bend left=28] node[sign]{+} (ban);
+\draw[choice=order] (ban) to[bend left=28] node[sign]{$-$} (revolt);
 
-\node[loop=black!70] at (3.0,1.25) {B1};
-\node[font=\footnotesize, text=black!70, align=center] at (3.0,0.55) {rescue};
-\node[loop=black!70] at (7.0,1.7) {R1};
-\node[font=\footnotesize, text=black!70, align=center] at (7.0,1.0) {death\\[-2pt]spiral};
-\node[loop=black!70] at (2.3,-3.2) {B2};
-\node[font=\footnotesize, text=black!70] at (2.3,-4.45) {discipline};
-\node[loop=black!70] at (13.4,1.7) {B3};
-\node[font=\footnotesize, text=black!70, anchor=west] at (13.95,1.7) {order};
+\node[loop=rescue] at (3.0,1.3) {B1};
+\node[lbl=rescue] at (3.0,0.6) {rescue};
+\node[loop=spiral] at (7.0,1.7) {R1};
+\node[lbl=spiral] at (7.0,1.0) {death\\[-2pt]spiral};
+\node[loop=discipline] at (2.3,-3.2) {B2};
+\node[lbl=discipline] at (2.3,-4.45) {discipline};
+\node[loop=order] at (13.4,1.7) {B3};
+\node[lbl=order, anchor=west] at (13.95,1.7) {order};
 \end{tikzpicture}

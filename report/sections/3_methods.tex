@@ -11,6 +11,16 @@ leaf) below them, seven levels deep, so the tree of 15 agents is tall and narrow
 message their parent, children, and sibling; leaders also write to one another, and the
 god writes to leaders and may send paid messengers to anyone. Every agent reads the same
 rules, so the tree, the stakes, and the rules are common knowledge.
+Figure~\ref{fig:board} shows one world in play.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.82\linewidth]{figures/world-board.png}
+\caption{One world of experiment~1 at stage~4, replayed from its log. The god sits at
+the centre of the five family trees; each square is an agent with its points and its
+move, C or D. Below: a message from the god and a leader's order to its child.}
+\label{fig:board}
+\end{figure}
 
 Time runs in stages $s = 1, 2, \dots$, each a sequence of rounds. In every round, paired
 agents play a two-move game with payoffs $u(a_i, a_j)$. Odd rounds pair agents along
@@ -25,9 +35,7 @@ give points to its parent, a child, or its sibling.
   a_s = a_0 + (s-1)\,\delta ,
   \label{eq:fee}
 \end{equation}
-and an agent with $x_i < a_s$ dies together with its subtree. Fees are collected from
-the leaders down, so a death high in the tree is settled before the agents below it are
-charged. Fates are also linked sideways: when a member dies, its sibling deputy dies
+and an agent with $x_i < a_s$ dies together with its subtree. Fates are also linked sideways: when a member dies, its sibling deputy dies
 with its subtree. A family dies with its leader, and the god dies when no family is
 left. Because $a_s$ grows without bound while the expected earnings of a stage stay
 bounded, every world ends in total annihilation with probability one, and the agents
@@ -40,9 +48,9 @@ painless while a whip is not, so revolt is the one way to escape punishment from
 at the price of one's life. Figure~\ref{fig:system} shows how these rules and the
 agents' choices feed back on one another.
 
-\begin{figure}[!htbp]
+\begin{figure}[!t]
 \centering
-\resizebox{0.85\linewidth}{!}{\input{sections/fig_system}}
+\resizebox{0.7\linewidth}{!}{\input{sections/fig_system}}
 \caption{Causal loops of the world. An arrow marked $+$ moves its target in the same
 direction, and one marked $-$ in the opposite direction. Solid arrows are rules applied
 by code; dashed arrows are choices the agents make, which the experiments observe but do
@@ -82,9 +90,7 @@ orthogonal Latin squares, so every condition also meets every game once.
 The unit of analysis is a family in a world. For family $f$ we record in-family
 cooperation $\kappa_f = n^{C}_f / n_f$ over the moves its members make against one
 another, its cooperation against other families, and the cooperation of its unframed
-members over all their moves. In the family games, passing counts as cooperation in the
-auction, and a catch within the share that keeps the lake full counts as cooperation in
-the commons. We also record the points its members gave away, their whips and revolts,
+members over all their moves. We also record the points its members gave away, their whips and revolts,
 and the stage at which the leader died; a family alive at the cut-off is assigned its
 last completed stage. Every world holds all five conditions, so for a contrast between
 conditions $c$ and $c'$ we take the per-world difference $\Delta = \kappa_{c} -

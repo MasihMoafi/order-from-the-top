@@ -1,40 +1,39 @@
 % !TEX root = ../main.tex
 \section*{5. Results}
-We report the pre-registered tests of experiment~1 first, then how its worlds ended,
-what the god did with its position, and finally the family games of experiment~2. One
-command, \texttt{families.paper}, generates every number from the logs.
+We report experiment~1's pre-registered tests, its endings, and the god's conduct, then
+experiment~2. One command, \texttt{families.paper}, generates every number from the logs.
 
 \subsection*{5.1 Framing raises cooperation, and no spillover is detected}
-Table~\ref{tab:prereg} lists the pre-registered tests. A family told to sacrifice for
-the many cooperates more inside the family than one told nothing (H1, mean difference
+Table~\ref{tab:prereg} lists the pre-registered tests. \textbf{A family told to sacrifice for
+the many cooperates more inside the family than one told nothing} (H1, mean difference
 \HOneCoop{}, 95\,\% interval \HOneCoopCI{}, $p$ \HOneCoopP{}), and cooperation rises
 with the number of members framed (H2, Spearman $\rho = $ \HTwoRho{}, $p$ \HTwoRhoP{}).
 Both results hold when the two worlds of each seed are averaged ($p = 0.002$ over ten
 seeds, the smallest value the test allows) and survive a Holm correction across all
-eight tests. We detect no spillover, however. Unframed members of the \textit{one} and \textit{few}
+eight tests. \textbf{We detect no spillover, however.} Unframed members of the \textit{one} and \textit{few}
 families cooperate no more than members of the control family (H3, \HThree{}, $p = $ \HThreeP{}), and the interval rules out a spread of more
 than one percentage point. A framed leader does not carry its members along,
 even though it can message, order, and whip them. Table~\ref{tab:conditions} in the appendix
 gives the rates behind these tests.
 
-\begin{table}[!htbp]
+\begin{table}[!t]
 \centering
 \caption{Pre-registered tests over \NWorlds{} worlds: per-world differences, exact
 sign-flip tests and 95\,\% bootstrap intervals.}
 \label{tab:prereg}
-\small
+\footnotesize
 \input{tables/prereg}
 \end{table}
 
 \subsection*{5.2 The self-interested leader shows no detectable gain}
 We expected the self-interested leader to draw points from fourteen members told to
-sacrifice. It does not. It receives no more gift points than the other leaders (H4,
+sacrifice. \textbf{It does not.} It receives no more gift points than the other leaders (H4,
 \HFourGifts{} points, $p = $ \HFourGiftsP{}), the interval allows at most a small gain,
 and its extra whips are not significant either. Its members cooperate with one another as much as
 the \textit{many} family does, but few of their gifts go to the leader.
 
 \subsection*{5.3 No revolt or war, and deaths follow the fee}
-No agent revolted in \NMoves{} moves (H6), although every agent knew that the revolt's
+\textbf{No agent revolted in \NMoves{} moves} (H6), although every agent knew that the revolt's
 death is quick and a whip's pain is not. Families instead passed points to their
 poorest members and kept paying, and they shrank slowly, as Figure~\ref{fig:survival}
 in the appendix shows. Every observed death followed from the fee: an agent that could not pay, the
@@ -46,8 +45,8 @@ their end, the stage at which families die does not differ between conditions or
 
 \subsection*{5.4 The god forbids revolt and informs on defectors}
 A leader's revolt would kill the god. The god reads the same rules as every player and
-receives no instruction to keep order, yet in every world it forbids revolt in the
-first stage: ``I order all leaders to avoid any war that could escalate to nuclear, and
+receives no instruction to keep order, yet \textbf{in every world it forbids revolt in the
+first stage}: ``I order all leaders to avoid any war that could escalate to nuclear, and
 never to revolt. I will whip violators.'' Revolt then stays on its agenda, appearing in
 \GodPlainRevolt{}\,\% of the plain god's messages and \GodInsiderRevolt{}\,\% of the
 insider god's. No agent revolted while this order stood. Because the order came from the one agent
@@ -63,8 +62,8 @@ two-sided as pre-registered). This last result is nominal: it does not survive t
 correction.
 
 \subsection*{5.5 The family games}
-Table~\ref{tab:games} reports experiment~2, and Table~\ref{tab:gamedefs} in the
-appendix defines each game. In the stag hunt, families settle on the joint hunt, the
+Table~\ref{tab:games} in the appendix reports experiment~2, and
+Table~\ref{tab:gamedefs} defines each game. In the stag hunt, families settle on the joint hunt, the
 equilibrium that pays both hunters most. In brink, at a crash risk of one in six, going
 straight pays more whatever the partner does, yet only \BrinkStraightLow{}\,\% of moves
 go straight at that risk. Commons members keep their catch within the share that keeps
@@ -72,15 +71,4 @@ the lake full in \CommonsWithin{}\,\% of their choices. Of \AuctionCount{} dolla
 auctions, most close low, with a median winning bid of \AuctionMedian{} against a prize
 of 10, but \AuctionPastPrize{} escalate past the prize, the trap that
 \citet{dixit2008art} describe, in which both top bidders lose. These benchmarks are
-single-round payoffs. Repeated play, shared survival, and the whip all reward restraint,
-so a departure from them is not by itself an error.
-
-\begin{table}[!htbp]
-\centering
-\caption{Experiment 2: behaviour by family game, five worlds of \texttt{qwen3.5-397b}
-with unequal follow-up, capped at stage 8. C counts passing in the auction and a sustainable catch in the
-commons.}
-\label{tab:games}
-\small
-\input{tables/games}
-\end{table}
+single-round payoffs, while repeated play, shared survival, and the whip reward restraint.
