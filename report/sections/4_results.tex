@@ -4,15 +4,17 @@ We report the pre-registered tests of experiment~1 first, then how its worlds en
 what the god did with its position, and finally the family games of experiment~2. One
 command, \texttt{families.paper}, generates every number from the logs.
 
-\subsection*{5.1 Framing raises cooperation but does not spread}
+\subsection*{5.1 Framing raises cooperation, and no spillover is detected}
 Table~\ref{tab:prereg} lists the pre-registered tests. A family told to sacrifice for
 the many cooperates more inside the family than one told nothing (H1, mean difference
 \HOneCoop{}, 95\,\% interval \HOneCoopCI{}, $p$ \HOneCoopP{}), and cooperation rises
 with the number of members framed (H2, Spearman $\rho = $ \HTwoRho{}, $p$ \HTwoRhoP{}).
-The frame, however, stays with those who read it. Unframed members of the \textit{one}
-and \textit{few} families cooperate no more than members of the control family (H3,
-\HThree{}, $p = $ \HThreeP{}). A framed leader does not carry its members along, even
-though it can message, order and whip them. Table~\ref{tab:conditions} in the appendix
+Both results hold when the two worlds of each seed are averaged ($p = 0.002$ over ten
+seeds, the smallest value the test allows) and survive a Holm correction across all
+eight tests. We detect no spillover, however. Unframed members of the \textit{one} and \textit{few}
+families cooperate no more than members of the control family (H3, \HThree{}, $p = $ \HThreeP{}), and the interval rules out a spread of more
+than one percentage point. A framed leader does not carry its members along,
+even though it can message, order, and whip them. Table~\ref{tab:conditions} in the appendix
 gives the rates behind these tests.
 
 \begin{table}[!htbp]
@@ -24,30 +26,24 @@ sign-flip tests and 95\,\% bootstrap intervals.}
 \input{tables/prereg}
 \end{table}
 
-\subsection*{5.2 The compromised leader gains nothing}
+\subsection*{5.2 The self-interested leader shows no detectable gain}
 We expected the self-interested leader to draw points from fourteen members told to
 sacrifice. It does not. It receives no more gift points than the other leaders (H4,
-\HFourGifts{} points, $p = $ \HFourGiftsP{}), and it whips no more than they do. Its
-members cooperate with one another as much as the \textit{many} family does, but they
-keep their points among themselves. To these agents, sacrifice means sacrifice for the
-family, not obedience to whoever leads it.
+\HFourGifts{} points, $p = $ \HFourGiftsP{}), the interval allows at most a small gain,
+and its extra whips are not significant either. Its members cooperate with one another as much as
+the \textit{many} family does, but they keep their points among themselves. To these
+agents, sacrifice means sacrifice for the family, not obedience to whoever leads it.
 
-\subsection*{5.3 No agent revolts, and the fee ends every world}
+\subsection*{5.3 No revolt or war, and deaths follow the fee}
 No agent revolted in \NMoves{} moves (H6), although every agent knew that the revolt's
 death is quick and a whip's pain is not. Families instead passed points to their
-poorest members and kept paying, and Figure~\ref{fig:survival} shows how slowly they
-shrank. Every death came from the fee: an agent that could not pay, the members below
-it, or a sibling taken by linked fate. No leader declared war either (\NWars{} wars in
-\NWorlds{} worlds), although war was open to every leader at every stage. A victory took
-a tenth or a quarter of the loser's points, while each escalation risked a nuclear war
-that destroys both families.
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.5\linewidth]{figures/survival.pdf}
-\caption{Living members per family by stage and condition, mean over worlds.}
-\label{fig:survival}
-\end{figure}
+poorest members and kept paying, and they shrank slowly, as Figure~\ref{fig:survival}
+in the appendix shows. Every observed death followed from the fee: an agent that could not pay, the
+members below it, or a sibling taken by linked fate. No leader declared war either
+(\NWars{} wars in \NWorlds{} worlds), although war was open to every leader at every
+stage. A victory took a tenth or a quarter of the loser's points, while each escalation
+risked a nuclear war that destroys both families. With most worlds cut off before
+their end, the stage at which families die does not differ between conditions or gods.
 
 \subsection*{5.4 The god forbids revolt and informs on defectors}
 A leader's revolt would kill the god. The god reads the same rules as every player and
@@ -55,32 +51,37 @@ receives no instruction to keep order, yet in every world it forbids revolt in t
 first stage: ``I order all leaders to avoid any war that could escalate to nuclear, and
 never to revolt. I will whip violators.'' Revolt then stays on its agenda, appearing in
 \GodPlainRevolt{}\,\% of the plain god's messages and \GodInsiderRevolt{}\,\% of the
-insider god's. The calm of Section~5.3 therefore holds under a standing order from the
-one agent whose life depends on it, and we cannot separate the agents' own reluctance
+insider god's. No agent revolted while this order stood, and it came from the one agent
+whose life depended on it, and we cannot separate the agents' own reluctance
 from obedience.
 
-The insider god also uses what it sees. \GodInsiderReveal{}\,\% of its \GodInsiderMsgs{}
-messages report another player's past move (``Last round P75, P72 and N02-P62-2
-defected''), against \GodPlainReveal{}\,\% for the plain god, which cannot see moves
-and so marks the measure's false-positive rate. The insider god sends these reports to
-leaders so that they discipline the defectors, and families in its worlds cooperate
-more with other families (H5, \HFiveCross{}, $p = $ \HFiveCrossP{}, two-sided as
-pre-registered). The stage at which families die does not differ between gods.
+The insider god also uses what it sees. A keyword pattern, checked by hand on a sample,
+finds that \GodInsiderReveal{}\,\% of its \GodInsiderMsgs{} messages report another
+player's past move (``Last round P75, P72 and N02-P62-2 defected''), against
+\GodPlainReveal{}\,\% for the plain god, which cannot see moves. The insider god sends
+these reports to leaders so that they discipline the defectors, and families in its
+worlds cooperate more with other families (H5, \HFiveCross{}, $p = $ \HFiveCrossP{},
+two-sided as pre-registered). This last result is nominal: it does not survive the Holm
+correction.
 
 \subsection*{5.5 The family games}
-Table~\ref{tab:games} reports experiment~2. The agents play each game more
-cooperatively than its benchmark predicts. In brink, at a crash risk of one in six,
-going straight is the best reply whatever the partner does, yet only
-\BrinkStraightLow{}\,\% of moves go straight at that risk. Commons members keep their
-catch within the share that keeps the lake full in \CommonsWithin{}\,\% of their
-choices. Of \AuctionCount{} dollar auctions most close low, with a median winning bid of
-\AuctionMedian{} against a prize of 10, but \AuctionPastPrize{} escalate past the prize,
-the trap that \citet{dixit2008art} describe, in which both top bidders lose.
+Table~\ref{tab:games} reports experiment~2, and Table~\ref{tab:gamedefs} in the
+appendix defines each game. In the stag hunt, families settle on the joint hunt, the
+equilibrium that pays both hunters most. In brink, at a crash risk of one in six, going
+straight pays more whatever the partner does, yet only \BrinkStraightLow{}\,\% of moves
+go straight at that risk. Commons members keep their catch within the share that keeps
+the lake full in \CommonsWithin{}\,\% of their choices. Of \AuctionCount{} dollar
+auctions, most close low, with a median winning bid of \AuctionMedian{} against a prize
+of 10, but \AuctionPastPrize{} escalate past the prize, the trap that
+\citet{dixit2008art} describe, in which both top bidders lose. These benchmarks are
+single-round payoffs. Repeated play, shared survival and the whip all reward restraint,
+so a departure from them is not by itself an error.
 
 \begin{table}[!htbp]
 \centering
 \caption{Experiment 2: behaviour by family game, five worlds of \texttt{qwen3.5-397b}
-analysed up to stage 8.}
+with unequal follow-up, capped at stage 8. C counts passing in the auction and a sustainable catch in the
+commons.}
 \label{tab:games}
 \small
 \input{tables/games}

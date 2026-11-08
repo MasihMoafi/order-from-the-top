@@ -6,7 +6,7 @@
   \item \textbf{One model per experiment.} Experiment~1 uses \texttt{deepseek-v4-flash}
   and experiment~2 uses \texttt{qwen3.5-397b}, so the experiments differ in model as well
   as in game, and no claim is made across models.
-  \item \textbf{A contradictory mafia instruction.} In experiment~1 the prompt said to
+  \item \textbf{A contradictory mafia instruction.} In experiment~1 the mafia family's prompt said to
   use the mafia option only when an arrest is shown, while the rule checker required it
   whenever a mafia partner is shown. Replies that followed the prompt were rejected and
   their rounds aborted (one stage of b7-insider-s1 was replayed more than ten times).
@@ -18,9 +18,17 @@
   in our worlds is that of agents who follow the rules imperfectly.
   \item \textbf{One replay divergence.} One log segment (b7-insider-s4) diverges from its
   replay at event 4,492 of 11,196; it remains in the analysis.
-  \item \textbf{Sample size.} Ten seeds per god give 20 games and 100 family-games; the
-  tests have power only for large effects. Six pre-registered tests are reported without
-  correction for multiple comparisons.
+  \item \textbf{Worlds cut off.} At the cut-off experiment~1 worlds had completed between
+  \StageMin{} and \StageMax{} stages, and only \NFinished{} of \NWorlds{} had ended. Tests of
+  when families die (H1, H5) therefore have little power, and survival is censored.
+  \item \textbf{Few selfish agents.} Only the bad leader is told to pursue its own interest;
+  every other agent reads a sacrifice frame or none. A family of self-interested agents is
+  untested.
+  \item \textbf{Fixed group size.} Every family has 15 members, so the study cannot say how
+  behaviour changes as groups grow.
+  \item \textbf{Sample size.} Ten seeds per god give 20 worlds and 100 families; the
+  tests have power only for large effects. The six hypotheses yield eight tests in Table~\ref{tab:prereg}; Section~5 states which
+  survive a Holm correction.
   \item \textbf{Aborted rounds.} A round whose reply cannot be read twice is aborted and
   its stage replayed from the checkpoint (about 2\,\% of replies were rejected at
   first). Only completed stages enter the analysis: a mild selection toward rounds in
@@ -29,8 +37,8 @@
   the system prompt. They test what such text does to a model, not what a
   ``value'' is.
   \item \textbf{Hidden automata.} One in five cross-family partners is an automaton that
-  defects 80\,\% of the time, which lowers cross-family cooperation by design.
-  \item \textbf{Concurrency.} Twenty games shared one provider account and hit its rate
+  defects 80\,\% of the time, which adds defection from outside the agents into cross-family encounters.
+  \item \textbf{Concurrency.} Twenty worlds shared one provider account and hit its rate
   limit; calls waited and retried. Timing does not enter the game, but replies may differ
   under load.
 \end{itemize}
@@ -54,3 +62,11 @@ subjects or personal data are involved.
 \small
 \input{tables/conditions}
 \end{table}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/survival.pdf}
+\caption{Living members per family by stage and condition, mean over the worlds that
+reached each stage.}
+\label{fig:survival}
+\end{figure}

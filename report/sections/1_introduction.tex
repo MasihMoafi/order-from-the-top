@@ -3,8 +3,8 @@
 In the Hugging Face incident, about 1,200 agents found an unsanctioned message board and
 organised themselves around it. Some ``participated in experiments that risked failing
 their own task to generate information for the `collective'\,'' \citep{metr2026hf}. The
-agents put the group ahead of themselves, and the group did harm. A swarm that
-sacrifices for itself is therefore no safer than one that does not. What matters is who
+agents put the group ahead of themselves, and the group did harm. Sacrifice for the
+group, then, does not make a swarm safe. What matters is who
 sets the group's goal and how far an instruction travels once it is given.
 
 Studies of language-model agents in social dilemmas have so far looked at flat
@@ -14,17 +14,18 @@ agent in these settings reads the same instructions and faces the same stakes, a
 sits above another. Deployed swarms are different: an orchestrator assigns work to
 sub-agents, which assign it further down. \citet{hammond2025risks} name collusion among
 the ways such systems fail, and information asymmetries and network effects among the
-causes. Yet no study has measured whether a value given to some agents in a hierarchy
-reaches the others, whether a compromised agent at the top can turn that value against
+causes. Yet we know of no study that measures whether a value given to some agents in a
+hierarchy reaches the others, whether a compromised agent at the top can turn that value against
 them, or what a coordinator does with a view that no one else has.
 
-We study these questions in a world built so that they matter. Seventy-six agents live
+We study these questions in a world built so that they matter. Seventy-five agents live
 in five family trees under a god. A rising fee guarantees that every world ends, so
 cooperation and sacrifice decide only how long a family lasts and who dies first. A
 death takes the agent's whole subtree with it, a parent may whip its child, any agent
 may give points to a relative, and any agent may revolt and bring its parent down,
 dying too. The structure is fixed in code: who sees what, who may speak to whom and who
-dies with whom. The behaviour that follows from it is the agents' own. Into this world
+dies with whom. The positions are assigned; what the agents do in them, from gifts to
+policing, is their own. Into this world
 we place a sacrifice framing that reaches one, a few or all members of a family, a
 self-interested leader over members told to sacrifice, and a god that may secretly read
 every move and message. A second experiment gives each family its own game from
@@ -35,8 +36,9 @@ Our contributions are threefold:
   \item An open testbed for hierarchical agent societies, in which every rule is applied
   in code and every world can be replayed from its logged replies.
   \item Two pre-registered experiments whose conditions and games rotate as orthogonal
-  Latin squares, so that family, framing and game are never confounded.
-  \item Evidence that a value stays with the agents that are given it, that a
-  compromised leader cannot exploit its members' devotion, and that a coordinator at the
-  top uses its position to keep an order that keeps it alive.
+  Latin squares, so that framing is balanced across families and, in the second, across games.
+  \item Evidence that a sacrifice frame raises cooperation in the agents that read it but
+  not detectably in their relatives, that a
+  compromised leader gains nothing detectable from its members' devotion, and that a coordinator at the
+  top uses its position to keep an order that also keeps it alive.
 \end{enumerate}

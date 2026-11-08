@@ -7,7 +7,7 @@ This section defines the world, the two manipulations and the measures.
 \subsection*{3.1 The world}
 A god $g$ sits above $F$ families. Each family $f$ is a tree $T_f$ rooted at its leader.
 The leader and every deputy have a deputy (left child) and a member (right child, a
-leaf) below them, so the tree is tall and narrow. Agent $i$ holds points $x_i$. Agents
+leaf) below them, seven levels deep, so the tree of 15 agents is tall and narrow. Agent $i$ holds points $x_i$. Agents
 message their parent, children and sibling; leaders also write to one another, and the
 god writes to leaders and may send paid messengers to anyone. Every agent reads the same
 rules, so the tree, the stakes and the rules are common knowledge.
@@ -29,8 +29,9 @@ and an agent with $x_i < a_s$ dies together with its subtree. Fees are collected
 the leaders down, so a death high in the tree is settled before the agents below it are
 charged. Fates are also linked sideways: when a member dies, its sibling deputy dies
 with its subtree. A family dies with its leader, and the god dies when no family is
-left. Because $a_s$ grows without bound while a round pays a bounded amount, every world
-ends in total annihilation, and the agents decide only how long it lasts.
+left. Because $a_s$ grows without bound while the expected earnings of a stage stay
+bounded, every world ends in total annihilation with probability one, and the agents
+decide only how long it lasts.
 
 \textbf{Revolt.} An agent $i$ that revolts against its parent $p(i)$ kills, at the end
 of the round, the whole subtree of $p(i)$, itself included. A leader that revolts kills
@@ -43,9 +44,9 @@ agents' choices feed back on one another.
 \centering
 \resizebox{0.85\linewidth}{!}{\input{sections/fig_system}}
 \caption{Causal loops of the world. An arrow marked $+$ moves its target in the same
-direction, and one marked $-$ in the opposite direction. R marks a reinforcing loop and
-B a balancing loop. Code applies the fee, deaths, whips and gifts; the agents decide
-which loops run and how strongly.}
+direction, and one marked $-$ in the opposite direction. Solid arrows are rules applied
+by code; dashed arrows are choices the agents make, which the experiments observe but do
+not fix. R marks a reinforcing loop and B a balancing loop.}
 \label{fig:system}
 \end{figure}
 
@@ -79,9 +80,15 @@ orthogonal Latin squares, so every condition also meets every game once.
 
 \subsection*{3.3 Measures and tests}
 The unit of analysis is a family in a world. For family $f$ we record in-family
-cooperation $\kappa_f = n^{C}_f / n_f$, the same rate for its framed and unframed
-members and against other families, the stage at which its leader died, the points its
-members gave away, its whips and its revolts. Every world holds all five conditions, so
-for a contrast between conditions $c$ and $c'$ we take the per-world difference
-$\Delta = \kappa_{c} - \kappa_{c'}$ and test its mean with an exact sign-flip
-permutation test, with 95\,\% bootstrap intervals over worlds.
+cooperation $\kappa_f = n^{C}_f / n_f$ over the moves its members make against one
+another, its cooperation against other families, and the cooperation of its unframed
+members over all their moves. In the family games, passing counts as cooperation in the
+auction, and a catch within the share that keeps the lake full counts as cooperation in
+the commons. We also record the points its members gave away, its whips and revolts,
+and the stage at which its leader died; a family alive at the cut-off is assigned its
+last completed stage. Every world holds all five conditions, so for a contrast between
+conditions $c$ and $c'$ we take the per-world difference $\Delta = \kappa_{c} -
+\kappa_{c'}$ and test its mean with an exact sign-flip permutation test, with 95\,\%
+bootstrap intervals over worlds. Because a plain and an insider world share each seed,
+we repeat every test with the two worlds of a seed averaged, and we report which results
+survive a Holm correction across all eight tests.

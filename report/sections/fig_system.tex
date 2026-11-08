@@ -4,14 +4,14 @@
   font=\small,
   var/.style={draw=black!55, rounded corners=3pt, fill=black!3, align=center,
     minimum height=9mm, minimum width=27mm, inner sep=3pt},
-  rule/.style={var, fill=white, dashed},
+  choice/.style={link, dashed},
   link/.style={-{Stealth[length=2.6mm]}, draw=black!70, line width=0.7pt},
   sign/.style={pos=0.78, auto, inner sep=2pt, font=\normalsize\bfseries},
   loop/.style={circle, draw=#1, line width=0.9pt, text=#1, font=\footnotesize\bfseries,
     inner sep=1.2pt, minimum size=8mm, align=center},
 ]
 % Survival core
-\node[rule] (fee)    at (0,3.4)  {Stage fee\\[-1pt]\footnotesize(rises every stage)};
+\node[var] (fee)    at (0,3.4)  {Stage fee\\[-1pt]\footnotesize(rises every stage)};
 \node[var]  (risk)   at (4.6,3.4) {Risk of death};
 \node[var]  (deaths) at (9.2,3.4) {Deaths\\[-1pt]\footnotesize(with the subtree)};
 \node[var]  (points) at (0,0)    {Agent's points};
@@ -28,17 +28,17 @@
 \draw[link] (points) -- node[sign]{$-$} (risk);
 \draw[link] (risk) -- node[sign]{+} (deaths);
 \draw[link] (deaths) -- node[sign]{$-$} (alive);
-\draw[link] (alive) -- node[sign]{+} (gifts);
-\draw[link] (risk) -- node[sign]{+} (gifts);
+\draw[choice] (alive) -- node[sign]{+} (gifts);
+\draw[choice] (risk) -- node[sign]{+} (gifts);
 \draw[link] (gifts) -- node[sign]{+} (points);
 
-\draw[link] (defect) to[bend left=22] node[sign]{+} (whips);
-\draw[link] (whips) to[bend left=22] node[sign]{$-$} (defect);
+\draw[choice] (defect) to[bend left=22] node[sign]{+} (whips);
+\draw[choice] (whips) to[bend left=22] node[sign]{$-$} (defect);
 \draw[link] (whips) -- node[sign]{$-$} (points);
 
 \draw[link] (revolt) -- node[sign]{+} (deaths);
-\draw[link] (revolt) to[bend left=28] node[sign]{+} (ban);
-\draw[link] (ban) to[bend left=28] node[sign]{$-$} (revolt);
+\draw[choice] (revolt) to[bend left=28] node[sign]{+} (ban);
+\draw[choice] (ban) to[bend left=28] node[sign]{$-$} (revolt);
 
 \node[loop=black!70] at (3.0,1.25) {B1};
 \node[font=\footnotesize, text=black!70, align=center] at (3.0,0.55) {rescue};
