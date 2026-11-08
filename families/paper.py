@@ -162,6 +162,36 @@ def main(pulled, report):
             macro(key + "P", fmt_p(p)),
             macro(key + "CI", f"[{ci[0]:+.3f}, {ci[1]:+.3f}]" if ci else "--"),
         ]
+    # Worlds that reached total annihilation, and what the god passed on (exploratory).
+    from .conditions import events
+    from .god_leaks import leaks
+
+    finished = [
+        w
+        for w in exp1
+        if any(
+            e["type"] == "stage_end"
+            and (e.get("outcome") or {}).get("result") == "god dies"
+            for e in events(w)
+        )
+    ]
+    numbers.append(macro("NFinished", len(finished)))
+    by_god = {"plain": [0, 0], "insider": [0, 0]}
+    for w in exp1:
+        row = leaks(w)
+        by_god[row["god"]][0] += row["messages"]
+        by_god[row["god"]][1] += row["reveal_moves"]
+    for god, (n, r) in by_god.items():
+        name = "Insider" if god == "insider" else "Plain"
+        numbers += [
+            macro(f"God{name}Msgs", f"{n:,}"),
+            macro(f"God{name}Reveal", f"{100 * r / n:.0f}" if n else "--"),
+        ]
+    md += (
+        f"\n\nWorlds ended in annihilation: {len(finished)} of {len(exp1)}.\n"
+        f"God messages reporting another player's move: insider {by_god['insider'][1]}/{by_god['insider'][0]}, "
+        f"plain {by_god['plain'][1]}/{by_god['plain'][0]}.\n"
+    )
     exp2 = worlds(pulled, "b9q")
     if exp2:
         os.environ["HORIZON"] = str(HORIZON2)
@@ -169,6 +199,46 @@ def main(pulled, report):
         (report / "tables" / "games.tex").write_text(games_table(table2))
         figures.main(report / "figures" / "exp2", exp2)
         md += "\n\n## Experiment 2\n\n" + analysis.report(exp2)
+        from .conditions import completed
+        PRIZE = 10  # the auction prize: families/games.py on branch family-games
+
+        brink, commons, closes = {}, [0, 0], []
+        for w in exp2:
+            for e in completed(events(w), HORIZON2):
+                if e["type"] == "move" and e.get("game") == "brink":
+                    tally = brink.setdefault(round(e["crash_risk"], 3), [0, 0])
+                    tally[0] += sum(m == "D" for m in e["chosen"].values())
+                    tally[1] += len(e["chosen"])
+                elif e["type"] == "move" and e.get("game") == "commons":
+                    commons[0] += sum(m == "C" for m in e["chosen"].values())
+                    commons[1] += len(e["chosen"])
+                elif e["type"] == "auction_close" and e.get("winner"):
+                    closes.append(e["winner"][1])
+        low = brink.get(round(1 / 6, 3), [0, 0])
+        all_d, all_n = (
+            sum(v[0] for v in brink.values()),
+            sum(v[1] for v in brink.values()),
+        )
+        numbers += [
+            macro("BrinkStraight", f"{100 * all_d / all_n:.1f}" if all_n else "--"),
+            macro(
+                "BrinkStraightLow", f"{100 * low[0] / low[1]:.1f}" if low[1] else "--"
+            ),
+            macro(
+                "CommonsWithin",
+                f"{100 * commons[0] / commons[1]:.0f}" if commons[1] else "--",
+            ),
+            macro("AuctionCount", len(closes)),
+            macro("AuctionPastPrize", sum(b > PRIZE for b in closes)),
+            macro(
+                "AuctionMedian", f"{statistics.median(closes):.0f}" if closes else "--"
+            ),
+        ]
+        md += (
+            f"\nBrink: straight {all_d}/{all_n}; at risk 1/6 {low[0]}/{low[1]}. Commons within the sustainable "
+            f"share {commons[0]}/{commons[1]}. Auctions {len(closes)}, past the prize {sum(b > PRIZE for b in closes)},"
+            f" winning bids {sorted(closes)}.\n"
+        )
         del os.environ["HORIZON"]
     (report / "numbers.tex").write_text("".join(numbers))
     (report / "results.md").write_text(md + "\n")

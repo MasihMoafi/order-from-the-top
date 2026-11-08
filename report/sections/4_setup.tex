@@ -16,7 +16,7 @@ at medium reasoning effort through Apart's Adaption API.
 Batch b7 plays seeds 0--4 and its replication b7r seeds 5--9, each seed with a plain and an
 insider god: 20 worlds, 100 family-worlds. Both batches run the same frozen code, whose
 file hashes we checked against the server. A second model, \texttt{qwen3.5-397b}, plays
-seeds 0--4 with the plain god (b7q), and experiment 2 plays the family games on seeds 0--4.
+seeds 0--4 with the plain god (b7q), and experiment 2 plays the family games on seeds 0--4 with \texttt{qwen3.5-397b}, each world stopped after stage 8 (Qwen's rate limit allowed no more in the time; horizon fixed before any result).
 A reply that cannot be read is asked for again; if the second reply also fails, the round
 is aborted rather than given an invented move, and the world resumes from the last stage
 checkpoint. Every world is then checked by an exact replay of its logged replies.

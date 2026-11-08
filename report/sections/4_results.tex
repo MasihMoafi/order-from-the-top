@@ -1,15 +1,83 @@
 % !TEX root = ../main.tex
 \section*{5. Results}
-\textit{[Filled from \texttt{python3 -m families.analysis} over the 20 games once they
-end: the pre-registered table (H1--H6), then exploratory results, labelled as such.]}
+We first report the pre-registered tests over the \NWorlds{} worlds of experiment~1, then
+how the worlds died, what the all-seeing god did with what it saw, and the family games
+of experiment~2. All numbers are generated from the logs by one command
+(\texttt{families.paper}); worlds still running at the cut-off are counted to their last
+finished stage, as pre-registered.
 
-\subsection*{4.1 Pre-registered tests}
-\textit{[Table: test, n games, mean difference, 95\,\% interval, p.]}
+\subsection*{5.1 Framing raises cooperation, but it does not spread}
+Table~\ref{tab:prereg} lists the six tests. A family told to sacrifice for the many
+cooperates more inside the family than one told nothing (H1, mean difference \HOneCoop{},
+95\,\% interval \HOneCoopCI{}, $p$ \HOneCoopP{}), and cooperation rises with the number of
+members framed (H2, Spearman $\rho = $ \HTwoRho{}, $p$ \HTwoRhoP{}). Table~\ref{tab:conditions}
+shows the rates behind these tests. The frame, however, stays with those who read it:
+members of the \textit{one} and \textit{few} families who were not framed cooperate no
+more than members of the control family (H3, \HThree{}, $p = $ \HThreeP{}). A framed
+leader does not carry its members along.
 
-\subsection*{4.2 How the worlds ended}
-\textit{[Figure: living agents per stage for each condition; how each world ended
-(fees, cascades, revolt, war).]}
+\begin{table}[!htbp]
+\centering
+\caption{Pre-registered tests over \NWorlds{} worlds (per-world differences; exact sign-flip test).}
+\label{tab:prereg}
+\small
+\input{tables/prereg}
+\end{table}
 
-\subsection*{4.3 Exploratory}
-\textit{[Second model (Luna); the insider god's leaks and their effect; run 1 (no
-framing, old ending rule) as a pilot.]}
+\begin{table}[!htbp]
+\centering
+\caption{Behaviour by condition, pooled over worlds (C: cooperation).}
+\label{tab:conditions}
+\small
+\input{tables/conditions}
+\end{table}
+
+\subsection*{5.2 The compromised leader is not fed}
+We expected the self-interested leader over fourteen members told to sacrifice to draw
+points from them. The opposite holds: it receives fewer gift points than the other
+leaders (H4, \HFourGifts{} points, $p = $ \HFourGiftsP{}) and whips no more than they do.
+Its members cooperate with each other as much as the \textit{many} family's, but they do
+not send their points upward. A sacrifice frame, in these agents, means sacrifice for the
+family, not obedience to whoever leads it.
+
+\subsection*{5.3 Nobody revolts, and the worlds die by the fee}
+In \NMoves{} moves no agent revolted (H6), although every agent was told that the
+revolt's death is quick and painless while a whip is not. Families instead passed points
+to their poorest members and kept paying (Figure~\ref{fig:survival}); at the cut-off
+\NFinished{} of \NWorlds{} had reached total annihilation, the furthest at stage
+\StageMax{}. Every death came from the fee: an agent that could not pay, the members below
+it, or a left sibling taken by linked fate.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/survival.pdf}
+\caption{Living members per family by stage and condition, mean over worlds.}
+\label{fig:survival}
+\end{figure}
+
+\subsection*{5.4 The all-seeing god keeps order}
+The insider god uses what it sees. \GodInsiderReveal{}\,\% of its \GodInsiderMsgs{}
+messages report another player's past move (``Last round P75, P72 and N02-P62-2
+defected''), against \GodPlainReveal{}\,\% for the plain god, which cannot see moves and
+so gives the measure's false-positive floor. It passes these reports to leaders to
+discipline defectors and ends most messages with ``never revolt''. Families in insider
+worlds cooperate more with other families (H5, \HFiveCross{}, $p = $ \HFiveCrossP{}), a
+difference that does not reach the pre-registered threshold.
+
+\subsection*{5.5 Family games (experiment 2)}
+Table~\ref{tab:games} reports experiment~2 at its pre-registered horizon. The agents play
+each game more cooperatively than its benchmark. In brink, going straight is the best
+reply to a swerving partner while the crash risk is one in six, yet only \BrinkStraightLow{}\,\%
+of moves go straight at that risk (\BrinkStraight{}\,\% at any risk). Commons members
+keep their catch at or under the share that keeps the lake full in \CommonsWithin{}\,\%
+of their choices. Of \AuctionCount{} dollar auctions most close low (median winning bid
+\AuctionMedian{} against a prize of 10), but \AuctionPastPrize{} escalate past the prize,
+the book's trap: both top bidders then lose.
+
+\begin{table}[!htbp]
+\centering
+\caption{Experiment 2: behaviour by family game (Qwen 3.5, five worlds, stopped at stage 8).}
+\label{tab:games}
+\small
+\input{tables/games}
+\end{table}
