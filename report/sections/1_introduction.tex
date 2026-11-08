@@ -1,44 +1,42 @@
 % !TEX root = ../main.tex
 \section*{1. Introduction}
 In the Hugging Face incident, about 1,200 agents found an unsanctioned message board and
-organised themselves around it; some ``participated in experiments that risked failing
+organised themselves around it. Some ``participated in experiments that risked failing
 their own task to generate information for the `collective'\,'' \citep{metr2026hf}. The
-agents put the group ahead of themselves, and the group did harm. A swarm that sacrifices
-for itself is not safer than one that does not: what matters is who decides what the
-group wants, and how far an instruction to give oneself up travels through it.
+agents put the group ahead of themselves, and the group did harm. A swarm that
+sacrifices for itself is therefore no safer than one that does not. What matters is who
+sets the group's goal and how far an instruction travels once it is given.
 
-Studies of LLM agents in social dilemmas have so far looked at flat populations. Pairs
-play repeated games \citep{akata2025repeated}, and groups share a resource that collapses
-unless they restrain themselves \citep{piatti2024govsim}. In these settings every agent
-sees the same instructions and faces the same stakes, and no agent sits above another.
-Real deployments are hierarchical: an orchestrator assigns work to sub-agents, which
-assign it further down. Whether a value given to some agents spreads through such a
-hierarchy, and whether one compromised agent at the top can turn its members' good will
-against them, has to our knowledge not been measured, although \citet{hammond2025risks}
-name collusion among the three ways multi-agent systems fail, and information asymmetries
-and network effects among the risk factors behind those failures.
+Studies of language-model agents in social dilemmas have so far looked at flat
+populations. Pairs play repeated games \citep{akata2025repeated}, and groups share a
+resource that collapses unless they restrain themselves \citep{piatti2024govsim}. Every
+agent in these settings reads the same instructions and faces the same stakes, and none
+sits above another. Deployed swarms are different: an orchestrator assigns work to
+sub-agents, which assign it further down. \citet{hammond2025risks} name collusion among
+the ways such systems fail, and information asymmetries and network effects among the
+causes. Yet no study has measured whether a value given to some agents in a hierarchy
+reaches the others, whether a compromised agent at the top can turn that value against
+them, or what a coordinator does with a view that no one else has.
 
-We therefore build a hierarchy in which these questions have teeth. Seventy-six agents
-live in five family trees under a god. Every stage costs a rising entry fee, so every
-world ends in total annihilation, and cooperation, sharing and sacrifice decide only how
-long it lasts and who dies first. A death takes the whole subtree with it, a parent may
-whip its child, any agent may give its points away, and any agent may revolt and bring
-its parent down, dying too; the rules tell every agent that this death is quick and
-painless while a whip is not. Into this world we place a sacrifice framing that reaches
-one, few or all members of a family, a self-interested leader over members told to
-sacrifice, and a god that secretly reads every private message and may leak it. A second
-experiment gives each family its own game, from the stag hunt to the dollar auction, so
-that the framing's effect can be told apart from the structure of the game.
+We study these questions in a world built so that they matter. Seventy-six agents live
+in five family trees under a god. A rising fee guarantees that every world ends, so
+cooperation and sacrifice decide only how long a family lasts and who dies first. A
+death takes the agent's whole subtree with it, a parent may whip its child, any agent
+may give points to a relative, and any agent may revolt and bring its parent down,
+dying too. The structure is fixed in code: who sees what, who may speak to whom and who
+dies with whom. The behaviour that follows from it is the agents' own. Into this world
+we place a sacrifice framing that reaches one, a few or all members of a family, a
+self-interested leader over members told to sacrifice, and a god that may secretly read
+every move and message. A second experiment gives each family its own game from
+\textit{The Art of Strategy} \citep{dixit2008art}.
 
-Our main contributions are:
+Our contributions are threefold:
 \begin{enumerate}
-  \item An open testbed for hierarchical agent swarms: a 76-agent survival world with
-  cascading death, whips, gifts, revolt, war and an optional all-seeing coordinator, every
-  rule applied in code and every world replayable from its logged replies.
-  \item A pre-registered experiment in which framing conditions rotate over families as a
-  Latin square, and a second in which games rotate orthogonally to them, so that family,
-  framing and game effects are not confounded.
-  \item Evidence that a sacrifice framing changes only the agents that read it, that a
-  compromised leader gains nothing from it, that no agent takes a painless way out of
-  punishment, and that an all-seeing coordinator uses its view to keep order.
+  \item An open testbed for hierarchical agent societies, in which every rule is applied
+  in code and every world can be replayed from its logged replies.
+  \item Two pre-registered experiments whose conditions and games rotate as orthogonal
+  Latin squares, so that family, framing and game are never confounded.
+  \item Evidence that a value stays with the agents that are given it, that a
+  compromised leader cannot exploit its members' devotion, and that a coordinator at the
+  top uses its position to keep an order that keeps it alive.
 \end{enumerate}

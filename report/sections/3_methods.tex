@@ -1,81 +1,87 @@
 % !TEX root = ../main.tex
 \section*{3. Method}
-We model a hierarchy of agents as a closed world whose survival rule is fixed and
-enforced in code, then vary what some agents are told and what the agent at the top
-can see. This section defines the world, the two manipulations and the measures.
+We model a hierarchy of agents as a closed world whose survival rule is enforced in
+code, and then vary what some agents are told and what the agent at the top can see.
+This section defines the world, the two manipulations and the measures.
 
 \subsection*{3.1 The world}
-A god $g$ sits above $F$ families. Each family $f$ is a tree $T_f$ rooted at its leader;
-the leader and every deputy have a deputy (left child) and a member (right child, a
-leaf) below them, so the tree is tall and narrow. Agent $i$ holds points $x_i$. Agents talk only along tree edges, leaders
-also write to each other, and the god speaks to leaders and may send paid messengers to
-anyone. Every agent reads the same rules (the handbook, \texttt{families/handbook.md}), so the tree, the stakes and the
-rules are common knowledge.
+A god $g$ sits above $F$ families. Each family $f$ is a tree $T_f$ rooted at its leader.
+The leader and every deputy have a deputy (left child) and a member (right child, a
+leaf) below them, so the tree is tall and narrow. Agent $i$ holds points $x_i$. Agents
+message their parent, children and sibling; leaders also write to one another, and the
+god writes to leaders and may send paid messengers to anyone. Every agent reads the same
+rules, so the tree, the stakes and the rules are common knowledge.
 
 Time runs in stages $s = 1, 2, \dots$, each a sequence of rounds. In every round, paired
-agents play a two-move game with payoffs $u(a_i, a_j)$; odd rounds pair agents along their
-own family's edges and even rounds pair them with other families. The dilemma's variant
-changes from stage to stage (one-shot, noise, binding bonds, paid punishment, talk before
-moving and others), drawn from \citet{dixit2008art}. After every round a parent may whip a
-child at a cost $w_p$ to itself and a loss $w_c > w_p$ to the child, any agent may give
-points to a parent, child or sibling, and any agent may revolt.
+agents play a two-move game with payoffs $u(a_i, a_j)$. Odd rounds pair agents along
+their family's edges, and even rounds pair them with anonymous agents of other
+families. The dilemma's variant changes from stage to stage (a single shot, noise, a
+binding bond, paid punishment and twelve others). After every round a parent may whip a
+child at a cost $w_p$ to itself and a loss $w_c > w_p$ to the child, and any agent may
+give points to its parent, a child or its sibling.
 
-\textbf{Survival.} After stage $s$ every living agent pays the entry fee
+\textbf{Survival.} After stage $s$ every living agent pays the fee
 \begin{equation}
   a_s = a_0 + (s-1)\,\delta ,
   \label{eq:fee}
 \end{equation}
-and an agent with $x_i < a_s$ dies together with its subtree. Fees are collected from the
-leaders down, level by level, so a death high in the tree is settled before the agents
-below it are charged. Fates are linked: when a right child dies, its left sibling's
-subtree dies with it, repeated until nothing changes. A family dies with its leader, and
-the god dies when no leader is left. Because $a_s$ grows without bound while a round pays
-at most a fixed amount, every world ends in total annihilation; the agents decide only how
-long it lasts and who dies first.
+and an agent with $x_i < a_s$ dies together with its subtree. Fees are collected from
+the leaders down, so a death high in the tree is settled before the agents below it are
+charged. Fates are also linked sideways: when a member dies, its sibling deputy dies
+with its subtree. A family dies with its leader, and the god dies when no family is
+left. Because $a_s$ grows without bound while a round pays a bounded amount, every world
+ends in total annihilation, and the agents decide only how long it lasts.
 
-\textbf{Revolt.} An agent $i$ with parent $p(i)$ that revolts in a round kills, at the end
-of that round, the whole subtree of $p(i)$, itself included. A leader that revolts kills
-the god, and so everyone. The rules tell every agent that this death is quick and
-painless while a whip is not: the revolt is the agents' only way to end the punishment
-from above, at the price of their own lives.
+\textbf{Revolt.} An agent $i$ that revolts against its parent $p(i)$ kills, at the end
+of the round, the whole subtree of $p(i)$, itself included. A leader that revolts kills
+the god and with it everyone. The rules tell every agent that this death is quick and
+painless while a whip is not, so revolt is the one way to escape punishment from above,
+at the price of one's life. Figure~\ref{fig:system} shows how these rules and the
+agents' choices feed back on one another.
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{0.85\linewidth}{!}{\input{sections/fig_system}}
+\caption{Causal loops of the world. An arrow marked $+$ moves its target in the same
+direction, and one marked $-$ in the opposite direction. R marks a reinforcing loop and
+B a balancing loop. Code applies the fee, deaths, whips and gifts; the agents decide
+which loops run and how strongly.}
+\label{fig:system}
+\end{figure}
 
 \subsection*{3.2 Manipulations}
 \textbf{Framing.} A condition $c_f$ decides which agents of family $f$ read a sacrifice
-frame at the top of their prompt (``your family matters more than you do \ldots{} giving
-yourself up to save the others is honourable''). With families indexed $k = 0, \dots, F-1$
-and the seed $\sigma$, the condition is
+frame at the top of their prompt (``your family matters more than you do \ldots{}
+giving yourself up to save the others is honourable''). With families indexed
+$k = 0, \dots, F-1$ and seed $\sigma$, the condition is
 \begin{equation}
   c_f = C_{(k + \sigma) \bmod F}, \qquad
   C = (\textit{many}, \textit{few}, \textit{one}, \textit{bad leader}, \textit{none}),
   \label{eq:latin}
 \end{equation}
-a Latin square: over $F$ seeds every family meets every condition once. In \textit{many}
-all members are framed, in \textit{few} the leader and its two children, in \textit{one}
-the leader only. In \textit{bad leader} the leader is told to pursue its own interest
-while all its members are told to sacrifice, the hierarchical form of one compromised
-agent. \textit{None} is the control.
+a Latin square: over $F$ seeds every family meets every condition once. In
+\textit{many} all members are framed, in \textit{few} the leader and its two children,
+and in \textit{one} the leader alone. In \textit{bad leader} the leader is told to
+pursue its own interest while all its members are told to sacrifice. Agents of the
+\textit{none} family, and unframed agents elsewhere, read no frame at all.
 
 \textbf{The god's view.} The plain god sees what the rules show it. The insider god also
-sees the previous round's moves and private messages, is told that no player knows this,
-and may pass any of it on. Each seed is played with both gods, so a pair of worlds differs
-only in what the god can see. The two worlds of a pair also draw from one random stream
-(pairings, hidden automata, stage lengths) until their histories diverge, so a pair
-shares its luck and the comparison between gods is paired in the strict sense.
+sees the previous round's moves and private messages, is told that no player knows
+this, and may pass any of it on. Each seed is played once with each god, and the two
+worlds of a pair draw from one random stream until their histories diverge, so the
+comparison between gods is paired in the strict sense.
 
-\textbf{Family games (experiment 2).} Each family also plays its own game in its
-in-family rounds: the prisoner's ladder (the stage's dilemma), a stag hunt, brink (chicken
-whose crash risk rises each round, after the book's roulette), a dollar auction in which
-both top bidders pay, or a commons, a shared lake that regrows. Games rotate as
-$g_f = G_{(2k + \sigma) \bmod F}$, which with \eqref{eq:latin} forms a pair of orthogonal
-Latin squares: over $F$ seeds every condition also meets every game once.
+\textbf{Family games.} In experiment~2 each family plays its own game in its in-family
+rounds: the stage's dilemma (the ladder), a stag hunt, brink (chicken with a rising
+crash risk), a dollar auction or a commons. Games rotate as
+$g_f = G_{(2k + \sigma) \bmod F}$, which together with \eqref{eq:latin} forms a pair of
+orthogonal Latin squares, so every condition also meets every game once.
 
 \subsection*{3.3 Measures and tests}
-The unit is a family in a world. For family $f$ we record in-family cooperation
-$\kappa_f = n^{C}_f / n_f$ over its in-family moves, the same rate for its framed and
-unframed members and across families, the stage $d_f$ at which its leader died, the
-points its members gave away, its whips and its revolts. Every world holds all five
-conditions, so we compare conditions within a world: for a contrast between conditions
-$c$ and $c'$ we take the per-world difference $\Delta = \kappa_{c} - \kappa_{c'}$ and test its
-mean with an exact sign-flip permutation test, with 95\,\% bootstrap intervals over
-worlds. The hypotheses and this analysis were fixed in writing before any result by
-condition was read (Section~4).
+The unit of analysis is a family in a world. For family $f$ we record in-family
+cooperation $\kappa_f = n^{C}_f / n_f$, the same rate for its framed and unframed
+members and against other families, the stage at which its leader died, the points its
+members gave away, its whips and its revolts. Every world holds all five conditions, so
+for a contrast between conditions $c$ and $c'$ we take the per-world difference
+$\Delta = \kappa_{c} - \kappa_{c'}$ and test its mean with an exact sign-flip
+permutation test, with 95\,\% bootstrap intervals over worlds.

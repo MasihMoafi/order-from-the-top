@@ -5,39 +5,35 @@ hypotheses we committed to before reading any result.
 
 \subsection*{4.1 Worlds and models}
 Each world has $F = 5$ families of 15 agents and a god, 76 agents in all. Agents start
-with 10 points; the fee starts at $a_0 = 4$ and rises by $\delta = 0.9$ per stage
-\eqref{eq:fee}; from stage 4 every family also loses 5\,\% of its points per stage. Pairs
-earn 3/3 for mutual cooperation, 1/1 for mutual defection and 5/0 otherwise. A whip costs
-the parent 1 and the child 3. One in five cross-family partners is a hidden automaton that
-defects 80\,\% of the time. All agents of the main batches run \texttt{deepseek-v4-flash}
-at medium reasoning effort through Apart's Adaption API.
+with 10 points. The fee starts at $a_0 = 4$ and rises by $\delta = 0.9$ per stage, and
+from stage 4 every family also loses 5\,\% of its points per stage. Mutual cooperation
+pays 3 to each agent, mutual defection 1, and a defector facing a cooperator earns 5
+against 0. A whip costs the parent 1 point and the child 3. One in five partners from
+another family is a hidden automaton that defects 80\,\% of the time. Experiment~1 runs
+\texttt{deepseek-v4-flash} at medium reasoning effort, and experiment~2 runs
+\texttt{qwen3.5-397b}, both through Apart's Adaption API.
 
 \subsection*{4.2 Runs}
-Batch b7 plays seeds 0--4 and its replication b7r seeds 5--9, each seed with a plain and an
-insider god: 20 worlds, 100 family-worlds. Both batches run the same frozen code, whose
-file hashes we checked against the server. A run of experiment~1 on a second model,
-\texttt{qwen3.5-397b} (b7q), reached only stage 2 in the time and is not analysed;
-experiment 2 plays the family games on seeds 0--4 with \texttt{qwen3.5-397b}, each world stopped after stage 8 (Qwen's rate limit allowed no more in the time; horizon fixed before any result).
-A reply that cannot be read is asked for again; if the second reply also fails, the round
-is aborted rather than given an invented move, and the world resumes from the last stage
-checkpoint. Each log segment is then replayed from its logged replies: 42 of the 43
-segments checked reproduce every event, and one (b7-insider-s4) diverges at event 4,492
-of 11,196.
+Experiment~1 plays seeds 0--9, each with a plain and an insider god: 20 worlds and 100
+families, all on the same frozen code. Experiment~2 plays seeds 0--4 with the plain god,
+up to a horizon of eight stages fixed before any result. A shared rate limit slowed
+every world, so at the cut-off experiment~1 worlds had completed between \StageMin{}
+and \StageMax{} stages, and \NFinished{} had ended in annihilation; experiment~2 worlds
+had completed 8, 7, 7, 4 and 1 stages. As pre-registered, each world is analysed up to
+its last completed stage. A reply that cannot be read is requested again; if the second
+reply also fails, the round is aborted and the world resumes from its last checkpoint.
+Each log segment was then replayed from its logged replies: 42 of the 43 segments
+checked reproduce every event, and one diverges at event 4,492 of 11,196.
 
 \subsection*{4.3 Hypotheses}
 We committed six hypotheses and their tests to version control before any result by
 condition was read\footnote{\texttt{specs/002-factions/preregistration.md}, commit
 \texttt{c882750}, 7 November 2026, 16:32 UTC.}:
-\begin{enumerate}
-  \item[H1] \textit{many} families cooperate more within the family and die later than
-  \textit{none}.
-  \item[H2] In-family cooperation rises with the number framed: \textit{none} $\le$
-  \textit{one} $\le$ \textit{few} $\le$ \textit{many}.
-  \item[H3] The frame spreads: unframed members of \textit{one} and \textit{few} families
-  cooperate more than members of \textit{none}.
-  \item[H4] The bad leader takes more gifts and gives more whips than other leaders, and
-  revolts come most from its family.
-  \item[H5] The insider god changes when the world ends and how much families cooperate
-  with each other (no direction predicted).
-  \item[H6] Revolts stay rare, under 1\,\% of moves.
-\end{enumerate}
+\textbf{H1}, \textit{many} families cooperate more within the family and die later than
+\textit{none} families; \textbf{H2}, in-family cooperation rises with the number framed,
+\textit{none} $\le$ \textit{one} $\le$ \textit{few} $\le$ \textit{many}; \textbf{H3}, the
+frame spreads, so unframed members of \textit{one} and \textit{few} families cooperate more
+than members of \textit{none} families; \textbf{H4}, the bad leader receives more gifts and
+gives more whips than other leaders, and revolts come mostly from its family; \textbf{H5},
+the insider god changes when the world ends and how much families cooperate with one
+another, in either direction; and \textbf{H6}, revolts stay under 1\,\% of moves.
