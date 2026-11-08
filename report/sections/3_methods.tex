@@ -2,23 +2,23 @@
 \section*{3. Method}
 We model a hierarchy of agents as a closed world whose survival rule is enforced in
 code, and then vary what some agents are told and what the agent at the top can see.
-This section defines the world, the two manipulations and the measures.
+This section defines the world, the two manipulations, and the measures.
 
 \subsection*{3.1 The world}
 A god $g$ sits above $F$ families. Each family $f$ is a tree $T_f$ rooted at its leader.
 The leader and every deputy have a deputy (left child) and a member (right child, a
 leaf) below them, seven levels deep, so the tree of 15 agents is tall and narrow. Agent $i$ holds points $x_i$. Agents
-message their parent, children and sibling; leaders also write to one another, and the
+message their parent, children, and sibling; leaders also write to one another, and the
 god writes to leaders and may send paid messengers to anyone. Every agent reads the same
-rules, so the tree, the stakes and the rules are common knowledge.
+rules, so the tree, the stakes, and the rules are common knowledge.
 
 Time runs in stages $s = 1, 2, \dots$, each a sequence of rounds. In every round, paired
 agents play a two-move game with payoffs $u(a_i, a_j)$. Odd rounds pair agents along
 their family's edges, and even rounds pair them with anonymous agents of other
 families. The dilemma's variant changes from stage to stage (a single shot, noise, a
-binding bond, paid punishment and twelve others). After every round a parent may whip a
+binding bond, paid punishment, and twelve others). After every round a parent may whip a
 child at a cost $w_p$ to itself and a loss $w_c > w_p$ to the child, and any agent may
-give points to its parent, a child or its sibling.
+give points to its parent, a child, or its sibling.
 
 \textbf{Survival.} After stage $s$ every living agent pays the fee
 \begin{equation}
@@ -74,7 +74,7 @@ comparison between gods is paired in the strict sense.
 
 \textbf{Family games.} In experiment~2 each family plays its own game in its in-family
 rounds: the stage's dilemma (the ladder), a stag hunt, brink (chicken with a rising
-crash risk), a dollar auction or a commons. Games rotate as
+crash risk), a dollar auction, or a commons. Games rotate as
 $g_f = G_{(2k + \sigma) \bmod F}$, which together with \eqref{eq:latin} forms a pair of
 orthogonal Latin squares, so every condition also meets every game once.
 
@@ -84,8 +84,8 @@ cooperation $\kappa_f = n^{C}_f / n_f$ over the moves its members make against o
 another, its cooperation against other families, and the cooperation of its unframed
 members over all their moves. In the family games, passing counts as cooperation in the
 auction, and a catch within the share that keeps the lake full counts as cooperation in
-the commons. We also record the points its members gave away, its whips and revolts,
-and the stage at which its leader died; a family alive at the cut-off is assigned its
+the commons. We also record the points its members gave away, their whips and revolts,
+and the stage at which the leader died; a family alive at the cut-off is assigned its
 last completed stage. Every world holds all five conditions, so for a contrast between
 conditions $c$ and $c'$ we take the per-world difference $\Delta = \kappa_{c} -
 \kappa_{c'}$ and test its mean with an exact sign-flip permutation test, with 95\,\%

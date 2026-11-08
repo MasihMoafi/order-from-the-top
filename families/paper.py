@@ -48,7 +48,7 @@ def prereg_table(results):
     """Return the supported registered comparisons as a complete TeX table."""
     names = {
         "H1 in-family cooperation, many - none": "H1 & in-family cooperation, \\textit{many} $-$ \\textit{none}",
-        "H1 stage destroyed, many - none": "H1 & stage destroyed, \\textit{many} $-$ \\textit{none}",
+        "H1 stage destroyed, many - none": "H1 & stage of death or cut-off, \\textit{many} $-$ \\textit{none}",
         "H2 Spearman(dose, in-family cooperation) > 0": "H2 & Spearman $\\rho$(number framed, cooperation)",
         "H3 unframed cooperation, one/few - none": "H3 & unframed cooperation, \\textit{one}/\\textit{few} $-$ \\textit{none}",
         "H4 gift points to leader, bad_leader - mean of others": "H4 & gift points to the leader, bad $-$ others",
