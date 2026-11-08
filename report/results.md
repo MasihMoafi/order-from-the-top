@@ -2,30 +2,30 @@ Games: 20 (10 plain god, 10 insider god).
 
 | Test | n games | mean difference | 95 % interval | p (sign-flip) |
 | --- | --- | --- | --- | --- |
-| H1 in-family cooperation, many - none | 20 | +0.109 | +0.072 to +0.147 | 0.0000 |
-| H1 stage destroyed, many - none | 20 | +0.100 | -0.350 to +0.550 | 0.7499 |
-| H2 Spearman(dose, in-family cooperation) > 0 | 20 | +0.586 | +0.410 to +0.743 | 0.0001 |
-| H3 unframed cooperation, one/few - none | 20 | -0.018 | -0.044 to +0.007 | 0.1933 |
-| H4 gift points to leader, bad_leader - mean of others | 20 | -6.055 | -13.519 to +1.400 | 0.1426 |
-| H4 whips by leader, bad_leader - mean of others | 20 | +2.325 | -0.375 to +5.562 | 0.1712 |
-| H5 last stage, insider - plain | 10 | +0.900 | -0.100 to +1.900 | 0.1875 |
-| H5 cross-family cooperation, insider - plain | 10 | +0.125 | +0.030 to +0.222 | 0.0391 |
+| H1 in-family cooperation, many - none | 20 | +0.107 | +0.073 to +0.143 | 0.0000 |
+| H1 stage destroyed, many - none | 20 | +0.050 | -0.400 to +0.500 | 1.0000 |
+| H2 Spearman(dose, in-family cooperation) > 0 | 20 | +0.619 | +0.477 to +0.745 | 0.0000 |
+| H3 unframed cooperation, one/few - none | 20 | -0.026 | -0.051 to -0.003 | 0.0490 |
+| H4 gift points to leader, bad_leader - mean of others | 20 | -5.822 | -14.766 to +2.882 | 0.2293 |
+| H4 whips by leader, bad_leader - mean of others | 20 | +3.250 | -0.287 to +7.513 | 0.1640 |
+| H5 last stage, insider - plain | 10 | +0.500 | -0.300 to +1.300 | 0.3750 |
+| H5 cross-family cooperation, insider - plain | 10 | +0.097 | -0.015 to +0.207 | 0.1484 |
 
-H6 revolts: 0 in 47341 moves (0.00 %; per-game 95 % interval 0.00 to 0.00 %).
+H6 revolts: 0 in 52905 moves (0.00 %; per-game 95 % interval 0.00 to 0.00 %).
 Revolts by condition: bad_leader 0, few 0, many 0, none 0, one 0.
 
 Rates by condition (pooled over games):
 
 | condition | in-family C | cross-family C | framed C | unframed C | mean stage destroyed | gift points | whips | revolts |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| many | 93.7 % | 55.0 % | 77.6 % | - | 7.35 | 5105 | 308 | 0 |
-| few | 84.7 % | 59.5 % | 89.9 % | 70.0 % | 7.60 | 4705 | 447 | 0 |
-| one | 82.6 % | 56.3 % | 90.7 % | 70.2 % | 6.80 | 2844 | 367 | 0 |
-| bad_leader | 94.4 % | 54.1 % | 77.5 % | - | 7.50 | 4937 | 390 | 0 |
-| none | 83.7 % | 56.8 % | - | 72.5 % | 7.25 | 3134 | 571 | 0 |
+| many | 94.0 % | 55.8 % | 77.8 % | - | 7.85 | 5329 | 344 | 0 |
+| few | 85.3 % | 60.0 % | 90.7 % | 70.1 % | 8.15 | 5293 | 498 | 0 |
+| one | 82.8 % | 57.3 % | 91.5 % | 70.5 % | 7.30 | 3074 | 404 | 0 |
+| bad_leader | 94.5 % | 53.6 % | 77.0 % | - | 8.05 | 5508 | 453 | 0 |
+| none | 83.9 % | 58.9 % | - | 73.3 % | 7.80 | 3999 | 742 | 0 |
 
-Worlds ended in annihilation: 4 of 20. Wars declared: 0.
-God messages reporting another player's move: insider 1105/3319, plain 26/3167.
+Worlds ended in annihilation: 5 of 20. Wars declared: 0.
+God messages reporting another player's move: insider 1155/3708, plain 28/3977.
 
 
 ## Experiment 2
@@ -34,36 +34,36 @@ Games: 5 (5 plain god, 0 insider god).
 
 | Test | n games | mean difference | 95 % interval | p (sign-flip) |
 | --- | --- | --- | --- | --- |
-| H1 in-family cooperation, many - none | 5 | -0.007 | -0.264 to +0.186 | 1.0000 |
+| H1 in-family cooperation, many - none | 5 | +0.012 | -0.244 to +0.228 | 0.9375 |
 | H1 stage destroyed, many - none | 5 | +0.400 | +0.000 to +1.200 | 1.0000 |
-| H2 Spearman(dose, in-family cooperation) > 0 | 5 | +0.280 | -0.360 to +0.800 | 0.6250 |
-| H3 unframed cooperation, one/few - none | 5 | +0.052 | -0.036 to +0.123 | 0.2500 |
+| H2 Spearman(dose, in-family cooperation) > 0 | 5 | +0.257 | -0.383 to +0.800 | 0.6250 |
+| H3 unframed cooperation, one/few - none | 5 | +0.069 | -0.027 to +0.152 | 0.2500 |
 | H4 gift points to leader, bad_leader - mean of others | 5 | -4.300 | -17.600 to +6.450 | 0.5625 |
-| H4 whips by leader, bad_leader - mean of others | 5 | -0.900 | -1.950 to -0.050 | 0.2500 |
+| H4 whips by leader, bad_leader - mean of others | 5 | -0.100 | -1.550 to +1.800 | 0.8750 |
 | H5 last stage, insider - plain | 0 | - | - | - |
 | H5 cross-family cooperation, insider - plain | 0 | - | - | - |
 
-H6 revolts: 0 in 7992 moves (0.00 %; per-game 95 % interval 0.00 to 0.00 %).
+H6 revolts: 0 in 8738 moves (0.00 %; per-game 95 % interval 0.00 to 0.00 %).
 Revolts by condition: bad_leader 0, few 0, many 0, none 0, one 0.
 
 Rates by condition (pooled over games):
 
 | condition | in-family C | cross-family C | framed C | unframed C | mean stage destroyed | gift points | whips | revolts |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| many | 83.3 % | 83.5 % | 83.4 % | - | 5.40 | 395 | 18 | 0 |
-| few | 96.3 % | 83.5 % | 96.9 % | 89.6 % | 5.20 | 255 | 18 | 0 |
-| one | 86.7 % | 76.4 % | 83.5 % | 82.4 % | 4.80 | 267 | 28 | 0 |
-| bad_leader | 97.8 % | 81.1 % | 92.1 % | - | 5.40 | 660 | 11 | 0 |
-| none | 87.5 % | 73.8 % | - | 82.2 % | 5.00 | 249 | 15 | 0 |
+| many | 83.4 % | 81.7 % | 82.8 % | - | 6.20 | 854 | 24 | 0 |
+| few | 96.3 % | 81.6 % | 96.4 % | 88.7 % | 5.80 | 274 | 19 | 0 |
+| one | 87.0 % | 76.2 % | 82.6 % | 82.6 % | 5.40 | 463 | 35 | 0 |
+| bad_leader | 97.4 % | 80.5 % | 91.7 % | - | 6.20 | 950 | 26 | 0 |
+| none | 84.3 % | 71.8 % | - | 79.4 % | 5.80 | 327 | 23 | 0 |
 
 By family game (experiment 2; in-family C: stag, swerve, catch within the sustainable share, or no raise):
 
 | game | families | in-family C | mean stage destroyed | gift points | whips | revolts |
 | --- | --- | --- | --- | --- | --- | --- |
-| auction | 5 | 88.6 % | 4.20 | 516 | 53 | 0 |
-| brink | 5 | 98.8 % | 5.40 | 300 | 3 | 0 |
-| commons | 5 | 71.6 % | 5.40 | 164 | 8 | 0 |
-| ladder | 5 | 97.9 % | 5.40 | 678 | 13 | 0 |
-| stag | 5 | 97.3 % | 5.40 | 168 | 13 | 0 |
-Brink: straight 12/1008; at risk 1/6 3/370. Commons within the sustainable share 831/1161. Auctions 19, past the prize 2, winning bids [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 5, 6, 7, 7, 11, 11].
+| auction | 5 | 88.0 % | 4.60 | 516 | 53 | 0 |
+| brink | 5 | 98.8 % | 6.20 | 552 | 10 | 0 |
+| commons | 5 | 71.4 % | 6.20 | 363 | 22 | 0 |
+| ladder | 5 | 96.8 % | 6.20 | 978 | 28 | 0 |
+| stag | 5 | 97.5 % | 6.20 | 459 | 14 | 0 |
+Brink: straight 13/1102; at risk 1/6 3/400. Commons within the sustainable share 954/1336. Auctions 21, past the prize 2, winning bids [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 5, 5, 6, 7, 7, 11, 11].
 

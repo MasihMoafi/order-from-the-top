@@ -2,7 +2,6 @@
 \section*{3. Method}
 We model a hierarchy of agents as a closed world whose survival rule is enforced in
 code, and then vary what some agents are told and what the agent at the top can see.
-This section defines the world, the two manipulations, and the measures.
 
 \subsection*{3.1 The world}
 Picture a family as a tall, narrow tree of 15 agents. Its leader has two children, a
@@ -94,7 +93,7 @@ members over all their moves. We also record the points its members gave away, t
 and the stage at which the leader died; a family alive at the cut-off is assigned its
 last completed stage. Every world holds all five conditions, so for a contrast between
 conditions $c$ and $c'$ we take the per-world difference $\Delta = \kappa_{c} -
-\kappa_{c'}$ and test its mean with an exact sign-flip permutation test, with 95\,\%
-bootstrap intervals over worlds. Because a plain and an insider world share each seed,
+\kappa_{c'}$ and test its mean with a sign-flip permutation test (exact up to 16
+differences, 200{,}000 random flips above), with 95\,\% bootstrap intervals over worlds. Because a plain and an insider world share each seed,
 we repeat every test with the two worlds of a seed averaged, and we report which results
 survive a Holm correction across all eight tests.

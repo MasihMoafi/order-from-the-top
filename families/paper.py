@@ -129,6 +129,37 @@ def games_table(table):
     return "\n".join(lines) + "\n"
 
 
+def institutions(all_worlds):
+    """Return the messages the rules refused, points pooled with the god, and treaties signed."""
+    from .conditions import completed, events, family_of
+
+    blocked = relatives = pooled = signatures = 0
+    pool_worlds, treaty_worlds, treaties = set(), set(), set()
+    for w in all_worlds:
+        for e in completed(events(w), HORIZON2 if "b9q" in w else None):
+            if e["type"] == "packet" and e.get("reason") == "edge not permitted":
+                blocked += 1
+                to = str(e.get("receiver"))
+                if to.startswith(("P", "N")) and family_of(e["sender"]) and family_of(e["sender"]) == family_of(to):
+                    relatives += 1
+            elif e["type"] == "gift" and e.get("receiver") == "P01":
+                pooled += e["points"]
+                pool_worlds.add(w)
+            elif e["type"] == "peace_signature":
+                signatures += 1
+                treaty_worlds.add(w)
+                treaties.add((w, e.get("contextId")))
+    return {
+        "NBlocked": f"{blocked:,}",
+        "NBlockedRelatives": f"{relatives:,}",
+        "GodPoolPoints": f"{pooled:,.0f}",
+        "GodPoolWorlds": len(pool_worlds),
+        "NTreatySigs": signatures,
+        "NTreaties": len(treaties),
+        "NTreatyWorlds": len(treaty_worlds),
+    }
+
+
 def macro(name, value):
     """Return one TeX newcommand definition with a trailing newline."""
     return f"\\newcommand{{\\{name}}}{{{value}}}\n"
@@ -210,6 +241,7 @@ def main(pulled, report):
         f"plain {by_god['plain'][1]}/{by_god['plain'][0]}.\n"
     )
     exp2 = worlds(pulled, "b9q")
+    numbers += [macro(k, v) for k, v in institutions(exp1 + exp2).items()]
     if exp2:
         os.environ["HORIZON"] = str(HORIZON2)
         table2 = [r for w in exp2 for r in rows(w)]
