@@ -25,3 +25,11 @@ or sample it came from; numbers are re-checked from the final logs before the re
   (an earlier, looser rule that also counted orders to cooperate was right 4 times in 8
   and was dropped). The insider god uses its view to discipline defectors through their
   leaders; in these samples it never tips one family off about another (not yet counted).
+- 8 Nov 05:10, INTERIM pre-registered analysis (`families.analysis`, b7 + b7r, 20 worlds,
+  completed stages only, censored; worlds at stages 2-13): H1 cooperation many - none
+  +0.107 [0.074, 0.141], p < 0.001; H1 survival -0.05, p = 1 (too few deaths yet); H2
+  dose rho +0.56 [0.38, 0.71], p = 0.0001; H3 spread -0.014, p = 0.31 (no spread to the
+  unframed); H4 gifts to the bad leader -8.9 points [-15.6, -2.2], p = 0.023 (opposite of
+  the prediction: no exploitation), whips +0.9, p = 0.63; H5 cross-family cooperation
+  insider - plain +0.086 [0.010, 0.161], p = 0.066, last stage +0.2, p = 0.81; H6 0
+  revolts in 39,550 moves. Final numbers come from the last pull.
