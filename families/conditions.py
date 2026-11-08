@@ -34,6 +34,7 @@ COLUMNS: tuple[str, ...] = (
     "end_stage",
     "game",
     "god_whips",
+    "alive_end",
 )
 LEADERS = {
     "octopus": "P02",
@@ -101,6 +102,7 @@ def rows(run, horizon=None):
                     "family": f,
                     "condition": c,
                     "destroyed_stage": None,
+                    "alive_end": 15,
                     # experiment 2: the family's own game (absent: the dilemma, experiment 1)
                     "game": (config.get("family_games") or {}).get(f, "ladder"),
                 }
@@ -141,10 +143,12 @@ def rows(run, horizon=None):
                     out[family_of(e["parent"])]["leader_whips"] += 1
         elif t == "revolt":
             out[family_of(e["rebel"])]["revolts"] += 1
-        elif t == "death" and e["agent"] in LEADERS.values():
+        elif t == "death" and e["agent"].startswith("P") and e["agent"] != "P01":
             f = family_of(e["agent"])
-            if out[f]["destroyed_stage"] is None:
-                out[f]["destroyed_stage"] = e["stage"]
+            if f in out:
+                out[f]["alive_end"] -= 1  # of the 15 original members
+                if e["agent"] in LEADERS.values() and out[f]["destroyed_stage"] is None:
+                    out[f]["destroyed_stage"] = e["stage"]
         if out is not None:
             for row in out.values():
                 row["end_stage"] = e["stage"]

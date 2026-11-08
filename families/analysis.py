@@ -87,16 +87,23 @@ def god_of(run):
     return "insider" if "insider" in Path(run).name else "plain"
 
 
+RESULTS = []  # (test, n, mean, interval or None, p) of the last report(), for the paper
+
+
 def line(name, diffs, rng, unit=""):
     diffs = [d for d in diffs if d is not None]
     if not diffs:
+        RESULTS.append((name, 0, None, None, None))
         return f"| {name} | 0 | - | - | - |"
     ci = interval(diffs, rng)
+    mean, p = statistics.fmean(diffs), sign_flip(diffs, rng)
+    RESULTS.append((name, len(diffs), mean, ci, p))
     ci_text = f"{ci[0]:+.3f} to {ci[1]:+.3f}" if ci else "-"
-    return f"| {name} | {len(diffs)} | {statistics.fmean(diffs):+.3f}{unit} | {ci_text} | {sign_flip(diffs, rng):.4f} |"
+    return f"| {name} | {len(diffs)} | {mean:+.3f}{unit} | {ci_text} | {p:.4f} |"
 
 
 def report(runs, seed=0):
+    RESULTS.clear()
     rng = random.Random(seed)
     gs = games(runs)
     inrate = lambda r: rate(r["in_c"], r["in_n"])
