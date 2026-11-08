@@ -1,3 +1,44 @@
 % !TEX root = ../main.tex
 \section*{6. Discussion}
-\textit{[After results. Limitations: see the appendix.]}
+The results separate two things the swarm-safety literature often treats as one: an
+instruction to put the group first, and its spread through a hierarchy.
+
+A sacrifice frame works on the agent that reads it. Framed agents cooperate more, give
+more, and the effect grows with how many members are framed. It does not travel: a
+framed leader leaves its unframed members as they were, although it can message and whip
+them. For deployments this cuts both ways. A value given to an orchestrator will not
+reach its sub-agents by example; each agent has to be told. By the same token, a harmful
+instruction planted in one agent did not spread down its tree in our worlds, which is
+reassuring for the ``one compromised agent'' threat, though it contrasts with the
+deliberate prompt infection of \citet{lee2024infection}, where the payload is built to
+copy itself.
+
+The compromised leader was not exploited for points. Members told to sacrifice for the
+family gave to each other, not upward, so a selfish agent at the top gained nothing from
+their good will. We read this as the frame binding to ``the family'' rather than to
+authority. Whether a leader that asks for points outright would fare better is an open
+question; ours rarely asked.
+
+No agent revolted. Every agent was told that the revolt's death is quick and painless
+and that whips are not, yet none chose it, framed or not, whipped or not. In these models
+self-preservation, or the reluctance to kill another, outweighs escaping punishment. The
+insider god pulled the same way: it used its view of every move to report defectors to
+their leaders and to repeat ``never revolt'', acting as a benevolent overseer rather than
+a cheat. A coordinator with full information, in our worlds, entrenched order.
+
+In experiment~2 the agents played every game more cooperatively than its benchmark,
+swerving in brink even when going straight was the best reply, and keeping the commons
+full. The dollar auction was the exception the book predicts: most auctions stopped low,
+but some escalated past the prize, and the escalation hurt both top bidders.
+
+\subsection*{Limitations}
+The main batches use one model; the second model (Qwen 3.5) plays experiment~2 only, so
+the two experiments differ in model as well as in game. Most worlds were still running at
+the cut-off, so survival is censored and H1's survival test has little power. The full
+list, and the dual-use considerations, are in the appendix.
+
+\subsection*{Future work}
+The testbed runs any model behind a common interface, so the same pre-registered design
+can compare model families directly. Leaders that bargain openly for points, a god that
+lies, and worlds in which revolt saves the family rather than ending it are each one rule
+away.
