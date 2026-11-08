@@ -1,4 +1,9 @@
-"""Count the engine's planned calls without contacting a model."""
+"""Estimate model-call counts with a cooperative, offline engine run.
+
+Planning bypasses player calls. Counts exclude retries and depend on seeded
+round lengths and simulated survival; actual player decisions can change them.
+Temporary logs are removed when the command exits.
+"""
 import argparse
 import asyncio
 import tempfile
@@ -10,6 +15,7 @@ from .tree import NAMES
 
 
 def main():
+    """Print per-stage and total planned calls using temporary offline output."""
     parser = argparse.ArgumentParser()
     parser.add_argument('--stages', type=int, choices=range(1, 17), default=16)
     parser.add_argument('--families', nargs='+', choices=(*NAMES, 'all'), default=['all'])

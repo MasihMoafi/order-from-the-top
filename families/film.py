@@ -1,14 +1,8 @@
-"""A turn-by-turn replay of one world on the Families board, from its log, game-style.
+"""Render logged moves, transfers and fee deaths as an MP4 with Matplotlib.
 
-Each round is shown as the steps that happen in it, one after another, so a viewer sees
-how the world works, not only its outcome:
-1. Play: partners are linked, each shows its move (C or D) and the points it won float up.
-2. Gifts and whips: a gift travels from giver to receiver (+points); a whip strikes (-3).
-3. End of a stage, the fee: every living agent pays (-fee on each card); an agent that
-   cannot pay turns red and dies, then the agents below it fall one level at a time.
-Every card shows its current points; a side scoreboard shows each family's condition,
-living members and total points. The god and the leaders wear Masih's portraits, members
-their Elpis marks. Nothing is acted out: every number comes from the log.
+Requires NumPy, Pillow, FFmpeg and local portraits under arena/sketch; portraits
+are not versioned. No engine or model calls run. The fixed layout covers the
+original agents; step data comes from families.conditions.events.
 Usage: python -m families.film RUN_DIR OUT.mp4
 """
 
@@ -61,10 +55,12 @@ FPS = 10
 
 
 def rgb(h):
+    """Convert a #RRGGBB colour to three floats in the range zero to one."""
     return tuple(int(h[i : i + 2], 16) / 255 for i in (1, 3, 5))
 
 
 def mark_image(agent, dead=False):
+    """Return an RGB array of the agent mark, optionally using dead colours."""
     index = int(agent[1:]) - 1 if agent[1:].isdigit() else 0
     _, ground, ink = ELPIS_COLOURS[index % len(ELPIS_COLOURS)]
     g, k = (rgb(DEAD), rgb("#f4f3ef")) if dead else (rgb(ground), rgb(ink))
@@ -75,6 +71,10 @@ def mark_image(agent, dead=False):
 
 
 def portraits():
+    """Load each original leader and god portrait as normal and faded RGB arrays.
+
+    Missing or unreadable local portrait files raise Pillow or file errors.
+    """
     out = {}
     for agent, rel in PORTRAIT.items():
         im = np.asarray(Image.open(ART / rel).convert("RGB").resize((128, 128))) / 255.0
@@ -83,6 +83,7 @@ def portraits():
 
 
 def layout():
+    """Return original agents, board positions and card sizes for all five families."""
     agents = make_tree(NAMES)
     pos, size = {"P01": (0.0, 0.0)}, {"P01": 230}
     for f, name in enumerate(NAMES):
@@ -104,6 +105,7 @@ def layout():
 
 
 def depth(agent, agents):
+    """Return distance below a family leader; the god and leaders have depth zero."""
     d = 0
     while agent in agents and agents[agent]["parent"] not in (None, "P01"):
         agent, d = agents[agent]["parent"], d + 1
@@ -111,7 +113,7 @@ def depth(agent, agents):
 
 
 def steps(evs):
-    """The world as a list of steps: play, transfers, fee. Each carries what to draw."""
+    """Return ordered play, transfer and fee steps with their logged drawing data."""
     stage_info, out, cur = {}, [], None
     for e in evs:
         t = e["type"]
@@ -172,6 +174,8 @@ def steps(evs):
 
 
 class Board:
+    """Own the figure, original-agent layout and displayed score and death state."""
+
     def __init__(self, run):
         self.evs = events(run)
         config = next(
@@ -186,6 +190,7 @@ class Board:
         self.fig = plt.figure(figsize=(16, 9), dpi=120)
 
     def axes(self):
+        """Clear the figure and return board, panel, header and footer axes."""
         self.fig.clear()
         self.fig.patch.set_facecolor(BG)
         board = self.fig.add_axes((0.0, 0.11, 0.62, 0.80))
@@ -206,6 +211,7 @@ class Board:
         return board, panel, head, foot
 
     def draw_board(self, board, highlight=None, red=frozenset()):
+        """Draw original-agent cards from the current displayed scores and deaths."""
         for i, a in self.agents.items():
             p = a["parent"]
             if p in self.pos and i in self.pos:
@@ -288,6 +294,7 @@ class Board:
         )
 
     def draw_panel(self, panel, stage, rnd, fee, variant):
+        """Draw the stage header, family totals and action legend on panel."""
         panel.text(
             0.04, 0.96, f"Stage {stage}   round {rnd}", fontsize=22, color=INK, va="top"
         )
@@ -362,6 +369,7 @@ class Board:
             )
 
     def frame(self, header, footer, stage, rnd, fee, variant, paint):
+        """Draw one frame on the shared figure using paint(board) for the animation."""
         board, panel, head, foot = self.axes()
         head.text(0.02, 0.5, header, fontsize=17, color=INK, va="center")
         foot.text(0.02, 0.6, footer, fontsize=13, color=MUTED, va="center")
@@ -369,6 +377,7 @@ class Board:
         paint(board)
 
     def card(self, title, lines):
+        """Replace the shared figure with a title card."""
         self.fig.clear()
         ax = self.fig.add_axes((0, 0, 1, 1))
         ax.set_facecolor(BG)
@@ -379,6 +388,7 @@ class Board:
 
 
 def play_step(w, writer, c, stage, rnd):
+    """Write play-animation frames and apply the logged play score deltas."""
     fee, variant = c["fee"], c["variant"]
     frames = int(FPS * (1.6 if stage <= 2 else 0.8))
     shown = {
@@ -440,6 +450,7 @@ def play_step(w, writer, c, stage, rnd):
 
 
 def transfer_step(w, writer, c, stage, rnd):
+    """Write gift and whip frames and apply the logged transfer deltas."""
     fee, variant = c["fee"], c["variant"]
     frames = int(FPS * 1.6)
     g, wh = len(c["gifts"]), len(c["whips"])
@@ -493,6 +504,7 @@ def transfer_step(w, writer, c, stage, rnd):
 
 
 def fee_step(w, writer, c, stage, rnd):
+    """Write fee and death frames and update displayed scores and deaths."""
     fee, variant = c["fee"], c["variant"]
     dying = [d for d in c["deaths"] if d[0] != "P01"]
     broke = sorted(a for a, _, root in dying if a == root)
@@ -570,6 +582,10 @@ def fee_step(w, writer, c, stage, rnd):
 
 
 def main(run, out):
+    """Render a world to MP4, requiring local portraits and an FFmpeg encoder.
+
+    Output is overwritten; input, artwork and encoder errors propagate.
+    """
     w = Board(run)
     plan = steps(w.evs)
     writer = FFMpegWriter(

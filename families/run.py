@@ -1,4 +1,9 @@
-"""Run the game with a simulated policy or the streaming model."""
+"""Launch an offline policy or live model world and write logs and checkpoints.
+
+Live Adaption calls require ADAPTION_API_KEY or ~/.config/adaption/api_key;
+the Luna backend uses the signed-in Codex CLI. ModelOutage exits with status 75
+for supervisor restart. Existing nonempty output logs are never overwritten.
+"""
 
 import argparse
 import asyncio
@@ -14,6 +19,7 @@ from .tree import NAMES
 
 
 def family_args(values):
+    """Expand [all] to board order; reject all combined with individual names."""
     if values == ["all"]:
         return list(NAMES)
     if "all" in values:
@@ -22,6 +28,11 @@ def family_args(values):
 
 
 async def run_real(args, families):
+    """Return (engine, outcome) after a live Adaption run.
+
+    Raise SystemExit without credentials; model outages and file errors
+    propagate. The HTTP client closes when the run ends.
+    """
     key_file = Path(os.path.expanduser("~/.config/adaption/api_key"))
     key = os.environ.get("ADAPTION_API_KEY") or (
         key_file.read_text().strip() if key_file.exists() else ""
@@ -48,6 +59,10 @@ async def run_real(args, families):
 
 
 async def run_luna(args, families):
+    """Return (engine, outcome) after a paced Codex CLI run.
+
+    Requires Codex sign-in and bubblewrap; model and engine errors propagate.
+    """
     from .codex_model import LUNA, CodexModel
 
     engine = Engine(
@@ -66,6 +81,10 @@ async def run_luna(args, families):
 
 
 def main():
+    """Parse world settings, run the selected backend and print its outcome.
+
+    Invalid CLI settings exit 2; a live model outage exits 75 for resumption.
+    """
     p = argparse.ArgumentParser()
     mode = p.add_mutually_exclusive_group(required=True)
     mode.add_argument("--fake", action="store_true")

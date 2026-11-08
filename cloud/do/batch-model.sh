@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Queue a second-model batch on the droplet from code folder DIR: the design of b7, plain god,
+# Queue a second-model framing batch on the droplet from code folder DIR, with a plain god,
 # one model for every agent. It waits until at most N games of batch WAIT are still running
 # (WAIT:N; plain WAIT means none; "now" starts at once), then starts. The key is held in
 # memory from now on. Extra arguments go to run.py (e.g. --max-credits 150).

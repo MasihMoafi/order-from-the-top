@@ -1,10 +1,10 @@
-"""Exact-replay check for whole supervised runs: every part of every world.
+"""Compare every part of supervised worlds with an offline engine replay.
 
-A supervised world is a chain of parts; each later part resumed from a checkpoint named in
-the supervisor log ("start DIR --resume STATE"). Each part is replayed from the same
-checkpoint and compared event by event and checkpoint by checkpoint.
+Resume paths come from each adjacent .supervise.log and resolve against the
+original code directory. Missing referenced checkpoints and incompatible rule
+checksums raise errors. See check() for partial-run verdicts.
 Usage: python -m families.replay_all OUT_ROOT RUN_DIR [RUN_DIR ...]
-Prints one line per part and a final count; exit status 1 if any part differs.
+Exit status is 1 if any checked part differs, otherwise 0.
 """
 
 import asyncio
@@ -20,7 +20,11 @@ START = re.compile(r"\bstart (\S+?)(?: --resume (\S+))?\s*$")
 
 
 def parts(run):
-    """(part directory, checkpoint it resumed from or None), in order."""
+    """Return ordered (part_directory, resume_path_or_None) pairs with event logs.
+
+    Resolve checkpoint paths from the supervisor log against the run code root;
+    without a matching log entry a part is treated as having no checkpoint.
+    """
     run = Path(run)
     log = Path(f"{run}.supervise.log")
     root = run.parent.parent.parent  # the code folder the supervisor ran in
@@ -36,11 +40,18 @@ def parts(run):
 
 
 def game_state(path):
+    """Read a checkpoint excluding spent credits and offline model bookkeeping."""
     state = json.loads(path.read_text())
     return {k: v for k, v in state.items() if k not in ("spent", "fake_model")}
 
 
 def check(part, resume, out):
+    """Return (verdict, detail) for one part, comparing events and checkpoints.
+
+    IDENTICAL requires all events and checkpoints; IDENTICAL TO ITS CUT allows
+    a stopped event prefix with every checkpoint equal. ABORTED means a stop
+    with no checkpoint; other mismatches are DIFFERENT. Setup errors propagate.
+    """
     original, replayed, stopped = asyncio.run(replay(part, out, list(NAMES), resume))
     diff = first_difference(original, replayed)
     states = sorted(p.name for p in part.glob("state-*.json"))
@@ -65,6 +76,10 @@ def check(part, resume, out):
 
 
 def main(out_root, runs):
+    """Print each part verdict and totals; return 1 for differences, otherwise 0.
+
+    Missing parts produce no verdict; replay setup errors propagate.
+    """
     tally = {}
     for run in runs:
         for part, resume in parts(run):

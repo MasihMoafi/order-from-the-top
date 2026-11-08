@@ -1,3 +1,5 @@
+"""Check model validation, handbook loading, fee planning and game rules."""
+
 import asyncio
 import json
 import random

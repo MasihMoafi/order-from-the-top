@@ -11,7 +11,6 @@ key="$HOME/.ssh/do_swarm_ed25519"
 proxy='ProxyCommand=nc -w 45 -x 127.0.0.1:10808 -X 5 %h %p'
 ssh=(ssh -i "$key" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o BatchMode=yes
   -o ConnectTimeout=45 -o ServerAliveInterval=15 -o "$proxy")
-# 1. Code only (no runs, logs, reviews).
 "${ssh[@]}" "$host" "mkdir -p ff"
 rsync -az --delete -e "ssh -i $key -o IdentitiesOnly=yes -o BatchMode=yes -o '$proxy'" \
   --exclude out/ --exclude '*.log' --exclude __pycache__ --exclude .pytest_cache \
@@ -20,11 +19,11 @@ rsync -az --delete -e "ssh -i $key -o IdentitiesOnly=yes -o BatchMode=yes -o '$p
 rsync -az -e "ssh -i $key -o IdentitiesOnly=yes -o BatchMode=yes -o '$proxy'" \
   --exclude out/ --exclude sketch/ --include '*/' --include '*.py' --exclude '*' --prune-empty-dirs \
   "$src/game" "$src/arena" "$host:ff/"
-# 2. Key: travels on stdin, lands mode 600, never printed.
+# The key travels on stdin and is stored with mode 600, never printed.
 "${ssh[@]}" "$host" 'mkdir -p ~/.config/adaption && umask 077 && cat > ~/.config/adaption/api_key' \
   < "$HOME/.config/adaption/api_key"
-# 3. Swap (512 MB droplet), Python, tests, then the run inside tmux so it outlives SSH.
-#    After the run the API key is shredded; the machine powers off 3 days from now regardless.
+# The run outlives SSH in tmux. Its API key is shredded on exit.
+# Deployment requests shutdown after three days regardless of run status.
 "${ssh[@]}" "$host" bash -s -- "$name" "$@" <<'REMOTE'
 set -euo pipefail
 name="$1"; shift

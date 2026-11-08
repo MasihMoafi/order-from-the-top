@@ -1,9 +1,9 @@
-"""Pre-registered tests H1-H6 (specs/002-factions/preregistration.md) over framing runs.
+"""Compute the registered H1-H6 framing comparisons from completed stages.
 
-Unit: one family in one game. Paired tests flip the sign of each game's difference
-(exact when 2^n is small, else 200,000 random flips); intervals are 95 % bootstrap over
-games. Standard library only.
-Usage: python3 -m families.analysis RUN_DIR [RUN_DIR ...]   (prints a Markdown report)
+See specs/002-factions/preregistration.md. Family comparisons are paired within
+worlds; sign flips and bootstrap intervals use worlds as independent units.
+report() replaces RESULTS for families.paper. No model calls are made.
+Usage: python -m families.analysis RUN_DIR [RUN_DIR ...]
 """
 
 import itertools
@@ -18,11 +18,15 @@ DOSE = {"none": 0, "one": 1, "few": 3, "many": 15}
 
 
 def rate(c, n):
+    """Return the fraction, or None when the denominator is zero."""
     return c / n if n else None
 
 
 def sign_flip(diffs, rng):
-    """Two-sided p for mean(diffs) == 0."""
+    """Return a two-sided sign-flip p-value, or None for no nonmissing data.
+
+    Use exact enumeration through 16 differences, otherwise 200,000 random flips.
+    """
     diffs = [d for d in diffs if d is not None]
     if not diffs:
         return None
@@ -41,6 +45,10 @@ def sign_flip(diffs, rng):
 
 
 def interval(values, rng, stat=statistics.fmean, n=10_000):
+    """Return a 95% bootstrap interval, or None for fewer than two values.
+
+    None entries are excluded. stat must accept a resampled sequence of values.
+    """
     values = [v for v in values if v is not None]
     if len(values) < 2:
         return None
@@ -49,6 +57,11 @@ def interval(values, rng, stat=statistics.fmean, n=10_000):
 
 
 def spearman(xs, ys):
+    """Return tied-rank correlation, or None if either rank series is constant.
+
+    xs and ys must have equal length; statistics.correlation rejects mismatches.
+    """
+
     def ranks(v):
         order = sorted(range(len(v)), key=lambda i: v[i])
         r = [0.0] * len(v)
@@ -69,6 +82,7 @@ def spearman(xs, ys):
 
 
 def games(runs):
+    """Return one condition-indexed entry per world with nonempty family rows."""
     out = []
     for run in runs:
         table = rows(run)
@@ -84,6 +98,7 @@ def games(runs):
 
 
 def god_of(run):
+    """Infer insider status from the folder name; all other names mean plain."""
     return "insider" if "insider" in Path(run).name else "plain"
 
 
@@ -91,6 +106,10 @@ RESULTS = []  # (test, n, mean, interval or None, p) of the last report(), for t
 
 
 def line(name, diffs, rng, unit=""):
+    """Append one test result to RESULTS and return its Markdown table row.
+
+    Missing differences are excluded; an empty sample records None statistics.
+    """
     diffs = [d for d in diffs if d is not None]
     if not diffs:
         RESULTS.append((name, 0, None, None, None))
@@ -103,6 +122,10 @@ def line(name, diffs, rng, unit=""):
 
 
 def report(runs, seed=0):
+    """Return the comparisons as Markdown and replace the module-level RESULTS.
+
+    Each world must contain the framing conditions used by the comparisons.
+    """
     RESULTS.clear()
     rng = random.Random(seed)
     gs = games(runs)

@@ -1,9 +1,8 @@
-"""Per-family results of a framing run (brief 7): one row per family and its condition.
+"""Count per-family outcomes for the framing and family-game experiments.
 
-Columns: in-family and cross-family cooperation, cooperation of the agents told to
-sacrifice, the stage the family's leader died, points given away, whips, revolts.
-Standard library only (runs on the server too).
-Usage: python3 -m families.conditions RUN_DIR [RUN_DIR ...]   (prints CSV rows)
+Resumed parts replace replayed stages; only completed stages enter rows().
+HORIZON limits every caller of rows() unless an explicit horizon is supplied.
+Usage: python -m families.conditions RUN_DIR [RUN_DIR ...] (CSV on stdout).
 """
 
 import csv
@@ -47,9 +46,11 @@ _BY_START = {int(v[1:]): k for k, v in LEADERS.items()}
 
 
 def events(run):
-    """The run's events as played: a supervised run resumes each part from the last
-    stage checkpoint, so the stages an aborted part had begun are dropped when the next
-    part replays them."""
+    """Return decoded events with replayed stages replaced by each later part.
+
+    A resumed treatment marker does not set the replacement stage; the first
+    other event does. Missing logs and malformed JSON raise errors.
+    """
     parts = sorted(
         Path(run).glob("part-*/events.jsonl"), key=lambda p: int(p.parent.name[5:])
     )
@@ -67,7 +68,11 @@ def events(run):
 
 
 def family_of(agent):
-    """Family of an id: P02-P16 octopus ... P62-P76 zeus; newcomers name their leader."""
+    """Return the family of an original or newcomer ID, or None for the god.
+
+    Unrecognized nonplayer IDs return None; malformed numeric or newcomer IDs
+    can raise ValueError, IndexError or KeyError.
+    """
     if agent.startswith("N"):
         return _BY_START[int(agent.split("-")[1][1:])]
     if not agent.startswith("P") or agent == "P01":
@@ -76,9 +81,10 @@ def family_of(agent):
 
 
 def completed(evs, horizon=None):
-    """Events of the stages the world completed (pre-registered censoring rule): a world
-    cut off mid-stage is measured up to its last finished stage, and never past `horizon`
-    (experiment 2 stops at stage 8)."""
+    """Return events through the last completed stage, capped by a truthy horizon.
+
+    No completed stages means stage-zero events only.
+    """
     done = max((e["stage"] for e in evs if e["type"] == "stage_end"), default=0)
     if horizon:
         done = min(done, horizon)
@@ -86,8 +92,11 @@ def completed(evs, horizon=None):
 
 
 def rows(run, horizon=None):
-    """One row per family. `horizon` defaults to the HORIZON environment variable (unset:
-    no horizon), so every tool built on rows() honours it."""
+    """Return one outcome row per configured family, or [] without a completed stage.
+
+    A falsy horizon uses HORIZON from the environment; an unset or zero HORIZON
+    leaves stages uncapped. Invalid HORIZON integers and malformed logs raise.
+    """
     horizon = horizon or int(os.environ.get("HORIZON", "0")) or None
     frame, out = {}, None
     for e in completed(events(run), horizon):

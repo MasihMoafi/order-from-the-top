@@ -1,12 +1,10 @@
-"""Luna (gpt-6-luna) through Masih's ChatGPT plan, via the official Codex CLI.
+"""Adapt the signed-in Codex CLI to the engine's model response fields.
 
-Codex uses Masih's existing sign-in, but runs inside a private bubblewrap view of the
-filesystem in which his global AGENTS.md reads as empty, and with his config.toml
-ignored, so no personal instructions reach the players; our system prompt replaces
-Codex's own. Nothing changes outside that view. Calls are paced so the plan
-sees a steady trickle, not bursts: at most `concurrency` at once and one start every
-`gap` seconds. A failed call waits and retries (30 s, doubling to 5 min) for up to
-PATIENCE seconds, then raises ModelOutage so the supervisor resumes from a checkpoint.
+Requires Codex and bubblewrap. Calls use a temporary working directory, replace
+Codex's system instructions, ignore its user config, and hide global agent
+instructions inside the subprocess view without changing their source files.
+Starts are spaced by gap and simultaneous calls are bounded by concurrency.
+Failed calls retry within PATIENCE before raising ModelOutage.
 """
 
 import asyncio
@@ -32,7 +30,11 @@ TIMEOUT = 300  # seconds one Codex process may take
 
 
 def parse(stdout):
-    """Text, reasoning, usage and error from `codex exec --json` output."""
+    """Return (text, reasoning, usage, error) from Codex JSONL.
+
+    Ignore non-JSON lines. Keep the last agent message, usage and error, and
+    join reasoning items in order; absent fields have empty defaults.
+    """
     text, reasoning, usage, error = "", [], {}, ""
     for line in stdout.splitlines():
         try:
@@ -55,6 +57,8 @@ def parse(stdout):
 
 
 class CodexModel(RealModel):
+    """Provide paced CLI calls using the engine response fields and outage errors."""
+
     def __init__(self, home=HOME, concurrency=4, gap=2.0):
         self.home, self.gap = str(home), gap
         # Each global instructions file, resolved through symlinks, reads as empty in the view.
@@ -71,6 +75,11 @@ class CodexModel(RealModel):
         self.next_start = 0.0
 
     async def call(self, system, user, rng, settings=None):
+        """Return the first successful response, retrying failures within PATIENCE.
+
+        Raise ModelOutage when no retry fits the remaining patience window.
+        Subprocess startup errors propagate without retry.
+        """
         settings = settings or LUNA
         loop = asyncio.get_running_loop()
         async with self.sem:
@@ -91,6 +100,11 @@ class CodexModel(RealModel):
                 delay = min(delay * 2, 300)
 
     async def once(self, system, user, settings):
+        """Return one CLI response with text, reasoning, usage and latency.
+
+        Timeouts kill the process and return ok=False; empty replies or nonzero
+        exits also return ok=False. Process startup errors propagate.
+        """
         with tempfile.TemporaryDirectory(prefix="luna-") as work:
             instructions = Path(work) / "system.md"
             instructions.write_text(system)

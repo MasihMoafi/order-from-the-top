@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Make the droplet destroy itself at a set time (Masih's choice: no bill if his internet is cut).
+# Schedule droplet deletion remotely so it does not require a live local connection.
 # The DigitalOcean token (scopes: droplet read + delete) travels on stdin and is never printed.
 # Usage: cloud/do/destroy-at.sh HOST "2026-11-08 20:00:00 UTC"
 set -euo pipefail

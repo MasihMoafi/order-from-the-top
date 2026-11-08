@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Start a brief-7 batch on a droplet set up by `deploy.sh HOST -`: each seed with a plain god
+# Start a framing batch on a droplet set up by `deploy.sh HOST -`: each seed with a plain god
 # and an insider god, side by side in one tmux session. The batch holds the API key in memory
 # from the start, so another batch shredding the key file cannot stop it; the key file is
 # shredded when this batch finishes.

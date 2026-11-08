@@ -1,3 +1,5 @@
+"""Check game, calibration and analysis regressions with offline fixtures."""
+
 import asyncio
 import json
 
@@ -167,7 +169,7 @@ def test_finding17_war_victory_precedes_ante(tmp_path):
         e = Engine(tmp_path, Policy(reply), families=('octopus', 'mafia', 'president'))
         e.order[0] = 0; e.agents['P32']['score'] = 0
         result = await e.run(1)
-        # A last family no longer wins (brief 7): it pays the fee like any other and dies.
+        # A surviving family still pays the fee until it dies.
         assert result == {'result': 'god dies', 'winners': []}
         reasons = [x['reason'] for x in records(tmp_path) if x['type'] == 'death' and x['agent'] in ('P02', 'P32')]
         assert reasons == ['nuclear war', 'cannot pay ante']

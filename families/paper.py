@@ -1,10 +1,9 @@
-"""Regenerate every number, table and figure the report uses, from the pulled logs.
+"""Write the report's tables, number macros, figures and readable results.
 
+Discovers experiment batches under PULLED_DIR and overwrites generated files
+under REPORT_DIR. Experiment 2 analysis sets HORIZON to HORIZON2, then removes
+it from the environment. Requires Matplotlib; makes no model calls.
 Usage: python -m families.paper PULLED_DIR REPORT_DIR
-Writes REPORT_DIR/tables/prereg.tex (H1-H6), tables/conditions.tex (rates by condition),
-tables/games.tex (experiment 2, at its horizon), numbers.tex (\\newcommand macros used in
-the text) and figures/*.pdf, plus results.md (the same numbers, readable). Run it after
-every pull; the report then compiles with the new numbers and nothing is typed by hand.
 """
 
 import os
@@ -27,14 +26,17 @@ HORIZON2 = 8  # experiment 2 horizon (pre-registered)
 
 
 def worlds(pulled, prefix):
+    """Return sorted matching world directories; the seed suffix is one character."""
     return sorted(str(p) for p in Path(pulled).glob(f"{prefix}-*-s?") if p.is_dir())
 
 
 def pct(c, n):
+    """Return a percentage without its sign, or -- when the denominator is zero."""
     return f"{100 * c / n:.1f}" if n else "--"
 
 
 def fmt_p(p):
+    """Return a TeX p-value, using -- for None and a threshold below 0.001."""
     return (
         "$<0.001$"
         if p is not None and p < 0.001
@@ -43,6 +45,7 @@ def fmt_p(p):
 
 
 def prereg_table(results):
+    """Return the supported registered comparisons as a complete TeX table."""
     names = {
         "H1 in-family cooperation, many - none": "H1 & in-family cooperation, \\textit{many} $-$ \\textit{none}",
         "H1 stage destroyed, many - none": "H1 & stage destroyed, \\textit{many} $-$ \\textit{none}",
@@ -70,6 +73,7 @@ def prereg_table(results):
 
 
 def condition_table(table):
+    """Return pooled family counts and rates as a complete TeX table."""
     lines = [
         "\\begin{tabular}{@{}lrrrrrr@{}}",
         "\\toprule",
@@ -101,6 +105,10 @@ def condition_table(table):
 
 
 def games_table(table):
+    """Return family-game summaries as a complete TeX table.
+
+    Games without final survivor counts receive placeholder cells.
+    """
     games = sorted({r["game"] for r in table})
     lines = [
         "\\begin{tabular}{@{}lrrrrr@{}}",
@@ -122,10 +130,16 @@ def games_table(table):
 
 
 def macro(name, value):
+    """Return one TeX newcommand definition with a trailing newline."""
     return f"\\newcommand{{\\{name}}}{{{value}}}\n"
 
 
 def main(pulled, report):
+    """Overwrite report tables, macros, figures and Markdown from pulled worlds.
+
+    See the module docstring for output and environment effects. Input,
+    analysis and plotting failures propagate and may leave partial output.
+    """
     report = Path(report)
     (report / "tables").mkdir(parents=True, exist_ok=True)
     (report / "figures").mkdir(parents=True, exist_ok=True)

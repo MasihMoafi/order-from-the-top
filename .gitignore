@@ -18,3 +18,8 @@ game/pilot/
 *.png
 *.mp4
 *.pdf
+
+# Local agent reviews and run reports
+/families/review-*.md
+/families/sol-*.md
+/families/terra-report*.md

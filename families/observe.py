@@ -59,6 +59,7 @@ details{margin:6px 0}summary{cursor:pointer;color:#555}pre{white-space:pre-wrap;
 
 
 def mark_svg(agent, size=22):
+    """Return the agent mark as inline SVG without loading image assets."""
     index = int(agent[1:]) - 1 if agent[1:].isdigit() else 0
     _, ground, ink = ELPIS_COLOURS[index % len(ELPIS_COLOURS)]
     cells = "".join(
@@ -72,12 +73,14 @@ def mark_svg(agent, size=22):
 
 
 def face(agent, size=22):
+    """Return portrait image markup for a known portrait, otherwise an inline mark."""
     if agent in PORTRAIT:
         return f'<img src="art/{Path(PORTRAIT[agent]).name}" width="{size}" height="{size}" style="border-radius:4px">'
     return mark_svg(agent, size)
 
 
 def text_of(packet):
+    """Extract packet text, unwrapping an embedded letter JSON object if present."""
     content = packet.get("content")
     raw = (
         content["parts"][0]["text"] if isinstance(content, dict) else str(content or "")
@@ -92,6 +95,7 @@ def text_of(packet):
 
 
 def describe(action):
+    """Return escaped HTML describing an action, with a placeholder if unreadable."""
     if not isinstance(action, dict):
         return "<i>no readable action</i>"
     parts = []
@@ -130,6 +134,11 @@ def describe(action):
 
 
 def main(run, out):
+    """Write a static conversation index, per-agent pages and copied portraits.
+
+    Requires local portraits and a stage_start event. Existing named output
+    files are overwritten; missing artwork and malformed logs raise errors.
+    """
     run, out = Path(run), Path(out)
     (out / "agents").mkdir(parents=True, exist_ok=True)
     (out / "art").mkdir(exist_ok=True)

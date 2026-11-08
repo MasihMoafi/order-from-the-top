@@ -1,3 +1,5 @@
+"""Check rotated family conditions and insider-god observations."""
+
 import asyncio
 import json
 from collections import Counter

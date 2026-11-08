@@ -27,6 +27,10 @@ REMOTE = (
 
 
 def server_frames(host, name):
+    """Build frames remotely and decode the gzipped JSON returned over SSH.
+
+    Raise on command failure, timeout, invalid compressed data or invalid JSON.
+    """
     script = (HERE / "board_frames.py").read_text()
     r = subprocess.run(
         ["bash", str(SSH), host, REMOTE.format(name=name)],
@@ -40,6 +44,11 @@ def server_frames(host, name):
 
 
 def paint(frame):
+    """Update the board through board_live.cjs and return its printed output.
+
+    The temporary snapshot is removed after the subprocess returns; its nonzero
+    exit status is not raised, and stderr is returned when stdout is empty.
+    """
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
         json.dump(frame, f)
     r = subprocess.run(
@@ -53,6 +62,7 @@ def paint(frame):
 
 
 def main():
+    """Play local or remote frames on the named board page, optionally following."""
     p = argparse.ArgumentParser()
     p.add_argument("run", help="local run folder, or the run name with --host")
     p.add_argument("--host")

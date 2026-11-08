@@ -1,3 +1,5 @@
+"""Check deterministic topology, messaging, survival and game outcomes."""
+
 import asyncio
 import json
 import random

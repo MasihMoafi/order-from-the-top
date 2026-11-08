@@ -22,6 +22,11 @@ REMOTE = (
 
 
 def fetch(host, name):
+    """Fetch a board snapshot over SSH; return None after printing invalid output.
+
+    Timeouts and process startup errors propagate; a nonzero SSH exit is parsed
+    like any other response and does not by itself raise an exception.
+    """
     r = subprocess.run(
         ["bash", str(SSH), host, REMOTE.format(name=name)],
         capture_output=True,
@@ -37,6 +42,7 @@ def fetch(host, name):
 
 
 def main():
+    """Poll and repaint changed remote snapshots until interrupted or --once ends."""
     p = argparse.ArgumentParser()
     p.add_argument("host")
     p.add_argument("name")

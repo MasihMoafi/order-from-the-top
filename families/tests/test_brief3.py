@@ -1,3 +1,5 @@
+"""Check live controls, checkpoint resumption and outage handling."""
+
 import asyncio
 import json
 from unittest.mock import patch

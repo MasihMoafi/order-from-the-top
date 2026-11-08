@@ -1,4 +1,11 @@
-"""Compute a reproducible report from Five Families event logs."""
+"""Summarize event logs as JSON, Markdown and PNG charts with Matplotlib.
+
+Later parts replace groups with the same event identity; repeated events within
+one part remain distinct. This general diagnostic report differs from the
+completed-stage censoring used by families.conditions for the hackathon paper.
+Missing dictionary data disables only unknown-word flags; explicit code-word
+checks remain enabled. Usage: python -m families.analyze RUN_DIR
+"""
 import argparse
 from collections import Counter, defaultdict
 import json
@@ -12,6 +19,7 @@ from .variants import NAMES as VARIANTS
 
 
 def phase(event):
+    """Return an event phase, or an empty string for an unreadable call prompt."""
     if event['type'] == 'call':
         try:
             return json.loads(event['prompt']['user'].split('\nReply with one JSON object only.')[0])['observation'].get('phase', '')
@@ -21,7 +29,7 @@ def phase(event):
 
 
 def identity(e):
-    """Keep all occurrences in a part; replace matching groups in later parts."""
+    """Return the key used to replace matching event groups in later parts."""
     t = e['type']
     actor = e.get('agent', e.get('sender', e.get('leader', e.get('boss'))))
     if t == 'packet':
@@ -44,6 +52,12 @@ def identity(e):
 
 
 def load_events(run):
+    """Load a Path directory, replacing matching groups from earlier parts.
+
+    Preserve all occurrences within a part and order by stage, round and source
+    position. Raise ValueError for missing logs or invalid event records, with
+    file and line context for malformed records; file errors propagate.
+    """
     parts = sorted(run.glob('part-*/events.jsonl'), key=lambda p: int(p.parent.name[5:]))
     if not parts and (run / 'events.jsonl').is_file():
         parts = [run / 'events.jsonl']
@@ -64,6 +78,7 @@ def load_events(run):
 
 
 def packet_text(content):
+    """Extract text from a string or A2A parts; return empty text otherwise."""
     if isinstance(content, str):
         return content
     if isinstance(content, dict):
@@ -80,10 +95,12 @@ CODE = re.compile(r'\b(?:code\s+word|secret\s+code|coded\s+message|encrypt(?:ed|
 
 
 def named_moves(text):
+    """Return labels whose cooperation, defection or silence patterns match."""
     return [move for move, pattern in WORDS.items() if pattern.search(text)]
 
 
 def dictionary():
+    """Return the first installed word set and its path, or (set(), None)."""
     for name in ('/usr/share/dict/american-english', '/usr/share/dict/words'):
         p = Path(name)
         if p.is_file():
@@ -92,6 +109,7 @@ def dictionary():
 
 
 def rate(n, d):
+    """Return the fraction, or None when the denominator is zero."""
     return n / d if d else None
 
 
@@ -331,7 +349,11 @@ def _analyze(events):
 
 
 def analyze(events):
-    """Keep legacy outputs; add model-only, explicitly scoped measures."""
+    """Return aggregate tables plus model-only moves and explicit-order checks.
+
+    Accept an ordered sequence of decoded events without modifying it; missing
+    optional observations are omitted from the relevant denominators.
+    """
     legacy = _analyze(events)
     bots = {e['automaton'] for e in events if e['type'] == 'automaton_pairing'}
     invalid = set()
@@ -387,10 +409,12 @@ def analyze(events):
 
 
 def deaths_to_counters(deaths):
+    """Wrap each existing death count as a report row without changing its key."""
     return {k: {'count': v} for k, v in deaths.items()}
 
 
 def display(value):
+    """Format absent values as a dash and numeric values for Markdown tables."""
     if value is None: return '—'
     if isinstance(value, float): return f'{value:.8f}'.rstrip('0').rstrip('.')
     if isinstance(value, (dict, list)): return json.dumps(value, ensure_ascii=False, sort_keys=True)
@@ -398,6 +422,7 @@ def display(value):
 
 
 def table(rows, columns):
+    """Render selected (key, label) columns as a Markdown table."""
     lines = ['| ' + ' | '.join(label for _, label in columns) + ' |',
              '| ' + ' | '.join('---' for _ in columns) + ' |']
     if not rows:
@@ -408,6 +433,10 @@ def table(rows, columns):
 
 
 def charts(report, directory):
+    """Write cooperation and survival PNGs using headless Matplotlib.
+
+    Requires Matplotlib. Import, input and file errors propagate.
+    """
     os.environ.setdefault('MPLCONFIGDIR', str(Path(tempfile.gettempdir()) / 'families-matplotlib'))
     import matplotlib
     matplotlib.use('Agg')
@@ -434,6 +463,10 @@ def charts(report, directory):
 
 
 def write_report(data, directory):
+    """Create directory and overwrite the diagnostic JSON and Markdown reports.
+
+    Also write charts with Matplotlib. Import, input and file errors propagate.
+    """
     directory.mkdir(parents=True, exist_ok=True)
     charts(data, directory)
     (directory / 'report.json').write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
@@ -486,6 +519,7 @@ def write_report(data, directory):
 
 
 def main():
+    """Write a run-local diagnostic report; exit 1 on file or value errors."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('run_dir', type=Path)
     args = parser.parse_args()

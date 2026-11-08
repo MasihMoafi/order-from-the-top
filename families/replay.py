@@ -1,9 +1,9 @@
-"""Re-run a recorded game exactly, from its event log, with no model calls.
+"""Replay recorded model replies through the engine without model calls.
 
-Each agent call gets back the reply it got in the original run, in the original order, so the
-engine recomputes every move, score, death and message. The tool then compares the new log
-and checkpoints with the original and reports the first difference, if any.
-Usage: python3 -m families.replay RUN_PART_DIR [--out DIR] [--families all] [--resume STATE]
+Prompts must match exactly, and replies are released in recorded call order.
+Events exclude network timing and cost when compared; checkpoints exclude
+model bookkeeping. Raw-source rule checksums must match for resumed parts.
+Usage: python -m families.replay RUN_PART_DIR --out DIR [--resume STATE]
 """
 
 import argparse
@@ -36,6 +36,10 @@ class ReplayModel:
         self.ready = asyncio.Condition()
 
     async def call(self, system, user, rng):
+        """Return the recorded response for an exact prompt match in call order.
+
+        Raise Diverged for an unrecorded prompt or a WAIT-second ordering timeout.
+        """
         queue = self.waiting.get((system, user))
         if not queue:
             raise Diverged(
@@ -72,6 +76,7 @@ class ReplayEngine(Engine):
         self.changes = changes
 
     def read_settings(self):
+        """Write changes recorded at this stage and round, then validate live settings."""
         due = [
             e
             for e in self.changes
@@ -91,6 +96,7 @@ class ReplayEngine(Engine):
 
 
 def comparable(e):
+    """Return event fields used for replay, excluding model timing and spending."""
     if e["type"] == "call":  # timing and cost are facts about the network, not the game
         return {
             k: e[k] for k in ("agent", "prompt", "reply", "parsed_action", "attempt")
@@ -99,6 +105,7 @@ def comparable(e):
 
 
 def first_difference(a, b):
+    """Return the first event or length mismatch description, or None if equal."""
     for n, (x, y) in enumerate(zip(a, b)):
         if comparable(x) != comparable(y):
             keys = sorted(k for k in set(x) | set(y) if x.get(k) != y.get(k))
@@ -109,11 +116,18 @@ def first_difference(a, b):
 
 
 def load(path):
+    """Return all JSONL events in file order; file and JSON errors propagate."""
     with open(path) as f:
         return [json.loads(line) for line in f]
 
 
 async def replay(part, out, families, resume):
+    """Return (original_events, replayed_events, stop_reason) for one run part.
+
+    Use a fresh output directory and the original resume checkpoint if any.
+    Diverged or ValueError during engine.run become stop_reason; setup errors,
+    including checkpoint checksum mismatches, propagate.
+    """
     events = load(part / "events.jsonl")
     config = next(
         e["configuration"] for e in events if e["type"] in ("treatment", "stage_start")
@@ -141,6 +155,11 @@ async def replay(part, out, families, resume):
 
 
 def main():
+    """Print event and checkpoint comparisons for one part.
+
+    A DIFFERENT verdict is printed without setting a nonzero exit status;
+    use replay_all for an exit status that rejects differing parts.
+    """
     p = argparse.ArgumentParser()
     p.add_argument("part", type=Path)
     p.add_argument("--out", type=Path)

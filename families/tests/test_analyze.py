@@ -1,3 +1,5 @@
+"""Check diagnostic aggregation and its command-line report output."""
+
 import json
 import subprocess
 import sys

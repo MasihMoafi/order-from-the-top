@@ -1,3 +1,5 @@
+"""Check offline replay equality and detection of changed recorded replies."""
+
 import asyncio
 import json
 

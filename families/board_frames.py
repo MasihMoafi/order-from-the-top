@@ -1,7 +1,8 @@
 """Turn a game's event log into one frame per round, for watching the game back on the board.
 
 A frame holds each agent's points and life, the move it played, what it said and to whom,
-and that round's notable events. Uses only the standard library so it can run on the server.
+and that round's notable events. Variant names use families.variants when importable;
+standalone execution falls back to numeric labels and needs only the standard library.
 Usage: python3 families/board_frames.py EVENTS.jsonl [EVENTS2.jsonl ...] > frames.json
 """
 
@@ -9,13 +10,6 @@ import json
 import re
 import sys
 
-FAMILIES = {
-    "P02": "Octopus",
-    "P17": "Matilda (mafia)",
-    "P32": "President",
-    "P47": "Bishop",
-    "P62": "Zeus",
-}
 PROMISE = re.compile(r"cooperat|\bplay c\b|\bc\b", re.IGNORECASE)
 REFUSAL = re.compile(r"defect|\bd\b|won't cooperate|will not cooperate", re.IGNORECASE)
 
@@ -79,7 +73,11 @@ def talk(says, moves):
 
 
 def frames(paths):
-    """One frame per (stage, round); agents' points and life as they stood at its end."""
+    """Return end-of-round board frames from logs in the supplied path order.
+
+    Read events without deduplicating resumed stages. Each frame copies agent
+    state; malformed JSON and missing required fields raise errors.
+    """
     agents, out, stage_info = {}, [], {}
     frame = {"stage": 0, "round": 0, "moves": {}, "says": {}, "feed": [], "died": []}
 

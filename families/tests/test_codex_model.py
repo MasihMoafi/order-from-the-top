@@ -1,3 +1,5 @@
+"""Check Codex JSONL parsing without launching model calls."""
+
 import json
 
 from families.codex_model import parse

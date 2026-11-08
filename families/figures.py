@@ -1,9 +1,9 @@
-"""Report figures from the raw logs (one command, no hand-edited numbers).
+"""Render report PDFs from world logs with Matplotlib's headless backend.
 
+Writes survival.pdf and cooperation.pdf, plus games.pdf for family-game runs.
+Cooperation intervals bootstrap worlds; survival curves retain each world's
+last count to the longest observed stage, including a partial final stage.
 Usage: python -m families.figures OUT_DIR RUN_DIR [RUN_DIR ...]
-Writes survival.pdf (living members per stage, by condition), cooperation.pdf (in-family
-cooperation by condition, with 95 % bootstrap intervals over worlds), gods.pdf (last stage,
-plain against insider god, paired by seed) and, for family-game runs, games.pdf.
 """
 
 import random
@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from .conditions import events, family_of, rows
 
 CONDITIONS = ("many", "few", "one", "bad_leader", "none")
-# Validated categorical palette (dataviz reference, light mode); fixed order by condition.
+# Keep condition colours consistent across the report figures.
 COLOUR = dict(zip(CONDITIONS, ("#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4")))
 LABEL = {
     "many": "many",
@@ -32,6 +32,7 @@ INK, MUTED = "#0b0b0b", "#52514e"
 
 
 def style(ax):
+    """Apply the shared report axis styling in place."""
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
     for side in ("left", "bottom"):
@@ -42,7 +43,10 @@ def style(ax):
 
 
 def alive_by_stage(run):
-    """{condition: [living original members after stage 1, 2, ...]} for one world."""
+    """Return original-member counts by condition for each observed stage.
+
+    The final stage can be partial; newcomers do not increase these counts.
+    """
     table = {r["family"]: r["condition"] for r in rows(run)}
     deaths, last = {f: [] for f in table}, 0
     for e in events(run):
@@ -58,6 +62,10 @@ def alive_by_stage(run):
 
 
 def bootstrap(values, rng, n=5000):
+    """Return the 2.5th and 97.5th bootstrap percentiles of the sample mean.
+
+    values must be nonempty and n large enough to select both percentiles.
+    """
     boot = sorted(
         statistics.fmean(rng.choices(values, k=len(values))) for _ in range(n)
     )
@@ -65,6 +73,10 @@ def bootstrap(values, rng, n=5000):
 
 
 def survival(runs, out):
+    """Write survival.pdf, padding shorter worlds with their last member count.
+
+    At least one family curve is required; otherwise max() raises ValueError.
+    """
     curves = {c: [] for c in CONDITIONS}
     for run in runs:
         for c, ys in alive_by_stage(run).items():
@@ -97,6 +109,7 @@ def survival(runs, out):
 
 
 def dots(groups, labels, colours, ylabel, path, rng):
+    """Write group means and bootstrap intervals, excluding None values."""
     fig, ax = plt.subplots(figsize=(6.2, 2.6))
     for x, (key, values) in enumerate(groups.items()):
         values = [v for v in values if v is not None]
@@ -126,6 +139,10 @@ def dots(groups, labels, colours, ylabel, path, rng):
 
 
 def main(out, runs):
+    """Create the output directory and overwrite the applicable report PDFs.
+
+    Input worlds must supply survival curves; log and plotting errors propagate.
+    """
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     rng = random.Random(0)

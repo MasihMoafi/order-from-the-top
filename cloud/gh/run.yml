@@ -1,4 +1,4 @@
-# Full Five Families game on a GitHub runner, so Masih's laptop can be off.
+# Run a supervised world on a GitHub runner and retain its logs as an artifact.
 name: five-families
 on:
   workflow_dispatch:

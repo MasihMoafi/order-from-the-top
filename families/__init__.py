@@ -1,7 +1,9 @@
-"""Five Families deterministic game engine."""
+"""Initialize Five Families and expose game helpers used by arena imports.
 
-# arena.arena still imports these names from the old top-level game module.
-# Load the package first so both it and families use the same game.game module.
+Importing this package attaches the shared game.game exports to game before
+arena.arena loads, so both import paths use the same Budget class.
+"""
+
 import game as _game
 from game.game import BASE, MODEL, Budget, append_lines
 

@@ -21,6 +21,7 @@ QUOTE = 60
 
 
 def text_of(packet):
+    """Extract packet text, unwrapping an embedded letter JSON object when present."""
     content = packet.get("content")
     if isinstance(content, dict):
         parts = content.get("parts") or [{}]
@@ -37,6 +38,11 @@ def text_of(packet):
 
 
 def leaks(run):
+    """Return heuristic disclosure counts and up to three samples for one world.
+
+    Only completed stages count. The folder name determines plain or insider
+    status; the indicators are text matches, not verified information leaks.
+    """
     evs = completed(events(run))
     god = "insider" if "insider" in Path(run).name else "plain"
     private = {}  # round -> texts of private messages delivered that round
@@ -75,6 +81,7 @@ def leaks(run):
 
 
 def main(runs):
+    """Print per-world JSON and pooled plain/insider disclosure rates."""
     by = {"plain": [0, 0, 0], "insider": [0, 0, 0]}
     for run in runs:
         row = leaks(run)

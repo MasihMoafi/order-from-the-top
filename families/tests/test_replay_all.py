@@ -1,3 +1,5 @@
+"""Check supervised replay discovery and checkpoint resumption."""
+
 import asyncio
 
 from families.engine import Engine

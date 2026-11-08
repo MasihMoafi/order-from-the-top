@@ -19,6 +19,7 @@ WINDOW = 700
 
 
 def around(text, pattern, width=WINDOW):
+    """Return normalized text around the first pattern match, or the start if absent."""
     text = text or ""
     m = re.search(pattern, text, re.IGNORECASE)
     i = m.start() if m else 0
@@ -26,6 +27,11 @@ def around(text, pattern, width=WINDOW):
 
 
 def moments(run):
+    """Return traceable Markdown excerpts from completed stages of one world.
+
+    Requires a stage_start configuration; StopIteration signals its absence.
+    Reasoning excerpts are truncated and revolt excerpts are capped at 25.
+    """
     evs = completed(events(run))
     config = next(e["configuration"] for e in evs if e["type"] == "stage_start")
     conditions = config.get("conditions") or {}
@@ -99,6 +105,7 @@ def moments(run):
 
 
 def main(out_dir, runs):
+    """Write one Markdown file per world, replacing files with matching names."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     total = 0

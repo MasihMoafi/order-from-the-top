@@ -16,6 +16,10 @@ HERE = Path(__file__).resolve().parent
 
 
 def snapshot(run):
+    """Return the newest checkpoint and recent event feed, or None without a state.
+
+    Stream the log with a 4,000-line tail; malformed JSON and file errors propagate.
+    """
     states = sorted(run.glob("state-*.json"), key=lambda p: p.stat().st_mtime)
     if not states:
         return None
@@ -67,6 +71,11 @@ def snapshot(run):
 
 
 def paint(snap):
+    """Update the browser board through board_live.cjs and print its output.
+
+    The temporary snapshot is removed after the subprocess returns; a nonzero
+    exit status is printed through stderr when stdout is empty, not raised.
+    """
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
         json.dump(snap, f)
     r = subprocess.run(
@@ -77,6 +86,7 @@ def paint(snap):
 
 
 def main():
+    """Poll one run directory and repaint when its newest checkpoint changes."""
     p = argparse.ArgumentParser()
     p.add_argument("run")
     p.add_argument("--once", action="store_true")

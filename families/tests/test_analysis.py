@@ -1,3 +1,5 @@
+"""Check sign-flip statistics and resumed-stage censoring."""
+
 import json
 import random
 
@@ -15,8 +17,7 @@ def write(part, records):
 
 
 def test_a_resumed_part_replaces_the_stages_its_aborted_parts_began(tmp_path):
-    # Shape seen in b7-plain-s2: each resume opens with a treatment record stamped with
-    # the checkpoint's stage (1), then replays stage 2.
+    # The resumed treatment carries checkpoint stage 1; its first played stage is 2.
     write(tmp_path / "part-0", [("packet", 0), ("call", 1), ("call", 1), ("call", 2)])
     write(tmp_path / "part-1", [("treatment", 1), ("call", 2)])  # aborted again
     write(tmp_path / "part-2", [("treatment", 1), ("call", 2), ("call", 3)])

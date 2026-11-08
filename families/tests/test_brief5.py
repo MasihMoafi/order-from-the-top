@@ -1,3 +1,5 @@
+"""Check player framing, gifts, revolts and automaton exclusions."""
+
 import asyncio
 import json
 import random

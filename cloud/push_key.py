@@ -3,6 +3,8 @@
 Usage: python3 cloud/push_key.py THREAD_ID
 The key travels on stdin to `room-cli vm run --stdin` and lands in the sandbox at the
 same path the game reads (~/.config/adaption/api_key, mode 600).
+Missing local keys and subprocess startup errors raise. Remote failures are printed
+as an exit field; they do not set this script's exit status or print remote stderr.
 """
 
 import subprocess
