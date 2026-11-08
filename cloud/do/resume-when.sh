@@ -7,7 +7,7 @@ host="$1"; dir="$2"; batch="$3"; wait_for="${4%%:*}"; left="${4#*:}"
 bash "$(dirname "$0")/remote.sh" "$host" "bash -s -- $dir $batch $wait_for $left" <<'REMOTE'
 set -euo pipefail
 dir="$1"; batch="$2"; wait_for="$3"; left="$4"
-cat > "$dir/families/out/$batch.resume.sh" <<EOF
+cat > "$dir/families/out/$batch.resume.sh" <<WATCH
 cd ~/$dir/families/out
 while [ "\$(pgrep -fc "supervise.sh families/out/$wait_for-")" -gt $left ]; do sleep 60; done
 for world in $batch-*-s?; do
@@ -15,3 +15,7 @@ for world in $batch-*-s?; do
   printf '{"pause": false}\n' > "\$newest/control.json.tmp" && mv "\$newest/control.json.tmp" "\$newest/control.json"
   echo "\$(date -u +%T) resumed \$world"
 done
+WATCH
+tmux new-session -d -s "$batch-resume" "bash $dir/families/out/$batch.resume.sh 2>&1 | tee -a $dir/families/out/$batch.resume.log; bash"
+echo "will resume $batch when at most $left $wait_for worlds run"
+REMOTE
