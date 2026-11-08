@@ -16,7 +16,7 @@ while true; do
   left=0
   for world in $batch-*-s?; do
     [ -d "\$world" ] || continue
-    newest=\$(ls -d "\$world"/part-* | sort -t- -k3 -n | tail -1)
+    newest=\$(ls -d "\$world"/part-* | awk -F'part-' '{print \$2, \$0}' | sort -n | tail -1 | cut -d' ' -f2)
     if ls "\$world"/part-*/state-stage$stage.json >/dev/null 2>&1; then
       grep -q '"stop": true' "\$newest/control.json" 2>/dev/null || {
         printf '{"stop": true}\n' > "\$newest/control.json.tmp" && mv "\$newest/control.json.tmp" "\$newest/control.json"
