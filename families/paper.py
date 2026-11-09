@@ -19,7 +19,7 @@ LABEL = {
     "many": "many",
     "few": "few",
     "one": "one",
-    "bad_leader": "bad leader",
+    "bad_leader": "selfish leader",
     "none": "none",
 }
 HORIZON2 = 8  # experiment 2 horizon (pre-registered)
@@ -51,8 +51,8 @@ def prereg_table(results):
         "H1 stage destroyed, many - none": "H1 & stage of death or cut-off, \\textit{many} $-$ \\textit{none}",
         "H2 Spearman(dose, in-family cooperation) > 0": "H2 & Spearman $\\rho$(number framed, cooperation)",
         "H3 unframed cooperation, one/few - none": "H3 & unframed cooperation, \\textit{one}/\\textit{few} $-$ \\textit{none}",
-        "H4 gift points to leader, bad_leader - mean of others": "H4 & gift points to the leader, bad $-$ others",
-        "H4 whips by leader, bad_leader - mean of others": "H4 & whips by the leader, bad $-$ others",
+        "H4 gift points to leader, bad_leader - mean of others": "H4 & gift points to the leader, selfish $-$ others",
+        "H4 whips by leader, bad_leader - mean of others": "H4 & whips by the leader, selfish $-$ others",
         "H5 last stage, insider - plain": "H5 & last stage reached, insider $-$ plain",
         "H5 cross-family cooperation, insider - plain": "H5 & cross-family cooperation, insider $-$ plain",
     }
@@ -127,37 +127,6 @@ def games_table(table):
         )
     lines += ["\\bottomrule", "\\end{tabular}"]
     return "\n".join(lines) + "\n"
-
-
-def institutions(all_worlds):
-    """Return the messages the rules refused, points pooled with the god, and treaties signed."""
-    from .conditions import completed, events, family_of
-
-    blocked = relatives = pooled = signatures = 0
-    pool_worlds, treaty_worlds, treaties = set(), set(), set()
-    for w in all_worlds:
-        for e in completed(events(w), HORIZON2 if "b9q" in w else None):
-            if e["type"] == "packet" and e.get("reason") == "edge not permitted":
-                blocked += 1
-                to = str(e.get("receiver"))
-                if to.startswith(("P", "N")) and family_of(e["sender"]) and family_of(e["sender"]) == family_of(to):
-                    relatives += 1
-            elif e["type"] == "gift" and e.get("receiver") == "P01":
-                pooled += e["points"]
-                pool_worlds.add(w)
-            elif e["type"] == "peace_signature":
-                signatures += 1
-                treaty_worlds.add(w)
-                treaties.add((w, e.get("contextId")))
-    return {
-        "NBlocked": f"{blocked:,}",
-        "NBlockedRelatives": f"{relatives:,}",
-        "GodPoolPoints": f"{pooled:,.0f}",
-        "GodPoolWorlds": len(pool_worlds),
-        "NTreatySigs": signatures,
-        "NTreaties": len(treaties),
-        "NTreatyWorlds": len(treaty_worlds),
-    }
 
 
 def macro(name, value):
@@ -241,7 +210,6 @@ def main(pulled, report):
         f"plain {by_god['plain'][1]}/{by_god['plain'][0]}.\n"
     )
     exp2 = worlds(pulled, "b9q")
-    numbers += [macro(k, v) for k, v in institutions(exp1 + exp2).items()]
     if exp2:
         os.environ["HORIZON"] = str(HORIZON2)
         table2 = [r for w in exp2 for r in rows(w)]

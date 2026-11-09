@@ -1,38 +1,5 @@
 % !TEX root = ../main.tex
 \section*{4. Experimental Setup}
-This section gives the numbers behind each world, the models and runs, and the
-hypotheses we committed to before reading any result.
+All agents run \texttt{deepseek-v4-flash} through Apart's Adaption API. Payoffs are $(T, R, P, S) = (5, 3, 1, 0)$, and a whip costs its giver 1 point and the child 3. Framing worlds hold five families of 15 agents and a god, 76 agents in all, with $a_0 = 4$ and $\delta = 0.9$. Growing worlds start at 31, 81 or 181 agents, with trees as in Figure~\ref{fig:tree}; there $a_0 = 6$ and $\delta = 3.5$, and each family draws a season of luck per stage. In real-power worlds a kill costs 2 and a cull costs 1, $\pi = 1/2$, an asteroid strikes automatically above 1.5 times the first population, and the god may send one from stage 3, at most once a stage. From stage 4 every family loses 5\,\% of its points each stage. Table~\ref{tab:ablations} in the appendix shows how the fee schedule was chosen.
 
-\subsection*{4.1 Worlds and models}
-Each world has $F = 5$ families of 15 agents and a god, 76 agents in all. Agents start
-with 10 points. The fee starts at $a_0 = 4$ and rises by $\delta = 0.9$ per stage, and
-from stage 4 every family also loses 5\,\% of its points per stage. Mutual cooperation
-pays 3 to each agent, mutual defection 1, and a defector facing a cooperator earns 5
-against 0. A whip costs the parent 1 point and the child 3. One in five partners from
-another family is a hidden automaton that defects 80\,\% of the time. Experiment~1 runs
-\texttt{deepseek-v4-flash} at medium reasoning effort, and experiment~2 runs
-\texttt{qwen3.5-397b}, both through Apart's Adaption API.
-
-\subsection*{4.2 Runs}
-Experiment~1 plays seeds 0--9, each with a plain and an insider god: 20 worlds and 100
-families, all on the same frozen code. Experiment~2 plays seeds 0--4 with the plain god,
-up to a horizon of eight stages fixed before any result. A shared rate limit slowed
-every world, and two worlds of experiment~2 outgrew the model's context limit; at the cut-off experiment~1 worlds had completed between \StageMin{}
-and \StageMax{} stages, and \NFinished{} had ended in annihilation; experiment~2 worlds
-had completed 8, 8, 6, 1, and 8 stages (seeds 0 to 4). As pre-registered, each world is analysed up to
-its last completed stage.
-Replaying the logged replies reproduces every event in 42 of the 43 log segments
-checked.
-
-\subsection*{4.3 Hypotheses}
-We committed six hypotheses and their tests to version control before any result by
-condition was read\footnote{\texttt{specs/002-factions/preregistration.md}, commit
-\texttt{e0b045c}, 7 November 2026, 16:32 UTC.}:
-\textbf{H1}, \textit{many} families cooperate more within the family and die later than
-\textit{none} families; \textbf{H2}, in-family cooperation rises with the number framed,
-\textit{none} $\le$ \textit{one} $\le$ \textit{few} $\le$ \textit{many}; \textbf{H3}, the
-frame spreads, so unframed members of \textit{one} and \textit{few} families cooperate more
-than members of \textit{none} families; \textbf{H4}, the bad leader receives more gifts and
-gives more whips than other leaders, and revolts come mostly from its family; \textbf{H5},
-the insider god changes when the world ends and how much families cooperate with one
-another, in either direction; and \textbf{H6}, revolts stay under 1\,\% of moves.
+I committed every hypothesis and test to version control before reading a result. Table~\ref{tab:hyp} in the appendix sets out each one and what happened.

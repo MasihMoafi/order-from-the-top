@@ -16,7 +16,10 @@ from pathlib import Path
 from .conditions import completed, events
 
 ID = re.compile(r"\b(?:P\d{2}|N\d{2}-P\d{2}-\d)\b")
-MOVE = re.compile(r"\b(defected|cooperated|betrayed|played [CD]|no defectors|last round)\b", re.IGNORECASE)
+MOVE = re.compile(
+    r"\b(defected|cooperated|betrayed|played [CD]|no defectors|last round)\b",
+    re.IGNORECASE,
+)
 QUOTE = 60
 
 

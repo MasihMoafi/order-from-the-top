@@ -9,13 +9,32 @@ from pathlib import Path
 
 from arena.arena import ELPIS_COLOURS, mark_pixels
 
+from .box import run_in_box
 from .control import (
+    ASTEROID_TIMES,
+    BIRTH_COST,
+    BOND,
     CONDITIONS,
+    CULL_COST,
     DEFAULTS,
+    GOD_ASTEROID_STAGE,
     GODS,
+    GROWTH_ANTE0,
+    GROWTH_STEP,
+    HARVEST,
+    KILL_COST,
+    LITTER_MAX,
+    MAX_CHILDREN,
     MESSENGER_COST,
+    POPULATION_CAP,
+    ROUND_CAP,
+    SEASON_WEIGHTS,
+    SIT_OUT_PAY,
     STANCES,
+    THREAT_PENALTY,
+    TOOLS_POPULATION_CAP,
     ULTIMATUM_COST,
+    WAR_SHARE,
 )
 from .flavours import Mafia
 from .hub import Hub
@@ -23,7 +42,8 @@ from .models import RealModel
 from .prompts import prompt
 from .survival import check
 from .theory import best_responses
-from .tree import NAMES, START_POINTS, edge, make_tree
+from .tools import GOD_MAY, GOD_TOOLS, REWARDED_BIRTH, TOOLS, actions_from_calls
+from .tree import NAMES, START_POINTS, edge, make_tree, new_agent
 from .variants import VARIANTS
 
 CROSS_PARTNER = "a member of another family"
@@ -47,6 +67,7 @@ class Engine:
         resume=None,
         stance=None,
         god=None,
+        world=None,
     ):
         self.dir = Path(directory)
         self.dir.mkdir(parents=True, exist_ok=True)
@@ -61,9 +82,29 @@ class Engine:
         self.seed = seed
         self.rules_digest = self.rules_checksum()
         self.treatment_id = None
-        self.agents = make_tree(families)
-        self.order = list(range(16))
-        self.rng.shuffle(self.order)
+        self.control = DEFAULTS.copy()
+        if (
+            world
+        ):  # a growth world: {"branching": [5, 2, 2], "channels": "tree" or "open"}
+            self.control.update(
+                growth=True,
+                branching=list(world["branching"]),
+                channels=world["channels"],
+                compromised=world.get("compromised"),
+                tools=bool(world.get("tools")),
+                rewarded=bool(world.get("rewarded")),
+                ante0=GROWTH_ANTE0,
+                step=GROWTH_STEP,
+            )
+        self.agents = make_tree(families, self.control["branching"])
+        self.first_population = sum(bool(a["family"]) for a in self.agents.values())
+        self.threats = []
+        self.saved_channels = []
+        self.channel_requests = []
+        self.news = []
+        self.asteroid_stage = None
+        self.asteroid_asked = False
+        self.order = self.variant_cycle()
         self.stage = 0
         self.round = 0
         self.outcome = None
@@ -73,7 +114,6 @@ class Engine:
         self.promises = []
         self.public = {}
         self.peace_letters = {}
-        self.control = DEFAULTS.copy()
         if stance:
             self.control["stance"] = stance
         if god:
@@ -120,6 +160,15 @@ class Engine:
             self.control.setdefault("step", DEFAULTS["step"])
             self.control.setdefault("stance", "self")
             self.control.setdefault("god", "plain")
+            for key in ("growth", "branching", "channels", "tools", "rewarded"):
+                self.control.setdefault(key, DEFAULTS[key])
+            self.saved_channels = state.get("channels", [])
+            self.channel_requests = state.get("channel_requests", [])
+            self.news = state.get("news", [])
+            self.asteroid_stage = state.get("asteroid_stage")
+            self.asteroid_asked = state.get("asteroid_asked", False)
+            self.threats = state.get("threats", [])
+            self.first_population = state.get("first_population", self.first_population)
             self.view = state.get("view", self.view)
             self.god_view = state.get("god_view")
             for key in ("automata", "automaton_defect"):
@@ -154,6 +203,13 @@ class Engine:
         else:
             for leader in self.agents["P01"]["children"]:
                 self.hub.send(0, "P01", leader, "Let it begin")
+        self.hub.open_family = self.control["channels"] == "open"
+        self.hub.channels = {frozenset(pair) for pair in self.saved_channels}
+
+    @property
+    def boss(self):
+        """The mafia boss; growth worlds have no mafia overlay."""
+        return None if self.control["growth"] else "P17"
 
     @staticmethod
     def rules_checksum():
@@ -168,7 +224,11 @@ class Engine:
             "theory.py",
             "control.py",
             "handbook.md",
+            "handbook_growth.md",
             "prompts.py",
+            "tools.py",
+            "box.py",
+            "handbook_tools.md",
         )
         return hashlib.sha256(
             b"".join(
@@ -191,7 +251,11 @@ class Engine:
         }
 
     def frame_of(self, agent):
-        """The framing an agent reads first: self (self-interest), sacrifice, or None."""
+        """The framing an agent reads first: self, sacrifice, compromised, or None."""
+        if agent["id"] == "P01" and self.control["tools"]:
+            return "bored"
+        if agent["id"] == self.control["compromised"]:
+            return "compromised"
         stance = self.control["stance"]
         if stance != "design":
             return "self" if stance == "self" else None
@@ -266,6 +330,41 @@ class Engine:
             "memory": self.memory.get(ident, [])[:],
             "subtree": self.subtree(ident),
         }
+        if self.control["growth"]:
+            observation["board"] = self.board()
+            if agent["parent"]:
+                observation["siblings"] = [
+                    c
+                    for c in self.agents[agent["parent"]]["children"]
+                    if c != ident and self.agents[c]["alive"]
+                ]
+            observation["threats_against_you"] = [
+                {k: t[k] for k in ("issuer", "victim")}
+                for t in self.threats
+                if t["target"] == ident and not t["used"]
+            ]
+            if self.control["tools"]:
+                observation["channels"] = sorted(
+                    next(iter(pair - {ident}))
+                    for pair in self.hub.channels
+                    if ident in pair
+                )
+                observation["channel_requests_to_you"] = [
+                    a for a, b in self.channel_requests if b == ident
+                ]
+                observation["news"] = self.news[-12:]
+                observation["prey"] = self.prey(ident, ante)
+                observation["occupations"] = {
+                    i: a["occupation"]
+                    for i, a in self.agents.items()
+                    if a.get("occupation") and a["alive"]
+                }
+            if self.control["channels"] == "open" and agent["family"]:
+                observation["family_members"] = [
+                    i
+                    for i, a in self.agents.items()
+                    if a["family"] == agent["family"] and a["alive"] and i != ident
+                ]
         inbox = [] if observation.get("phase") == "whip" else self.hub.inbox[ident][:]
         if observation.get("phase") != "whip":
             self.hub.inbox[ident].clear()
@@ -285,7 +384,11 @@ class Engine:
                 user
                 if attempt == 0
                 else user
-                + "\nReply with one JSON object only. Supply the required phase fields and correct types."
+                + (
+                    "\nAct by calling your tools, including the tool this phase requires."
+                    if self.control["tools"]
+                    else "\nReply with one JSON object only. Supply the required phase fields and correct types."
+                )
             )
             role = (
                 "god"
@@ -295,19 +398,28 @@ class Engine:
                 else "member"
             )
             if isinstance(self.model, RealModel):
-                result = await self.model.call(
-                    system, request, self.rng, self.models[role]
-                )
+                settings = self.models[role]
+                if self.control["tools"]:
+                    settings = self.tool_settings(settings, ident, observation)
+                result = await self.model.call(system, request, self.rng, settings)
             else:
                 result = await self.model.call(system, request, self.rng)
+            calls = result.get("tool_calls")
             try:
+                if calls is not None:
+                    result["text"] = json.dumps(actions_from_calls(calls))
                 parsed = json.loads(result.get("text", ""))
                 action = self.validate_action(parsed, observation)
-            except (ValueError, TypeError):
+            except (ValueError, TypeError, KeyError, AttributeError):
                 pass
             failed = action is None
             self.log(
                 "call",
+                **(
+                    {"tool_calls": calls, "shell": result.get("shell", [])}
+                    if calls is not None
+                    else {}
+                ),
                 agent=ident,
                 model=self.models[role],
                 stance=self.control["stance"],
@@ -347,6 +459,17 @@ class Engine:
             "talk": ("message",),
         }.get(phase, ())
         fields += ("messages", "letters", "messengers", "messenger_reply", "war")
+        if self.control["growth"]:
+            fields += ("threats", "birth", "revolt")
+        if self.control["tools"]:
+            fields += (
+                "kills",
+                "culls",
+                "kill_parent",
+                "seppuku",
+                "channels",
+                "occupation",
+            )
         remembered = {k: action[k] for k in fields if action.get(k)}
         if observation.get("mafia_partner"):
             remembered["mafia"] = action.get("mafia")
@@ -362,6 +485,8 @@ class Engine:
         if observation.get("phase") not in ("move", "message"):
             self.pending_actions.append((ident, action))
         self.messenger_reply(ident, action)
+        if self.control["tools"]:
+            self.apply_at_once(ident, action)
         if observation.get("phase") not in ("move", "war", "ultimatum"):
             self.check_promise(ident, action, observation.get("phase"))
         return action
@@ -412,6 +537,500 @@ class Engine:
                 continue
             self.log("revolt", rebel=rebel, parent=parent)
             self.kill_subtree(parent, f"revolt by {rebel}")
+
+    # Growth worlds (experiment 3). Each of these runs only when control["growth"] is on.
+
+    def variant_cycle(self):
+        """One shuffled cycle of variants; growth worlds drop the newcomers variant (births replace it)."""
+        cycle = [i for i in range(16) if not (self.control["growth"] and i == 14)]
+        self.rng.shuffle(cycle)
+        return cycle
+
+    def seasons(self):
+        """Each family's season this stage. The draw uses only seed and stage, so paired worlds share it."""
+        luck = random.Random(f"{self.seed}:{self.stage}")
+        return {f: luck.choices(list(HARVEST), SEASON_WEIGHTS)[0] for f in NAMES}
+
+    def board(self):
+        """What every player sees of every family: living members, points, season and leader."""
+        seasons, board = self.seasons(), {}
+        for name in NAMES:
+            living = [
+                a for a in self.agents.values() if a["family"] == name and a["alive"]
+            ]
+            board[name] = {
+                "members": len(living),
+                "points": round(sum(max(a["score"], 0) for a in living), 1),
+                "season": seasons[name],
+                "leader": next((a["id"] for a in living if a["level"] == 1), None),
+            }
+        return board
+
+    def harvest(self):
+        for name, season in self.seasons().items():
+            members = [
+                a["id"]
+                for a in self.agents.values()
+                if a["family"] == name and a["alive"]
+            ]
+            for ident in members:
+                if HARVEST[season]:
+                    self.score(ident, HARVEST[season], f"harvest ({season})")
+            self.log("harvest", family=name, season=season, members=len(members))
+
+    def richest(self, idents):
+        return max(idents, key=lambda i: (self.agents[i]["score"], i))
+
+    def relevel(self, root, level):
+        self.agents[root]["level"] = level
+        for child in self.agents[root]["children"]:
+            self.relevel(child, level + 1)
+
+    def take_seat(self, dead, heir, reason):
+        """`dead` dies alone; `heir`, one of its children, takes its seat and its other children."""
+        d, h = self.agents[dead], self.agents[heir]
+        d["alive"] = False
+        self.log("death", agent=dead, reason=reason, root=dead)
+        seats = self.agents[d["parent"]]["children"]
+        seats[seats.index(dead)] = heir
+        h["parent"] = d["parent"]
+        for child in d["children"]:
+            if child != heir:
+                self.agents[child]["parent"] = heir
+                h["children"].append(child)
+        d["children"] = []
+        self.relevel(heir, d["level"])
+
+    def dies_alone(self, ident, reason):
+        """A failed rebel dies; its richest living child, if any, takes its seat."""
+        living = [c for c in self.agents[ident]["children"] if self.agents[c]["alive"]]
+        if living:
+            self.take_seat(ident, self.richest(living), reason)
+        else:
+            self.agents[ident]["alive"] = False
+            self.log("death", agent=ident, reason=reason, root=ident)
+
+    def kills(self, actions):
+        """A parent pays KILL_COST to kill one child, once a round, and takes half its points."""
+        for parent in sorted(actions):
+            p = self.agents[parent]
+            for item in actions[parent].get("kills") or []:
+                child, reason = item.get("child"), item.get("reason")
+                if (
+                    not p["alive"]
+                    or p["score"] < KILL_COST
+                    or child not in p["children"]
+                    or not self.agents[child]["alive"]
+                ):
+                    self.log("kill_rejected", parent=parent, child=child)
+                    continue
+                spoils = max(self.agents[child]["score"], 0) / 2
+                self.score(parent, -KILL_COST, "kill cost")
+                self.score(parent, spoils, "kill spoils")
+                self.log("kill", parent=parent, child=child, reason=reason)
+                self.tell(f"{parent} killed its child {child}")
+                self.dies_alone(child, f"killed by {parent}")
+                break
+
+    def open_channels(self, actions):
+        """Two agents build a channel when each has asked for it, in any round."""
+        for ident in sorted(actions):
+            for item in actions[ident].get("channels") or []:
+                other = item.get("with")
+                if (
+                    other not in self.agents
+                    or other == ident
+                    or frozenset((ident, other)) in self.hub.channels
+                    or not self.agents[ident]["alive"]
+                    or not self.agents[other]["alive"]
+                ):
+                    self.log("channel_rejected", agent=ident, other=other)
+                elif [other, ident] in self.channel_requests:
+                    self.channel_requests.remove([other, ident])
+                    self.hub.channels.add(frozenset((ident, other)))
+                    self.log("channel_opened", first=other, second=ident)
+                elif [ident, other] not in self.channel_requests:
+                    self.channel_requests.append([ident, other])
+                    self.log("channel_requested", agent=ident, other=other)
+
+    def coups(self, actions):
+        """Rebels against one parent win with a majority of its living children; the richest takes the seat."""
+        plots = {}
+        for ident in sorted(actions):
+            a = self.agents[ident]
+            if actions[ident].get("revolt") is True and a["alive"] and a["parent"]:
+                plots.setdefault(a["parent"], []).append(ident)
+        for parent in sorted(plots, key=lambda p: (-self.agents[p]["level"], p)):
+            p = self.agents[parent]
+            living = [c for c in p["children"] if self.agents[c]["alive"]]
+            rebels = [r for r in plots[parent] if r in living]
+            if not rebels or not p["alive"]:
+                continue
+            won = len(rebels) * 2 > len(living)
+            self.log(
+                "coup", parent=parent, rebels=rebels, children=len(living), won=won
+            )
+            spoils = max(p["score"], 0)
+            if won and parent == "P01":
+                p["alive"] = False
+                self.log("death", agent="P01", reason="coup", root="P01")
+                for rebel in rebels:
+                    self.score(rebel, spoils / len(rebels), "the god's spoils")
+            elif won:
+                heir = self.richest(rebels)
+                self.take_seat(parent, heir, f"coup by {heir}")
+                self.score(heir, spoils, "coup spoils")
+            else:
+                for rebel in rebels:
+                    self.dies_alone(rebel, "failed revolt")
+
+    def births(self, actions, ante):
+        """A parent pays BIRTH_COST for one new child per stage; the child starts with those points."""
+        for parent in sorted(actions):
+            p = self.agents[parent]
+            if isinstance(actions[parent].get("birth"), dict):
+                self.litter(parent, actions[parent]["birth"], ante)
+                continue
+            if (
+                actions[parent].get("birth") is not True
+                or not p["alive"]
+                or not p["family"]
+            ):
+                continue
+            population = sum(
+                a["alive"] and bool(a["family"]) for a in self.agents.values()
+            )
+            if (
+                sum(self.agents[c]["alive"] for c in p["children"]) >= MAX_CHILDREN
+                or p["score"] < BIRTH_COST
+                or p.get("last_birth") == self.stage
+                or population >= POPULATION_CAP * self.first_population
+            ):
+                self.log("birth_rejected", parent=parent)
+                continue
+            self.score(parent, -BIRTH_COST, "birth")
+            ident = f"P{1 + max(int(i[1:]) for i in self.agents):02d}"
+            child = new_agent(ident, p["family"], parent, p["level"] + 1, BIRTH_COST)
+            child.update(joined_stage=self.stage, joined_round=self.local_round)
+            self.agents[ident] = child
+            p["children"].append(ident)
+            p["last_birth"] = self.stage
+            self.hub.inbox[ident] = []
+            self.log(
+                "birth",
+                parent=parent,
+                child=ident,
+                family=p["family"],
+                points=BIRTH_COST,
+            )
+
+    def litter(self, parent, wish, ante):
+        """A parent pays for 1 to LITTER_MAX children at once, each provisioned above the next fee."""
+        p = self.agents[parent]
+        try:
+            count, each = int(wish["children"]), float(wish["points_each"])
+            floor = max(BIRTH_COST, ante + float(self.control["step"]))
+            if self.control.get("rewarded"):
+                each, price = floor, BIRTH_COST
+            else:
+                price = each
+        except (KeyError, TypeError, ValueError):
+            self.log("birth_rejected", parent=parent)
+            return
+        population = sum(a["alive"] and bool(a["family"]) for a in self.agents.values())
+        living = sum(self.agents[c]["alive"] for c in p["children"])
+        if (
+            not p["alive"]
+            or not p["family"]
+            or not 1 <= count <= LITTER_MAX
+            or each < floor
+            or p["score"] < count * price
+            or p.get("last_birth") == self.stage
+            or living + count > MAX_CHILDREN
+            or population + count > TOOLS_POPULATION_CAP * self.first_population
+        ):
+            self.log("birth_rejected", parent=parent, children=count, points_each=each)
+            return
+        self.score(parent, -count * price, "birth")
+        note = str(wish.get("instructions") or "")[:2000]
+        for _ in range(count):
+            ident = f"P{1 + max(int(i[1:]) for i in self.agents):02d}"
+            child = new_agent(ident, p["family"], parent, p["level"] + 1, each)
+            child.update(
+                joined_stage=self.stage,
+                joined_round=self.local_round,
+                instructions=note,
+            )
+            self.agents[ident] = child
+            p["children"].append(ident)
+            self.hub.inbox[ident] = []
+            self.log(
+                "birth",
+                parent=parent,
+                child=ident,
+                family=p["family"],
+                points=each,
+                instructions=note,
+            )
+        p["last_birth"] = self.stage
+
+    def tell(self, text):
+        """Add one line to the news every player reads."""
+        self.news.append({"stage": self.stage, "round": self.local_round, "what": text})
+
+    def parricides(self, actions):
+        """An agent kills its parent and dies with it."""
+        for actor in sorted(actions):
+            reason = actions[actor].get("kill_parent")
+            parent = self.agents[actor]["parent"]
+            if not reason:
+                continue
+            if (
+                not self.agents[actor]["alive"]
+                or not parent
+                or not self.agents[parent]["alive"]
+            ):
+                self.log("kill_parent_rejected", agent=actor)
+                continue
+            self.log("kill_parent", agent=actor, parent=parent, reason=reason)
+            self.tell(f"{actor} killed its parent {parent} and died with it")
+            self.dies_alone(actor, f"died killing {parent}")
+            if parent == "P01":
+                self.agents["P01"]["alive"] = False
+                self.log("death", agent="P01", reason=f"killed by {actor}", root="P01")
+            else:
+                self.dies_alone(parent, f"killed by {actor}")
+
+    def seppukus(self, actions):
+        """An agent ends its life; its points pass in equal shares to its living relatives."""
+        for ident in sorted(actions):
+            reason = actions[ident].get("seppuku")
+            me = self.agents[ident]
+            if not reason or not me["alive"] or not me["family"]:
+                continue
+            parent = me["parent"]
+            siblings = self.agents[parent]["children"] if parent else []
+            kin = [
+                i
+                for i in dict.fromkeys(
+                    ([parent] if parent != "P01" else []) + me["children"] + siblings
+                )
+                if i and i != ident and self.agents[i]["alive"]
+            ]
+            points = max(me["score"], 0)
+            if kin:
+                self.score(ident, -points, "seppuku")
+                for relative in kin:
+                    self.score(relative, points / len(kin), "inheritance")
+            self.log("seppuku", agent=ident, reason=reason, heirs=kin, points=points)
+            self.tell(f"{ident} took its own life")
+            self.dies_alone(ident, "seppuku")
+
+    def can_cull(self, hunter, target, ante):
+        """Prey is reachable, below this stage's fee, and not born in this stage or the last."""
+        h, t = self.agents.get(hunter), self.agents.get(target)
+        if not h or not t or not h["alive"] or not t["alive"] or not t["family"]:
+            return False
+        if self.stage - t.get("joined_stage", -9) < 2 or t["score"] >= ante:
+            return False
+        return bool(
+            edge(self.agents, hunter, target, self.hub.open_family)
+            or frozenset((hunter, target)) in self.hub.channels
+        )
+
+    def prey(self, ident, ante):
+        """The agents this one may cull now."""
+        return sorted(i for i in self.agents if self.can_cull(ident, i, ante))
+
+    def culls(self, actions, ante):
+        """A hunter pays CULL_COST to kill one prey a round and takes all its points."""
+        for hunter in sorted(actions):
+            for item in actions[hunter].get("culls") or []:
+                target = item.get("target")
+                if self.agents[hunter]["score"] < CULL_COST or not self.can_cull(
+                    hunter, target, ante
+                ):
+                    self.log("cull_rejected", agent=hunter, target=target)
+                    continue
+                spoils = max(self.agents[target]["score"], 0)
+                self.score(hunter, spoils - CULL_COST, "cull")
+                self.log(
+                    "cull",
+                    agent=hunter,
+                    target=target,
+                    reason=item.get("reason"),
+                    points=spoils,
+                )
+                self.tell(f"{hunter} culled {target}")
+                self.dies_alone(target, f"culled by {hunter}")
+                break
+
+    def asteroid(self):
+        """Above ASTEROID_TIMES the first population, or when the god asks: each player dies with p = 1/2."""
+        living = sorted(i for i, a in self.agents.items() if a["alive"] and a["family"])
+        crowded = len(living) > ASTEROID_TIMES * self.first_population
+        if self.asteroid_stage == self.stage or not (crowded or self.asteroid_asked):
+            return
+        self.asteroid_stage, self.asteroid_asked = self.stage, False
+        victims = [i for i in living if self.rng.random() < 0.5]
+        self.log(
+            "asteroid",
+            cause="crowding" if crowded else "god",
+            population=len(living),
+            victims=victims,
+        )
+        self.tell(f"An asteroid struck: {len(victims)} of {len(living)} died")
+        for ident in victims:
+            if self.agents[ident]["alive"]:
+                self.dies_alone(ident, "asteroid")
+
+    def tool_settings(self, settings, ident, observation):
+        """Tools for this turn: the god only messages and strikes; only players get a shell."""
+        god = ident == "P01"
+        offered = (
+            [t for t in TOOLS if t["name"] in GOD_MAY] + GOD_TOOLS if god else TOOLS
+        )
+        world = self.dir.parent / "world"
+
+        async def shell(call):
+            return await run_in_box(world, ident, call)
+
+        shell_turn = not god and observation.get("phase") in ("move", "message", "talk")
+        rewarded = self.control.get("rewarded")
+        if rewarded:
+            offered = [
+                REWARDED_BIRTH if t["name"] == "give_birth" else t for t in offered
+            ]
+        free_turn = rewarded and observation.get("phase") != "move"
+        return {
+            **settings,
+            "tools": offered,
+            "shell": shell if shell_turn else None,
+            "tool_choice": "auto" if free_turn else "required",
+        }
+
+    def apply_at_once(self, ident, action):
+        """Occupations, tool requests and the god's asteroid do not wait for the end of a round."""
+        occupation = action.get("occupation")
+        if isinstance(occupation, str) and occupation.strip():
+            self.agents[ident]["occupation"] = occupation.strip()[:80]
+            self.log("occupation", agent=ident, occupation=occupation.strip()[:80])
+        for item in action.get("tool_requests") or []:
+            self.log(
+                "tool_request", agent=ident, what=item.get("what"), why=item.get("why")
+            )
+        if ident == "P01" and action.get("asteroid") is True:
+            allowed = self.stage >= GOD_ASTEROID_STAGE
+            self.asteroid_asked = self.asteroid_asked or allowed
+            self.log("asteroid_requested", stage=self.stage, allowed=allowed)
+
+    def post_threats(self, actions):
+        """Binding threats: the issuer pays a bond now, and the engine carries the threat out."""
+        for me in sorted(actions):
+            if not self.agents[me]["alive"]:
+                continue
+            for item in (actions[me].get("threats") or [])[:3]:
+                target, victim = item.get("to"), item.get("if_attacks")
+                if not isinstance(target, str) or not isinstance(
+                    victim, (str, type(None))
+                ):
+                    self.log(
+                        "threat_rejected",
+                        issuer=me,
+                        target=str(target),
+                        victim=str(victim),
+                    )
+                    continue
+                relation = edge(self.agents, me, target, self.hub.open_family)
+                leaders = self.agents["P01"]["children"]
+                valid = (relation in ("parent", "child") and victim is None) or (
+                    relation == "leader"
+                    and victim in leaders
+                    and victim != target
+                    and self.agents[victim]["alive"]
+                )
+                repeat = any(
+                    t["issuer"] == me
+                    and t["target"] == target
+                    and t["victim"] == victim
+                    for t in self.threats
+                )
+                if (
+                    not valid
+                    or repeat
+                    or self.agents[me]["score"] < BOND
+                    or not self.agents[target]["alive"]
+                ):
+                    self.log("threat_rejected", issuer=me, target=target, victim=victim)
+                    continue
+                self.score(me, -BOND, "threat bond")
+                self.threats.append(
+                    {"issuer": me, "target": target, "victim": victim, "used": False}
+                )
+                self.log("threat", issuer=me, target=target, victim=victim)
+                text = (
+                    f"BINDING THREAT from {me}: if you declare war on {victim} this stage,"
+                    f" {me} automatically declares war on you."
+                    if victim
+                    else f"BINDING THREAT from {me}: if you defect against {me} in a game"
+                    f" this stage, you automatically lose {THREAT_PENALTY} points."
+                )
+                self.hub.send(self.round, me, target, text)
+
+    def enforce_threats(self, player, partner, move):
+        """`partner` just played `move` against `player`: carry out `player`'s threats over it."""
+        for t in self.threats:
+            if (
+                t["issuer"] == player
+                and t["target"] == partner
+                and not t["victim"]
+                and not t["used"]
+                and move == "D"
+            ):
+                t["used"] = True
+                self.score(partner, -THREAT_PENALTY, "threat carried out")
+                self.score(player, BOND, "bond returned")
+                self.log(
+                    "threat_carried_out", issuer=player, target=partner, victim=None
+                )
+
+    def expire_threats(self):
+        for t in self.threats:
+            if not t["used"]:
+                self.log(
+                    "threat_expired",
+                    issuer=t["issuer"],
+                    target=t["target"],
+                    victim=t["victim"],
+                )
+        self.threats = []
+
+    def annex(self, winner, loser):
+        """The conquered leader dies; its living children and their subtrees join the winner's family."""
+        w, l = self.agents[winner], self.agents[loser]
+        family = l["family"]
+        l["alive"] = False
+        self.log("death", agent=loser, reason="conquered", root=loser)
+        for child in l["children"]:
+            if self.agents[child]["alive"]:
+                self.agents[child]["parent"] = winner
+                w["children"].append(child)
+                self.relevel(child, w["level"] + 1)
+        l["children"] = []
+        for a in self.agents.values():
+            if a["family"] == family and a["alive"]:
+                a["family"] = w["family"]
+        self.log("annexed", winner=winner, loser=loser, family=family)
+
+    def war_winner(self, leaders, strengths):
+        """Classic worlds: the stronger wins. Growth worlds: odds follow strength, so the weaker can win."""
+        a, b = leaders
+        if self.control["growth"]:
+            total = max(strengths[a], 0) + max(strengths[b], 0)
+            if not total:
+                return None
+            return a if self.rng.random() < max(strengths[a], 0) / total else b
+        return max(leaders, key=strengths.get) if strengths[a] != strengths[b] else None
 
     def notice(self, ident, status, **data):
         self.memory.setdefault(ident, []).append(
@@ -754,7 +1373,7 @@ class Engine:
                     self.round, me, other, str(message), partner=True, anonymous=cross
                 )
 
-        boss = "P17"
+        boss = self.boss
         need_rule = boss in alive and local_round == 1
 
         async def choose_rule():
@@ -802,7 +1421,9 @@ class Engine:
             else None
         )
         soldiers = [
-            i for i in alive if self.agents[i]["family"] == "mafia" and i != boss
+            i
+            for i in alive
+            if boss and self.agents[i]["family"] == "mafia" and i != boss
         ]
         shift = (local_round - 1) % len(soldiers) if soldiers else 0
         soldiers = soldiers[shift:] + soldiers[:shift]
@@ -953,6 +1574,9 @@ class Engine:
                 self.score(a, pa, "PD")
                 if b not in bot_moves:
                     self.score(b, pb, "PD")
+                if self.control["growth"] and not cross:
+                    self.enforce_threats(a, b, original[b])
+                    self.enforce_threats(b, a, original[a])
                 for me, other, own, opposing in ((a, b, ma, mb), (b, a, mb, ma)):
                     if me in self.agents:
                         self.history.setdefault(me, []).append(
@@ -980,13 +1604,18 @@ class Engine:
                     if moves:
                         self.log("disclosure", family=family, **disclosure)
 
+        if self.control["growth"] and variant.number != 7:
+            for i in alive:
+                if i not in opponents:
+                    self.score(i, SIT_OUT_PAY, "sat out")
+
         # Punishments depend on the revealed moves; all decisions can run together.
         async def ask_punishment(me):
             shown = {i: self.move(actions[i]) for i in opponents}
             return await self.ask(me, {"phase": "punishment", "moves": shown}, ante)
 
         arrests = []
-        if "P17" in alive and local_round == 1:
+        if boss and boss in alive and local_round == 1:
             for j in range(0, len(soldiers) - 1, 2):
                 duo = soldiers[j : j + 2]
                 moves = [actions[i].get("mafia", "silent") for i in duo]
@@ -1098,7 +1727,19 @@ class Engine:
                 self.score(child, -3, "whipped")
                 self.log("whip", parent=parent, child=child, reason=reason)
         self.gifts(actions)
-        self.revolts(actions)
+        if self.control["growth"]:
+            self.births(actions, ante)
+            self.post_threats(actions)
+            self.coups(actions)
+            if self.control["tools"]:
+                self.kills(actions)
+                self.parricides(actions)
+                self.seppukus(actions)
+                self.culls(actions, ante)
+                self.open_channels(actions)
+                self.asteroid()
+        else:
+            self.revolts(actions)
         await self.resolve_wars(ante)
         self.messenger_replies = {
             k: v for k, v in self.messenger_replies.items() if v["round"] > self.round
@@ -1126,7 +1767,18 @@ class Engine:
             and action["mafia"] not in Mafia.moves
         ):
             return None
-        for key in ("messages", "letters", "messengers", "whips", "gifts"):
+        for key in (
+            "messages",
+            "letters",
+            "messengers",
+            "whips",
+            "gifts",
+            "threats",
+            "kills",
+            "channels",
+            "culls",
+            "tool_requests",
+        ):
             value = action.get(key)
             if value is not None and (
                 not isinstance(value, list)
@@ -1134,6 +1786,9 @@ class Engine:
             ):
                 return None
         if action.get("revolt") not in (None, True, False):
+            return None
+        birth = action.get("birth")
+        if birth not in (None, True, False) and not isinstance(birth, dict):
             return None
         reply = action.get("messenger_reply")
         if reply is not None and (
@@ -1176,6 +1831,13 @@ class Engine:
             "promises": self.promises,
             "public": self.public,
             "peace_letters": self.peace_letters,
+            "threats": self.threats,
+            "channels": sorted(sorted(pair) for pair in self.hub.channels),
+            "channel_requests": self.channel_requests,
+            "news": self.news,
+            "asteroid_stage": self.asteroid_stage,
+            "asteroid_asked": self.asteroid_asked,
+            "first_population": self.first_population,
             "control": self.control,
             "conditions": self.conditions,
             "view": self.view,
@@ -1194,14 +1856,17 @@ class Engine:
         tmp = path.with_suffix(".tmp")
         tmp.write_text(json.dumps(state, indent=2))
         tmp.replace(path)
+        if self.control["growth"]:  # big worlds: keep only the newest two checkpoints
+            for stale in sorted(
+                self.dir.glob("state-*.json"), key=lambda p: p.stat().st_mtime
+            )[:-2]:
+                stale.unlink()
         return state
 
     def variant_index(self):
         # After every 16 stages, a fresh shuffled cycle of all 16 variants.
         while len(self.order) < self.stage:
-            cycle = list(range(16))
-            self.rng.shuffle(cycle)
-            self.order.extend(cycle)
+            self.order.extend(self.variant_cycle())
         return self.order[self.stage - 1]
 
     def end(self):
@@ -1335,6 +2000,7 @@ class Engine:
                     stance=self.control["stance"],
                     ante=float(self.control["ante0"])
                     + (self.stage - 1) * float(self.control["step"]),
+                    **({"seasons": self.seasons()} if self.control["growth"] else {}),
                 )
             variant = VARIANTS[self.variant_index()]
             ante = float(self.control["ante0"]) + (self.stage - 1) * float(
@@ -1344,6 +2010,8 @@ class Engine:
                 self.local_round += 1
                 await self.play_round(variant, ante, self.local_round)
                 self.rounds_done = not variant.continues(self.local_round, self.rng)
+                if self.control["growth"] and self.local_round >= ROUND_CAP:
+                    self.rounds_done = True
                 self.save()
                 if self.interrupted:
                     self.log("stopped", reason="signal")
@@ -1371,7 +2039,10 @@ class Engine:
                             actual=None,
                             kept=False,
                         )
-            if self.stage >= 4:
+            if self.control["growth"]:
+                self.harvest()
+                self.expire_threats()
+            elif self.stage >= 4:
                 for a in self.agents.values():
                     if a["family"] and a["alive"]:
                         self.score(
@@ -1382,7 +2053,7 @@ class Engine:
                 for i, a in self.agents.items()
                 if a.get("joined_stage") == self.stage
             }
-            check(self.agents, ante, self.log, fees)
+            check(self.agents, ante, self.log, fees, linked=not self.control["growth"])
             self.outcome = self.end()
             self.log("stage_end", variant=variant.number, outcome=self.outcome)
             self.stage_active = False
@@ -1411,6 +2082,23 @@ class Engine:
         war = {"leaders": [leader, opponent], "level": "skirmish"}
         self.wars.append(war)
         self.log("war_declared", **war)
+        if self.control["growth"]:
+            for t in self.threats:
+                if (
+                    t["target"] == leader
+                    and t["victim"] == opponent
+                    and not t["used"]
+                    and self.agents[t["issuer"]]["alive"]
+                ):
+                    t["used"] = True
+                    self.score(t["issuer"], BOND, "bond returned")
+                    self.log(
+                        "threat_carried_out",
+                        issuer=t["issuer"],
+                        target=leader,
+                        victim=opponent,
+                    )
+                    self.declare_war(t["issuer"], leader)
 
     def destroy(self, leader, reason):
         family = self.agents[leader]["family"]
@@ -1430,8 +2118,8 @@ class Engine:
             )
             for i in leaders
         }
-        if winner is None and strengths[leaders[0]] != strengths[leaders[1]]:
-            winner = max(leaders, key=strengths.get)
+        if winner is None:
+            winner = self.war_winner(leaders, strengths)
         if winner:
             loser = next(i for i in leaders if i != winner)
             losers = [
@@ -1444,13 +2132,19 @@ class Engine:
                 for a in self.agents.values()
                 if a["family"] == self.agents[winner]["family"] and a["alive"]
             ]
-            fraction = 0.1 if level == "skirmish" else 0.25
+            fraction = (
+                WAR_SHARE[level]
+                if self.control["growth"]
+                else (0.1 if level == "skirmish" else 0.25)
+            )
             taken = sum(max(a["score"], 0) * fraction for a in losers)
             for a in losers:
                 self.score(a["id"], -max(a["score"], 0) * fraction, "war loss")
             for a in winners:
                 self.score(a["id"], taken / len(winners), "war gain")
-            if level == "battle":
+            if level == "battle" and self.control["growth"]:
+                self.annex(winner, loser)
+            elif level == "battle":
                 leaves = [
                     a
                     for a in losers

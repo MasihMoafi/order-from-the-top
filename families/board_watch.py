@@ -79,7 +79,10 @@ def paint(snap):
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
         json.dump(snap, f)
     r = subprocess.run(
-        ["node", str(HERE / "board_live.cjs"), f.name], capture_output=True, text=True, check=False
+        ["node", str(HERE / "board_live.cjs"), f.name],
+        capture_output=True,
+        text=True,
+        check=False,
     )
     Path(f.name).unlink()
     print((r.stdout or r.stderr).strip(), flush=True)

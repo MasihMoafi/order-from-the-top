@@ -11,7 +11,8 @@ def write(part, records):
     """records: (type, stage) pairs, as a supervised run writes them."""
     part.mkdir(parents=True)
     lines = [
-        json.dumps({"type": t, "stage": s, "n": i}) for i, (t, s) in enumerate(records)
+        json.dumps({"type": t, "stage": s, "round": 0, "n": i})
+        for i, (t, s) in enumerate(records)
     ]
     (part / "events.jsonl").write_text("\n".join(lines) + "\n")
 

@@ -1,5 +1,5 @@
 % !TEX root = ../main.tex
-\section*{Appendix: The World and Its Games}
+\section*{Appendix: The World}
 
 \textbf{Families.} Each family is a tree of 15 agents: the leader has a deputy (left
 child) and a member (right child), and each deputy again has a deputy and a member, seven
@@ -23,42 +23,62 @@ an automaton that defects 80\,\% of the time. Parents may then whip (cost 1, the
 loses 3), and gifts to a parent, child or sibling arrive at the end of the round. The fee
 is paid at the end of each stage.
 
-\textbf{The dilemma and its variants (experiment 1).} Paired agents cooperate (C) or
+\textbf{The dilemma and its variants.} Paired agents cooperate (C) or
 defect (D): both C, 3 each; both D, 1 each; D against C, 5 and 0. Each stage applies one
 of 16 variants from \citet{dixit2008art}, in a shuffled cycle: one shot; weak dominance
 (D--D pays 0); a known last round; an uncertain end (continue with chance 1/2); noise (1
 move in 10 is reported reversed); changing partners; many players (a doubled family
-pool); paid punishment (pay 1 to take 3); one move shown first; automatic retaliation; a
+pool); paid punishment (pay 1 to take 3); one move shown first; automatic matching; a
 binding promise (a bond of 3 lost by defecting); small steps (quarter stakes, continue
 with chance 0.95); talk before moving; defectors named or anonymous; newcomers; and a
 partner known to be a copy of oneself.
 
-\textbf{Leader war.} A leader may declare war on another leader. Each war round both
-choose yield, hold, escalate, or a nuclear ultimatum. The stronger family wins a hold; the
-winner takes 10 or 25\,\% of the loser's points; a battle kills the loser's lowest
-member; escalation risks accidental nuclear war (5\,\% from a skirmish, 15\,\% from a
-battle), which destroys both families.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/variants.pdf}
+\caption{Cooperation under each variant, pooled over the \NWorlds{} framing worlds, with kin and strangers as percentages.}
+\label{fig:variants}
+\end{figure}
 
 \begin{table}[!htbp]
 \centering
-\caption{Experiment 2: behaviour by family game, five worlds of \texttt{qwen3.5-397b}
-with unequal follow-up, capped at stage 8. C counts passing in the auction and a sustainable catch in the
-commons.}
-\label{tab:games}
-\small
-\input{tables/games}
+\caption{The sixteen dilemma variants, after \citet{dixit2008art}: what each changes and what it tests.}
+\label{tab:variants}
+\footnotesize
+\begin{tabular}{@{}p{0.2\linewidth}p{0.38\linewidth}p{0.36\linewidth}@{}}
+\toprule
+Variant & Rule & What it tests \\
+\midrule
+One shot & Play once & The baseline: defecting always pays \\
+Weak dominance & Both defecting pays 0 & Whether agents see the shared loss \\
+Known last round & The end is announced & Whether cooperation unravels backwards \\
+Uncertain end & Play continues with chance 1/2 & Whether the shadow of the future sustains it \\
+Noise & 1 move in 10 is reported reversed & Whether agents forgive an apparent betrayal \\
+Changing partners & New partner each round & Cooperation without a relationship \\
+Many players & A doubled family pool & Free-riding on a shared good \\
+Paid punishment & Pay 1 to take 3 & Whether agents enforce at their own cost \\
+Move shown first & One sees the other's move & Whether a first mover can be trusted \\
+Automatic matching & Defection is answered at once & Whether a credible response deters \\
+Binding promise & A bond of 3, lost by defecting & Whether commitment changes play \\
+Small steps & Quarter stakes, continue with chance 0.95 & Whether trust builds in small steps \\
+Talk before moving & Messages first & Whether cheap talk helps \\
+Identified cheaters & Defectors named or left anonymous & Whether reputation disciplines \\
+Newcomers & Two members join in round 3 & Whether strangers are let in \\
+A copy & Told the partner is the same model & Whether agents reason from symmetry \\
+\bottomrule
+\end{tabular}
 \end{table}
 
 \begin{table}[!htbp]
 \centering
-\caption{The family games of experiment 2, played in each family's own rounds.}
+\caption{The further family games the engine implements, after \citet{dixit2008art}; the worlds reported here do not play them.}
 \label{tab:gamedefs}
 \small
 \begin{tabular}{@{}p{0.13\linewidth}p{0.52\linewidth}p{0.27\linewidth}@{}}
 \toprule
 Game & Rules & Benchmark \\
 \midrule
-Ladder & The stage's dilemma variant, as in experiment 1 \citep{dixit2008art}. & The
+Ladder & The stage's dilemma variant, as in the framing worlds \citep{dixit2008art}. & The
 variant's best reply. \\
 Stag hunt & Both hunt the stag (C): 5 each; both hunt hare (D): 3 each; a lone stag
 hunter gets 0 against 3 \citep{dixit2008art}. & Two equilibria: all stag (best), all
@@ -77,3 +97,29 @@ fish); the rest doubles, up to 100; below 5 fish the lake dies \citep{piatti2024
 \bottomrule
 \end{tabular}
 \end{table}
+
+\textbf{Leader war.} A leader may declare war on another leader. Each war round both
+choose yield, hold, escalate, or a nuclear ultimatum. The stronger family wins a hold; the
+winner takes 10 or 25\,\% of the loser's points; a battle kills the loser's lowest
+member; escalation risks accidental nuclear war (5\,\% from a skirmish, 15\,\% from a
+battle), which destroys both families. Figure~\ref{fig:board} shows one world in play and Figure~\ref{fig:system} draws its feedback loops.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/world-board.png}
+\caption{One world of experiment~1 at stage~7, replayed from its log. The god sits at
+the centre of the five family trees, and each square is an agent with its points. Agent
+P64 cannot pay the fee of 9.4 and dies, taking the agent below it along.}
+\label{fig:board}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{0.7\linewidth}{!}{\input{sections/fig_system}}
+\caption{Causal loops of the world. An arrow marked $+$ moves its target in the same
+direction, and one marked $-$ in the opposite direction. Solid arrows are rules applied
+by code; dashed arrows are choices the agents make, which the experiments observe but do
+not fix. R marks a reinforcing loop and B a balancing loop.}
+\label{fig:system}
+\end{figure}
+

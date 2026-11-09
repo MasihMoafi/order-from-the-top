@@ -46,9 +46,9 @@ _BY_START = {int(v[1:]): k for k, v in LEADERS.items()}
 
 
 def events(run):
-    """Return decoded events with replayed stages replaced by each later part.
+    """Return decoded events with replayed rounds replaced by each later part.
 
-    A resumed treatment marker does not set the replacement stage; the first
+    A resumed treatment marker does not set the replacement point; the first
     other event does. Missing logs and malformed JSON raise errors.
     """
     parts = sorted(
@@ -59,10 +59,10 @@ def events(run):
         with open(path) as f:
             part = [json.loads(line) for line in f]
         # A resumed part opens with a `treatment` record stamped with the checkpoint's
-        # stage; its play starts at the first other event.
-        play = [e["stage"] for e in part if e["type"] != "treatment"]
+        # position; its play starts at the first other event, which may be mid-stage.
+        play = [(e["stage"], e["round"]) for e in part if e["type"] != "treatment"]
         if play:
-            kept = [e for e in kept if e["stage"] < play[0]]
+            kept = [e for e in kept if (e["stage"], e["round"]) < play[0]]
         kept += part
     return kept
 

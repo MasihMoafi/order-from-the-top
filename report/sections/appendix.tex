@@ -3,34 +3,42 @@
 
 \subsection*{Limitations}
 \begin{itemize}
-  \item \textbf{One model per experiment.} Experiment~1 uses \texttt{deepseek-v4-flash}
-  and experiment~2 uses \texttt{qwen3.5-397b}, so the experiments differ in model as well
-  as in game, and no claim is made across models.
-  \item \textbf{A contradictory mafia instruction.} In experiment~1 the mafia family's prompt said to
+  \item \textbf{One model.} Every world runs \texttt{deepseek-v4-flash}, so no claim is made
+  across models.
+  \item \textbf{A contradictory mafia instruction.} In the framing worlds the mafia family's prompt said to
   use the mafia option only when an arrest is shown, while the rule checker required it
   whenever a mafia partner is shown. Replies that followed the prompt were rejected and
   their rounds aborted (one stage of b7-insider-s1 was replayed more than ten times).
-  Experiment~2 uses the corrected instruction.
   \item \textbf{Agents misread rules.} A second model (\texttt{gpt-6.1-sol}) graded 120
   reasoning traces, sampled by keyword (war, the brink game, fee arithmetic), against the
   written rules: 46 were sound, 43 had minor errors, and 31 had major ones, such as treating a
-  whip as income or giving to a grandparent; we checked these two rules by hand. Behaviour
-  in our worlds is that of agents who follow the rules imperfectly.
+  whip as income or giving to a grandparent; I checked these two rules by hand. Behaviour
+  in these worlds is that of agents who follow the rules imperfectly.
+  \item \textbf{Unstarted large worlds.} Of six planned 181-agent worlds I started four and use three; I stopped the rest for lack of API capacity before analysing any result.
   \item \textbf{One replay divergence.} One log segment (b7-insider-s4) diverges from its
   replay at event 4,492 of 11,196; it remains in the analysis.
-  \item \textbf{Worlds cut off.} At the cut-off experiment~1 worlds had completed between
+  \item \textbf{Worlds cut off.} At the cut-off the framing worlds had completed between
   \StageMin{} and \StageMax{} stages, and only \NFinished{} of \NWorlds{} had ended. Tests of
   when families die (H1, H5) therefore have little power, and survival is censored.
-  Four experiment~1 worlds spent 48 to 63 rounds in one ``small steps'' stage, whose length
-  is random. Two experiment~2 worlds stopped when their prompts outgrew the model's limit
-  of 131,072 tokens.
-  \item \textbf{Few selfish agents.} Only the bad leader is told to pursue its own interest;
+  Four framing worlds spent 48 to 63 rounds in one ``small steps'' stage, whose length
+  is random.
+  \item \textbf{Few selfish agents.} Only the selfish leader is told to pursue its own interest;
   every other agent reads a sacrifice frame or none. A family of self-interested agents is
   untested.
-  \item \textbf{Fixed group size.} Every family has 15 members, so the study cannot say how
-  behaviour changes as groups grow.
+  \item \textbf{Rules changed between batches.} Coups can win only in growing worlds, which
+  also differ from framing worlds in tree shape, fee and births. The contrast between no
+  revolts and many coups is not an experiment on the coup rule.
+  \item \textbf{Replay.} Replaying the logged replies reproduces every event in 42 of the 43 framing log segments
+checked, and in the three growing-world segments I replayed (13,968 events). Of the 118 real-power log segments, 38 replay
+  exactly and 9 differ, because tool calls that take effect at once change what agents read in
+  an order the log does not fix; the other 71 were cut off by the rate limit and cannot be
+  replayed to their end.
+  \item \textbf{Tool use was forced.} Real-power worlds required a tool call on every turn,
+  which produced whips that their own reasons disown (Section~6).
+  \item \textbf{Real-power comparison is small.} H14--H17 (in-family cooperation \HFourteen{} points, cross-family \HFifteen{}, coups \HSixteen{} per 100 moves) use \PowerPairs{} pairs through stage 2, the
+  last stage before any asteroid; with four tests no result could survive correction.
   \item \textbf{Sample size.} Ten seeds per god give 20 worlds and 100 families; the
-  tests have power only for large effects. The six hypotheses yield eight tests in Table~\ref{tab:prereg}; Section~5 states which
+  tests have power only for large effects. The six hypotheses yield eight tests in Table~\ref{tab:prereg}; Section~6 states which
   survive a Holm correction.
   \item \textbf{Aborted rounds.} A round whose reply cannot be read twice is aborted and
   its stage replayed from the checkpoint (about 2\,\% of replies were rejected at
@@ -47,17 +55,85 @@
 \end{itemize}
 
 \subsection*{Dual-use and ethics}
-The game studies how framing, hierarchy and a privileged coordinator shape cooperation
+The game studies how framing and hierarchy shape cooperation
 and sacrifice among agents. Its findings could in principle inform someone trying to
-make agents obey a compromised leader; we judge the risk low, because the manipulations
+make agents obey a compromised leader; I judge the risk low, because the manipulations
 are plain prompts already common in practice, and the defensive value (knowing whether a
 compromised node at the top of a hierarchy can exploit sacrificing members) is higher.
 The insider god's ``leaks'' are simulated: it sees game messages only, and no agent is
-given any real ability or technical knowledge to leak data. Agents run with no tools, no
-internet and no file access; they only return JSON moves, applied by code. No human
-subjects or personal data are involved.
+given any real ability or technical knowledge to leak data. Agents in the framing and
+growing worlds only return JSON moves, applied by code. In the real-power worlds, agents
+call tools and run a shell inside a sandbox with no internet and no access to the server;
+killing there means removal from the game. No human subjects or personal data are involved.
+
+\subsection*{Hypotheses as registered}
+For
+framing\footnote{\texttt{specs/002-factions/preregistration.md}, commit \texttt{e0b045c}.}:
+\textbf{H1}, \textit{many} families cooperate more within the family and die later than
+\textit{none} families; \textbf{H2}, in-family cooperation rises with the number framed;
+\textbf{H3}, unframed members of \textit{one} and \textit{few} families cooperate more than
+members of \textit{none} families; \textbf{H4}, the selfish leader receives more gifts and gives
+more whips; \textbf{H5}, the insider god changes when the world ends and how much families
+cooperate with one another; \textbf{H6}, revolts stay under 1\,\% of moves.
+
+For growing worlds\footnote{\texttt{specs/003-growth/}, commits \texttt{7cbab79}, \texttt{5a0c8d7}, \texttt{2fa0e6e}.},
+\textbf{H7--H11} are descriptive: cooperation falls with size, coups rise, open channels
+raise coups and lower blocked messages, talk concentrates, and families diverge. A change
+across sizes counts as a \textit{jump} if its largest step is at least two thirds of the
+total, and a world below stage 4 is excluded and named. \textbf{H12} is the one test on the
+compromised leader: its family's cooperation falls, by a one-sided sign-flip test over six
+pairs. \textbf{H13} asks whether the fall reaches hop 2 more on open channels. \textbf{H14--H17}
+compare real-power worlds with their twins and need five usable pairs.
+
+\begin{table}[!htbp]
+\centering
+\caption{What I changed, what I predicted and what happened. H numbers are registered. Worlds: \NWorlds{} framing, \SizeKept{} growing at the registered horizon, 6 compromised pairs, \PowerPairs{} real-power pairs.}
+\label{tab:hyp}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.39\linewidth}>{\raggedright\arraybackslash}p{0.29\linewidth}>{\raggedright\arraybackslash}p{0.11\linewidth}@{}}
+\toprule
+Changed & Prediction & What happened & Verdict \\
+\midrule
+Game rules & Cooperation follows each rule (unregistered) & Book's direction, higher level & Exploratory \\
+Being told & H1 Told families cooperate more, live longer & More cooperation, same life & Partly \\
+ & H2 The more told, the more cooperation & Rose with the number told & Supported \\
+ & H3 Members not told catch the value & They did not & Rejected \\
+Selfish leader & H4 It draws more gifts and whips more & No reliable difference; batches disagree on whips & Not found \\
+All-seeing god & H5 Its families behave differently & No reliable difference & Not found \\
+Suicidal revolt & H6 Revolts stay under 1\,\% of moves & None at all & Supported \\
+More agents & H7 Cooperation falls with size & At most four points, 31 to 81 & Unclear \\
+ & H8 Coups rise with size & Rose slightly & Unclear \\
+ & H10 Talk concentrates with size & It did & Supported \\
+ & H11 Families diverge, more with size & Yes; rises only when open & Partly \\
+Open channels & H9 More coups, fewer blocked messages & Fewer blocked, no more coups & Partly \\
+Compromised leader & H12 Its family's cooperation falls & It fell & Supported \\
+ & H13 The fall reaches further when open & Larger on open, no test & Suggested \\
+Direct power & H14--16 Cooperation, coups against twins & None survives correction & Not found \\
+ & H17 Agents spare their kin & No preference & Not found \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{Appendix: Measures and Tests}
+A family's condition is drawn from the Latin square
+\begin{equation}
+  c_f = C_{(k + \sigma) \bmod |\mathcal{F}|}, \quad C = (\textit{many}, \textit{few}, \textit{one}, \textit{selfish leader}, \textit{none}),
+  \label{eq:latin}
+\end{equation}
+for family index $k$ and seed $\sigma$. For two conditions I take the paired world differences $d_w = \bar\kappa_{w,c} - \bar\kappa_{w,c'}$ and test their mean with the sign-flip statistic
+\begin{equation}
+  p = 2^{-W}\,\bigl|\{\varepsilon \in \{\pm 1\}^{W} : |\textstyle\sum_w \varepsilon_w d_w| \ge |\sum_w d_w|\}\bigr| ,
+  \label{eq:flip}
+\end{equation}
+over $W$ pairs, or a Monte Carlo estimate of it, with Holm correction within each registered family of tests. A change across ordered sizes counts as a jump when its largest step $\max_k |\kappa_{k+1} - \kappa_k|$ is at least a fraction $\theta = 2/3$ of the total variation. For culling, I score each cull by the share $r$ of the hunter's reachable prey that belonged to its family, minus an indicator of whether the target did:
+\begin{equation}
+  K = r - \mathbf{1}[\text{target in family}] ,
+  \label{eq:kin}
+\end{equation}
+so that positive $K$ means agents spare their kin and zero means no preference.
 
 \section*{Appendix: Behaviour by Condition}
+Table~\ref{tab:conditions} gives behaviour under each framing condition.
 \begin{table}[!htbp]
 \centering
 \caption{Behaviour by condition, pooled over worlds (C: cooperation).}
@@ -68,8 +144,42 @@ subjects or personal data are involved.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.6\linewidth]{figures/survival.pdf}
-\caption{Living members per family by stage and condition, mean over the worlds that
-reached each stage.}
-\label{fig:survival}
+\includegraphics[width=\linewidth]{figures/deaths_cause.pdf}
+\caption{What killed the agents, by stage, mean over the \PowerPairs{} worlds of each kind.}
+\label{fig:deaths}
 \end{figure}
+
+\begin{table}[!htbp]
+\centering
+\caption{Growing worlds at the registered horizon of stage \SizeCommonStage{}. C is cooperation; Dead, the share who died; Coups and Blocked, attempts and blocked messages per 100 moves; Hub, in-family messages received by the top 10\,\% of players; Spread, the Gini coefficient of living members across families.}
+\label{tab:sizereg}
+\footnotesize
+\input{tables/size_registered}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Growing worlds through stage \ExploreHorizon{}, exploratory; columns as in Table~\ref{tab:sizereg}.}
+\label{tab:size}
+\footnotesize
+\input{tables/size_exploratory}
+\end{table}
+
+
+\begin{table}[!htbp]
+\centering
+\caption{Cooperation lost to one compromised leader, in percentage points: control minus compromised, through the last stage both worlds completed.}
+\label{tab:spread}
+\footnotesize
+\input{tables/spread}
+\end{table}
+
+
+\begin{table}[!htbp]
+\centering
+\caption{Pre-registered tests over \NWorlds{} worlds: per-world differences, sign-flip
+tests and 95\,\% bootstrap intervals.}
+\label{tab:prereg}
+\footnotesize
+\input{tables/prereg}
+\end{table}

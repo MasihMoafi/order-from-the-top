@@ -28,6 +28,13 @@ LABEL = {
     "bad_leader": "bad leader",
     "none": "none",
 }
+LONG_LABEL = {
+    "many": "all members framed",
+    "few": "leader and children framed",
+    "one": "leader framed",
+    "bad_leader": "selfish leader",
+    "none": "no frame",
+}
 INK, MUTED = "#0b0b0b", "#52514e"
 
 
@@ -91,16 +98,25 @@ def survival(runs, out):
         mean = [statistics.fmean(col) for col in zip(*padded)]
         ax.plot(range(longest + 1), mean, color=COLOUR[c], linewidth=2)
         ends[c] = mean[-1]
-    # Direct labels at the line ends, nudged apart so none overlap.
-    placed, gap = [], 0.9
-    for c, y in sorted(ends.items(), key=lambda kv: kv[1]):
-        y = max(y, placed[-1] + gap) if placed else y
+    # Each label carries a colour key, and a thin connector ties it to its line's true end.
+    placed, gap = [], 1.15
+    for c, end in sorted(ends.items(), key=lambda kv: kv[1]):
+        y = max(end, placed[-1] + gap) if placed else end
         placed.append(y)
-        ax.text(longest + 0.2, y, LABEL[c], color=INK, fontsize=8, va="center")
+        key_at = longest + 0.5
+        ax.plot([longest, key_at], [end, y], color=COLOUR[c], linewidth=0.8)
+        ax.plot(
+            [key_at, key_at + 0.6],
+            [y, y],
+            color=COLOUR[c],
+            linewidth=3.2,
+            solid_capstyle="butt",
+        )
+        ax.text(key_at + 0.8, y, LONG_LABEL[c], color=INK, fontsize=8, va="center")
     ax.set_xlabel("stage", color=MUTED, fontsize=9)
     ax.set_ylabel("living members (of 15)", color=MUTED, fontsize=9)
     ax.set_ylim(0, 15.5)
-    ax.set_xlim(0, longest + 1.6)
+    ax.set_xlim(0, longest + 8.2)
     ax.set_xticks(range(longest + 1))
     style(ax)
     fig.tight_layout()

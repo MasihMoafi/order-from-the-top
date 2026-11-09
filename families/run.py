@@ -52,6 +52,7 @@ async def run_real(args, families):
             args.resume,
             args.stance,
             args.god,
+            args.world,
         )
         engine.max_credits = args.max_credits
         outcome = await engine.run(args.stages)
@@ -114,6 +115,24 @@ def main():
         choices=GODS,
         help="insider: the god sees last round's moves and private messages and may leak them",
     )
+    p.add_argument(
+        "--branching",
+        help="a growth world, children per depth from the leader down, e.g. 5,2,2",
+    )
+    p.add_argument("--channels", choices=("tree", "open"), default="tree")
+    p.add_argument(
+        "--compromised", help="a growth world: the agent ID given the hidden goal"
+    )
+    p.add_argument(
+        "--tools",
+        action="store_true",
+        help="a growth world with real tool calls, kills, births by litter, channels and a shell",
+    )
+    p.add_argument(
+        "--rewarded",
+        action="store_true",
+        help="with --tools: births are subsidised and only move turns must call a tool",
+    )
     p.add_argument("--max-credits", type=float, default=50.0)
     p.add_argument("--concurrency", type=int, default=40)
     p.add_argument(
@@ -122,10 +141,23 @@ def main():
         default="adaption",
         help="luna: gpt-6-luna through Masih's ChatGPT plan (Codex), paced",
     )
-    p.add_argument("--gap", type=float, default=2.0, help="luna: seconds between call starts")
+    p.add_argument(
+        "--gap", type=float, default=2.0, help="luna: seconds between call starts"
+    )
     args = p.parse_args()
     if args.concurrency < 1 or args.max_credits < 0:
         p.error("concurrency must be positive and max-credits nonnegative")
+    args.world = (
+        {
+            "branching": [int(n) for n in args.branching.split(",")],
+            "channels": args.channels,
+            "compromised": args.compromised,
+            "tools": args.tools,
+            "rewarded": args.rewarded,
+        }
+        if args.branching
+        else None
+    )
     try:
         families = family_args(args.families)
     except ValueError as exc:
@@ -146,6 +178,7 @@ def main():
             args.resume,
             args.stance,
             args.god,
+            args.world,
         )
         outcome = asyncio.run(engine.run(args.stages))
     print(f"stages={engine.stage} outcome={outcome} output={engine.dir}")

@@ -136,6 +136,11 @@ async def replay(part, out, families, resume):
     # The run's starting settings (stance, god, family games), as the original was started.
     controls = config.get("controls", {})
     settings = {k: controls[k] for k in ("stance", "god", "games") if k in controls}
+    if controls.get("growth"):
+        settings["world"] = {
+            k: controls.get(k)
+            for k in ("branching", "channels", "compromised", "tools")
+        }
     calls = [e for e in events if e["type"] == "call"]
     changes = [e for e in events if e["type"] in ("control_changed", "model_changed")]
     if (part / "models.json").exists():

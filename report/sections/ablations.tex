@@ -1,0 +1,51 @@
+% !TEX root = ../main.tex
+\section*{Appendix: Ablations}
+Two constants govern how long a world lasts. Table~\ref{tab:ablations} shows how the fee of Equation~\ref{eq:fee} behaves for scripted players with no language
+model, over three seeds and a cap of 16 stages. I chose the framing fee $a_0 = 4$, $\delta = 0.9$ because under it a family that always cooperates can last, losing most but not all of its members,
+while one that always defects is gone within a few stages. Lower fees leave cooperation with little to decide; higher fees end the world regardless.
+
+\begin{table}[!htbp]
+\centering
+\caption{Fee schedules under scripted play: stages completed by a population that always cooperates, its survivors of 75, and stages completed by one that always defects.}
+\label{tab:ablations}
+\footnotesize
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+$a_0$ & $\delta$ & Stages, all cooperate & Survivors of 75 & Stages, all defect \\
+\midrule
+3 & 0.5 & 16.0 & 75.0 & 4.7 \\
+3 & 0.9 & 16.0 & 55.7 & 4.0 \\
+3 & 1.5 & 13.0 & 0.0 & 3.3 \\
+4 & 0.5 & 16.0 & 73.3 & 4.0 \\
+4 & 0.9 & 16.0 & 20.3 & 3.7 \\
+4 & 1.5 & 12.3 & 0.0 & 3.0 \\
+6 & 0.5 & 16.0 & 59.0 & 3.0 \\
+6 & 0.9 & 12.7 & 0.0 & 3.0 \\
+6 & 1.5 & 9.7 & 0.0 & 2.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The second ablation frees the agents: only moves require a tool call, and a child costs a flat price. Table~\ref{tab:rewarded} compares these worlds with the real-power worlds of the same seeds, on the stages both completed. It was added after the real-power results were known, it changes two things at once, and it is exploratory.
+
+\begin{table}[!htbp]
+\centering
+\caption{Free turns against forced turns, in worlds of the same seeds, over the stages both completed.}
+\label{tab:rewarded}
+\footnotesize
+\begin{tabular}{@{}lrr@{}}
+\toprule
+& Free turns & Forced turns \\
+\midrule
+Whips & \RewardWhips{} & \ForcedWhips{} \\
+Whips whose reason says none was meant & \RewardNoWhipReasons{} & \ForcedNoWhipReasons{} \\
+God's turns & \RewardGodTurns{} & \ForcedGodTurns{} \\
+God's turns choosing the asteroid & \RewardGodAsteroids{} & \ForcedGodAsteroids{} \\
+Asteroid strikes & \RewardStrikes{} & \ForcedStrikes{} \\
+Deaths & \RewardDeaths{} & \ForcedDeaths{} \\
+Turns with no tool call & \RewardSilentTurns{} & \ForcedSilentTurns{} \\
+Culls & \RewardCulls{} & \ForcedCulls{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+\FloatBarrier

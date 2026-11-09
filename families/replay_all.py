@@ -70,7 +70,7 @@ def check(part, resume, out):
         return "IDENTICAL", note
     if cut and states and same == len(states):
         return "IDENTICAL TO ITS CUT", note
-    if stopped and not states:
+    if stopped and not states and not any(e["type"] == "move" for e in original):
         return "ABORTED", note
     return "DIFFERENT", f"{note}; {diff or stopped}"
 

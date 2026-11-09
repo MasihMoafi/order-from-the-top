@@ -1,23 +1,7 @@
 % !TEX root = ../main.tex
 \section*{2. Related Work}
-\textbf{Agents in social dilemmas.} Language models play repeated two-player games
-competently but unforgivingly \citep{akata2025repeated}. In a shared-resource society
-most groups of agents collapse, and they last longer when agents reason about the
-effect of their actions on everyone \citep{piatti2024govsim}. These populations, like
-those of generative-agent simulations \citep{park2023generative,
-vezhnevets2023concordia}, are flat.
-We add a hierarchy with shared fates and a framing that reaches different numbers of
-agents in the same tree.
+Language models have been studied in social dilemmas, always as equals. They play repeated two-player games competently but unforgivingly \citep{akata2025repeated}, and most groups sharing a resource collapse unless agents reason about the effect of their actions on everyone \citep{piatti2024govsim}. In these worlds agents have ranks, and each one's survival depends on those above and below it.
 
-\textbf{Multi-agent risk.} Groups of agents fail in ways single agents do not, through
-miscoordination, conflict, and collusion \citep{hammond2025risks}. Malicious instructions
-can spread from agent to agent \citep{lee2024infection}, and agents can collude in
-secret \citep{motwani2024collusion}. Our self-interested leader asks the hierarchical
-form of this question: what one compromised agent at the top can do with members
-inclined to obey and sacrifice.
+Simulation frameworks come closer in design. Concordia's Game Master, itself a language model, turns actions stated in words into their effects \citep{vezhnevets2023concordia}. My question required the reverse: identical rules in every world, so that a difference between two worlds can be traced to what I changed. In place of the Game Master I use an engine that applies the rules, records every prompt and reply, and can check a world by rerunning it from those records.
 
-\textbf{Strategy and cooperation.} The dilemma variants, promises, bonds, and
-brinkmanship of our world follow \citet{dixit2008art}. Its levers follow the four
-capabilities that \citet{dafoe2020open} name for cooperative AI: understanding (what
-each agent sees), communication (messages and letters), commitment (promises, bonds, and
-treaties), and institutions (the family tree and the god).
+Groups of agents fail through miscoordination, conflict and collusion \citep{hammond2025risks}, malicious instructions can pass from agent to agent \citep{lee2024infection}, and agents can collude in secret \citep{motwani2024collusion}. \citet{dafoe2020open} pose the open problems of cooperative AI without running experiments, and name four capabilities it requires: understanding, communication, commitment and institutions. Each appears in these worlds as something I can change: what agents may see, the messages they may send, the promises that bind them, and the hierarchy and its punishments.

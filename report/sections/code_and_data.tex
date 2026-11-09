@@ -4,9 +4,14 @@
   \item \textbf{Code:} \url{https://github.com/MasihMoafi/order-from-the-top}. All code was
   written during the sprint (6--8 November 2026); none is preexisting.
   \item \textbf{Data:} every game's full event log (prompts, replies, reasoning, moves,
-  deaths): \url{https://github.com/MasihMoafi/order-from-the-top/releases/tag/v1}.
+  deaths): \url{https://github.com/MasihMoafi/order-from-the-top/releases/tag/v2}.
   \texttt{families/replay\_all.py} replays them.
   \item \textbf{Pre-registration:} \texttt{specs/002-factions/preregistration.md}, git
-  commit \texttt{e0b045c} (7 Nov 2026, 16:32 UTC), before any result by condition.
-  \item \textbf{Video:} a one-minute replay of one game, in the same release.
+  commit \texttt{e0b045c} (7 Nov 2026, 16:32 UTC); \texttt{specs/003-growth/}, commits
+  \texttt{7cbab79}, \texttt{5a0c8d7} and \texttt{2fa0e6e} (8 Nov 2026), each before the
+  batch it covers.
+  \item \textbf{Numbers:} \texttt{families.paper}, \texttt{families.game\_rates} and
+  \texttt{families.growth\_paper} generate every number in this report from the logs.
+  \item \textbf{Prompts and settings:} \texttt{families/prompts.py} holds every prompt and \texttt{families/models.py} the model call: provider-default sampling and a capped thinking budget, recorded with each world in \texttt{models.json}.
+  \item \textbf{Videos:} a two-minute film and six time-lapse replays in the same release; three earlier films, including a narrated replay of one game, are in release \texttt{v1}.
 \end{itemize}

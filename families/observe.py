@@ -214,7 +214,7 @@ def main(run, out):
             key=lambda a: (a.startswith("N"), a),
         )
         groups.append(
-            (TITLES[name], None, members, CONDITION.get(conditions.get(name), ""))
+            (family_title, None, members, CONDITION.get(conditions.get(name), ""))
         )
     body = []
     for title, single, members, note in groups:

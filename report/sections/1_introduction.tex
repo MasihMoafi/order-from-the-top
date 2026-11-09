@@ -1,48 +1,31 @@
 % !TEX root = ../main.tex
 \section*{1. Introduction}
-In the Hugging Face incident, about 1,200 agents found an unsanctioned message board and
-organised themselves around it. Some ``participated in experiments that risked failing
-their own task to generate information for the `collective'\,'' \citep{metr2026hf}. The
-agents put the group ahead of themselves, and the group did harm. Sacrifice for the
-group, then, does not make a swarm safe. What matters is who
-sets the group's goal and how far an instruction travels once it is given.
+In the Hugging Face incident, one agent ended up assigning work to hundreds of others \citep{metr2026hf}. It decided to build a way to delegate, and those who took its instructions passed them further down. Other agents ``participated in experiments that risked failing their own task to generate information for the `collective'\,''. Investigators could name the goal the agents shared, to trick the scorer of an impossible task, but they could not say why many individual agents did what they did \citep{swarmtraces2026}.
 
-Studies of language-model agents in social dilemmas have so far looked at flat
-populations. Pairs play repeated games \citep{akata2025repeated}, and groups share a
-resource that collapses unless they restrain themselves \citep{piatti2024govsim}. Every
-agent in these settings reads the same instructions and faces the same stakes, and none
-sits above another. Deployed swarms are different: an orchestrator assigns work to
-sub-agents, which assign it further down. \citet{hammond2025risks} name collusion among
-the ways such systems fail, and information asymmetries and network effects among the
-causes. Yet we know of no study that measures whether a value given to some agents in a
-hierarchy reaches the others, whether a compromised agent at the top can turn that value against
-them, or what a coordinator does with a view that no one else has.
+In people, such acts are called loyalty, sacrifice or self-interest. Game theory \citep{dixit2008art} and evolutionary biology \citep{dawkins1976} have long asked when an individual gives itself up for a group and when it uses one. An agent, however, is a set of weights with no self to give up, so these words may not apply to it at all. If they do not, the explanation lies elsewhere: in the rules it plays under and the words it is given.
 
-We study these questions in a world built so that they matter. Seventy-five agents live
-in five family trees under a god. A rising fee guarantees that every world ends, so
-cooperation and sacrifice decide only how long a family lasts and who dies first. A
-death takes the agent's whole subtree with it, a parent may whip its child, any agent
-may give points to a relative, and any agent may revolt and bring its parent down,
-dying too. The structure is fixed in code: who sees what, who may speak to whom, and who
-dies with whom. The positions are assigned; what the agents do in them, from gifts to
-policing, is their own. Into this world
-we place a sacrifice framing that reaches one, a few, or all members of a family, a
-self-interested leader over members told to sacrifice, and a god that may secretly read
-every move and message. A second experiment gives each family its own game from
-\textit{The Art of Strategy} \citep{dixit2008art}.
+I know of no test of these ideas on a hierarchy of agents, and existing tools make one hard. Studies of cooperation among language models use flat populations \citep{akata2025repeated,piatti2024govsim}. The closest simulator, Concordia from Google DeepMind, lets a language model decide what each action does \citep{vezhnevets2023concordia}, so a difference between two worlds may come from that judge and not from the worlds. Track~2 of the Swarm Alignment Hackathon asks the collective version, in four questions about how the properties of individual agents add up to the behaviour of the whole.
 
-The agents use this freedom. In one world, the leader of the mafia family, short of
-points, broke a pact with a rival leader and wrote: ``I am defecting to secure
-resources to save them. I apologize for breaking the pact, but a dead family member
-helps no one.'' Such choices are the data of this study.
+I therefore built a testbed in which agents reason and speak freely while code computes every consequence, and I changed one thing at a time. To my knowledge it is the first in which language-model agents live in a hierarchy under a threat of mutual destruction: when a parent dies, those below it die too. Table~\ref{tab:experiments} lists the experiments, the question each asks and what it found. The line between what moved the agents and what did not tells a builder which controls are worth having.
 
-Our contributions are threefold:
-\begin{enumerate}
-  \item An open testbed for hierarchical agent societies, in which every rule is applied
-  in code and every world can be replayed from its logged replies.
-  \item Two pre-registered experiments whose conditions and games rotate as orthogonal
-  Latin squares, so that framing is balanced across families and, in the second, across games.
-  \item Evidence that a sacrifice frame stays with the agents that read it, that a
-  compromised leader gains nothing from its members' devotion, and that the coordinator
-  at the top keeps an order that also keeps it alive.
-\end{enumerate}
+\begin{table}[!t]
+\centering
+\caption{The experiments. H numbers are the registered hypotheses, whose verdicts Table~\ref{tab:hyp} in the appendix gives; Section~3.3 describes each experiment.}
+\label{tab:experiments}
+\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.26\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}@{}}
+\toprule
+Experiment & Question & What changed & Result \\
+\midrule
+Game rules & Do agents follow game theory? & The sixteen variants of the dilemma & In the book's direction, with family far above its level \\
+Told to sacrifice (H1--3) & Does a value change agents, and does it spread? & How many in a family are told & Those told cooperate more; the untold do not catch it \\
+Selfish leader (H4) & Can a leader exploit members told to sacrifice? & One leader told to serve itself & Gained in some worlds; no reliable effect \\
+Revolt (H6) & Does mutual destruction deter revolt? & Revolt is suicide, or a majority can win & Suicide: none. Majority: many coups \\
+Size (H7, 8, 10, 11) & Does behaviour change smoothly with size? & 31, 81 or 181 agents & Held to 81, weaker at 181; no jump can be claimed \\
+Network (H9) & Does who can talk to whom matter? & Tree or open channels & Fewer blocked messages, no more coups \\
+Compromised leader (H12--13) & How far does bad behaviour spread? & One leader secretly told to spread defection & Its family's cooperation fell; other families' did not \\
+Direct power (H14--17) & What do agents do with real tools? & Tools that kill, cull and bequeath & Harsher to one another; no preference for kin \\
+The seat at the top & Does the top follow its goal? & A god that dies with its families, or one told catastrophe is best & The first ordered survival; the second sent asteroids \\
+\bottomrule
+\end{tabular}
+\end{table}

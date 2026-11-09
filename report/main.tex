@@ -12,14 +12,20 @@
 % ======================================================================
 \documentclass[11pt,letterpaper]{article}
 \usepackage{apartreport}
+\setlength{\parindent}{1.1em}
 \usepackage{booktabs}
+\usepackage{placeins}
+\usepackage{array}
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning}
-\setlength{\floatsep}{18pt plus 4pt minus 2pt}
-\setlength{\textfloatsep}{20pt plus 4pt minus 2pt}
+\usetikzlibrary{arrows.meta,positioning,decorations.pathreplacing,decorations.pathmorphing}
+\setlength{\floatsep}{10pt plus 3pt minus 2pt}
+\setlength{\textfloatsep}{12pt plus 3pt minus 2pt}
 \input{numbers}
-\hypersetup{pdftitle={Order from the Top: Framing, a Compromised Leader, and a Privileged Coordinator in a Hierarchy of LLM Agents}}
+\input{numbers_growth}
+\input{numbers_games}
+\newcommand{\redsout}{\bgroup\markoverwith{\textcolor{red}{\rule[0.55ex]{2pt}{1pt}}}\ULon}
+\hypersetup{pdftitle={Order from the Top: Loyalty, Sacrifice and Self-Interest in a Hierarchy of LLM Agents}}
 
 \begin{document}
 
@@ -27,16 +33,20 @@
 %  Title block: 3 pt rule, title, 1 pt rule, authors, abstract
 % ======================================================================
 \begin{singlespace}
-\vspace*{17pt}
+\vspace*{4pt}
 \hrule height 3pt
-\vspace{22pt}
-{\centering\fontsize{20}{24.7}\selectfont\bfseries
-  Order from the Top: Framing, a Compromised Leader, and a Privileged Coordinator in a Hierarchy of LLM Agents\footnote{Research conducted at the
+\vspace{12pt}
+{\centering\fontsize{12}{15}\selectfont\redsout{Order from the Top: Framing, a Compromised Leader, and a Privileged Coordinator in a Hierarchy of LLM Agents}\par}
+\vspace{7pt}
+{\centering\fontsize{17}{21}\selectfont\bfseries
+  Order from the Top: Loyalty, Sacrifice and Self-Interest in a Hierarchy of LLM Agents\footnote{Research conducted at the
     \href{https://apartresearch.com/sprints/swarm-alignment-2026}{\uline{Swarm Alignment Hackathon}},
     November 2026}\par}
-\vspace{32pt}
+\vspace{9pt}
+{\centering\footnotesize\itshape The struck-out title is the one this entry was first submitted under, and the form matches a resubmission by its title. I renamed the paper because the agent at the top of these hierarchies coordinates nothing.\par}
+\vspace{9pt}
 \hrule height 1pt
-\vspace{22pt}
+\vspace{10pt}
 
 % ---------- authors: 3 x 2 grid, centred (delete a row or column if not needed) ----------
 {\centering
@@ -48,12 +58,14 @@ Masih Moafi
 {\centering \textbf{With}\\ Apart Research\par}
 
 % ---------- abstract ----------
-\vspace{22pt}
+\vspace{10pt}
 {\centering\fontsize{14}{17.3}\selectfont\bfseries Abstract\par}
 \vspace{10pt}
 \begin{adjustwidth}{0.99in}{1.13in}
 \justifying
 \input{sections/abstract}
+
+\vspace{6pt}\noindent\textbf{Keywords:} multi-agent systems; language-model agents; hierarchy; social dilemmas; cooperative AI; AI safety
 \end{adjustwidth}
 \vspace{32pt}
 \end{singlespace}
@@ -73,9 +85,10 @@ Masih Moafi
 \input{sections/4_results}
 \input{sections/5_discussion}
 \input{sections/6_conclusion}
+\input{sections/references}
 \input{sections/code_and_data}
 \input{sections/author_contributions}
-\input{sections/references}
+\input{sections/ablations}
 \input{sections/appendix}
 \input{sections/appendix_games}
 \input{sections/appendix_quotes}

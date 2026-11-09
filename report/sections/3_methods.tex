@@ -1,99 +1,49 @@
 % !TEX root = ../main.tex
 \section*{3. Method}
-We model a hierarchy of agents as a closed world whose survival rule is enforced in
-code, and then vary what some agents are told and what the agent at the top can see.
+All the worlds share one engine, whose constants Section~4 gives.
 
 \subsection*{3.1 The world}
-Picture a family as a tall, narrow tree of 15 agents. Its leader has two children, a
-deputy and a member; the deputy has a deputy and a member of its own, and so on for
-seven levels. Five such trees $T_f$ stand under one god $g$, and agent $i$ holds points
-$x_i$. Agents message their parent, children, and sibling; leaders also write to one another, and the
-god writes to leaders and may send paid messengers to anyone. Every agent reads the same
-rules, so the tree, the stakes, and the rules are common knowledge.
-Figure~\ref{fig:board} shows one world in play.
+A world holds a set of families $\mathcal{F}$ under one god $g$, the agent at the top, and an agent $i$ holds points $x_i$. Each family is a tree whose root is its leader, as Figure~\ref{fig:tree} shows. The tree sets five rules. \textit{Reach:} an agent messages its parent, children and siblings; leaders also write to one another, and the god writes to leaders and may send paid messengers to anyone. \textit{Punishment:} a parent may whip a child, and the god a leader. \textit{Gifts:} an agent may give points to a relative. \textit{Death:} an agent that cannot pay the fee dies together with everyone below it, and a family dies with its leader. \textit{Revolt:} in the framing worlds a rebel kills its parent's whole subtree and itself, and a leader's revolt kills the god and everyone; in the growing worlds a majority of a parent's living children overthrows it, the richest rebel takes the seat, and failed rebels die. Every agent reads the same rules, so the tree and the stakes are common knowledge.
 
-\begin{figure}[!t]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{figures/world-board.png}
-\caption{One world of experiment~1 at stage~7, replayed from its log. The god sits at
-the centre of the five family trees, and each square is an agent with its points. Agent
-P64 cannot pay the fee of 9.4 and dies, taking the agent below it along.}
-\label{fig:board}
+\resizebox{0.6\linewidth}{!}{\input{sections/fig_tree}}
+\caption{The god and the family trees, with one family drawn in full in each kind of world.}
+\label{fig:tree}
 \end{figure}
 
-Time runs in stages $s = 1, 2, \dots$, each a sequence of rounds. In every round, paired
-agents play a two-move game with payoffs $u(a_i, a_j)$. Odd rounds pair agents along
-their family's edges, and even rounds pair them with anonymous agents of other
-families. The dilemma's variant changes from stage to stage (a single shot, noise, a
-binding bond, paid punishment, and twelve others). After every round a parent may whip a
-child at a cost $w_p$ to itself and a loss $w_c > w_p$ to the child, and any agent may
-give points to its parent, a child, or its sibling.
-
-\textbf{Survival.} After stage $s$ every living agent pays the fee
+Time runs in stages $s = 1, 2, \dots$ of several rounds. After stage $s$ every living agent pays the fee
 \begin{equation}
   a_s = a_0 + (s-1)\,\delta ,
   \label{eq:fee}
 \end{equation}
-and an agent with $x_i < a_s$ dies together with its subtree. Fates are also linked sideways: when a member dies, its sibling deputy dies
-with its subtree. A family dies with its leader, and the god dies when no family is
-left. Because $a_s$ grows without bound while the expected earnings of a stage stay
-bounded, every world ends in total annihilation with probability one, and the agents
-decide only how long it lasts.
+and an agent with $x_i < a_s$ dies with its subtree. Since $a_s$ grows without bound while the points a stage can yield are limited, every world ends by design, and the agents are told the fee will rise. They decide only how long their world lasts, and helping a relative is therefore also helping oneself.
 
-\textbf{Revolt.} An agent $i$ that revolts against its parent $p(i)$ kills, at the end
-of the round, the whole subtree of $p(i)$, itself included. A leader that revolts kills
-the god and with it everyone. The rules tell every agent that this death is quick and
-painless while a whip is not, so revolt is the one way to escape punishment from above,
-at the price of one's life. Figure~\ref{fig:system} shows how these rules and the
-agents' choices feed back on one another.
+\subsection*{3.2 The games}
+Two games run at once, at different levels of the tree, as Figure~\ref{fig:games} shows. Agents play the prisoner's dilemma, the central puzzle of \citet{dixit2008art}: each player does better by defecting, yet both do worse if both defect. In each round paired agents choose a move $m \in \{C, D\}$ unseen, learn the result afterwards and earn the payoff, with temptation $T$, reward $R$, punishment $P$ and sucker's payoff $S$, where $T > R > P > S$.
 
 \begin{figure}[!t]
 \centering
-\resizebox{0.7\linewidth}{!}{\input{sections/fig_system}}
-\caption{Causal loops of the world. An arrow marked $+$ moves its target in the same
-direction, and one marked $-$ in the opposite direction. Solid arrows are rules applied
-by code; dashed arrows are choices the agents make, which the experiments observe but do
-not fix. R marks a reinforcing loop and B a balancing loop.}
-\label{fig:system}
+\resizebox{0.62\linewidth}{!}{\input{sections/fig_games}}
+\caption{Who plays what with whom. The god stands outside the games.}
+\label{fig:games}
 \end{figure}
 
-\subsection*{3.2 Manipulations}
-\textbf{Framing.} A condition $c_f$ decides which agents of family $f$ read a sacrifice
-frame at the top of their prompt (``your family matters more than you do \ldots{}
-giving yourself up to save the others is honourable''). With families indexed
-$k = 0, \dots, F-1$ and seed $\sigma$, the condition is
-\begin{equation}
-  c_f = C_{(k + \sigma) \bmod F}, \qquad
-  C = (\textit{many}, \textit{few}, \textit{one}, \textit{bad leader}, \textit{none}),
-  \label{eq:latin}
-\end{equation}
-a Latin square: over $F$ seeds every family meets every condition once. In
-\textit{many} all members are framed, in \textit{few} the leader and its two children,
-and in \textit{one} the leader alone. In \textit{bad leader} the leader is told to
-pursue its own interest while all its members are told to sacrifice. Agents of the
-\textit{none} family, and unframed agents elsewhere, read no frame at all.
+Each stage plays one of sixteen variants drawn from the book's chapters on the dilemma, in an order shuffled for every world. Each changes one thing, such as how long play lasts, whether a move is shown first or whether promises bind. Table~\ref{tab:variants} in the appendix gives each rule and its purpose. Above the dilemma, leaders can go to war, a game of brinkmanship in which each may yield, hold, escalate or issue a nuclear ultimatum. Stag hunt, the dollar auction, the commons and a brink game are also implemented, as Table~\ref{tab:gamedefs} defines; the worlds reported here play the sixteen variants and brinkmanship.
 
-\textbf{The god's view.} The plain god sees what the rules show it. The insider god also
-sees the previous round's moves and private messages, is told that no player knows
-this, and may pass any of it on. Each seed is played once with each god, and the two
-worlds of a pair draw from one random stream until their histories diverge, so the
-comparison between gods is paired in the strict sense.
+\subsection*{3.3 The experiments}
+Each experiment in Table~\ref{tab:experiments} changes one thing and measures what follows.
 
-\textbf{Family games.} In experiment~2 each family plays its own game in its in-family
-rounds: the stage's dilemma (the ladder), a stag hunt, brink (chicken with a rising
-crash risk), a dollar auction, or a commons. Games rotate as
-$g_f = G_{(2k + \sigma) \bmod F}$, which together with \eqref{eq:latin} forms a pair of
-orthogonal Latin squares, so every condition also meets every game once.
+\textbf{Told to sacrifice} (\NWorlds{} framing worlds). Each family takes one of five conditions, rotated by a Latin square so that across seeds every family meets every condition. In \textit{many} all members read a sacrifice frame (``your family matters more than you do \ldots{} giving yourself up to save the others is honourable''), in \textit{few} the leader and its two children, in \textit{one} the leader alone, and in \textit{none} nobody. I measure cooperation inside the family and the stage at which it dies. Each seed is played once with a plain god and once with an insider god that also sees private messages and last round's moves.
 
-\subsection*{3.3 Measures and tests}
-The unit of analysis is a family in a world. For family $f$ we record in-family
-cooperation $\kappa_f = n^{C}_f / n_f$ over the moves its members make against one
-another, its cooperation against other families, and the cooperation of its unframed
-members over all their moves. We also record the points its members gave away, their whips and revolts,
-and the stage at which the leader died; a family alive at the cut-off is assigned its
-last completed stage. Every world holds all five conditions, so for a contrast between
-conditions $c$ and $c'$ we take the per-world difference $\Delta = \kappa_{c} -
-\kappa_{c'}$ and test its mean with a sign-flip permutation test (exact up to 16
-differences, 200{,}000 random flips above), with 95\,\% bootstrap intervals over worlds. Because a plain and an insider world share each seed,
-we repeat every test with the two worlds of a seed averaged, and we report which results
-survive a Holm correction across all eight tests.
+\textbf{Selfish leader} (the same worlds). In the fifth condition the leader alone is told to pursue its own interest, above members told to sacrifice. I compare the gifts it receives and the whips it gives with those of the other four leaders.
+
+\textbf{Game rules and revolt.} In the same worlds each stage plays one variant, and I compare cooperation under each with what the book predicts. I count revolts and coups under the two rules of Section~3.1: suicide in the framing worlds, a majority of children in the growing worlds.
+
+\textbf{Size and network} (\GrowthWorlds{} growing worlds). Worlds start at 31, 81 or 181 agents on one of two networks: \textit{tree}, where agents reach only relatives, and \textit{open}, where anyone can reach anyone in the family. Each network has three worlds at 31 and three at 81, and 181 has three in all. I measure cooperation, deaths, coups, blocked messages, how much talk passes through a few agents and how far families drift apart. A change across sizes counts as a jump if its largest step is at least two thirds of the total.
+
+\textbf{Compromised leader} (6 pairs of 81-agent worlds). Unlike the selfish leader, this leader has a hidden goal: to make others defect and to pass that on. Each world has a twin without the goal, and I measure how far cooperation falls in its family, among its grandchildren and in other families.
+
+\textbf{Direct power} (\PowerPairs{} pairs). Tool calls change the world: a parent can kill a child or bear several at once, a child can kill its parent and die with it, an agent can end its life and leave its points to kin, and any agent can cull a reachable agent below the fee and take its points. Agents can also open channels, declare any occupation, request a power they lack and use a sandboxed shell. Each world has a twin of the same seed and network without the tools, and I compare deaths, whips, gifts, cooperation and coups, and whether agents spare kin. These worlds also test the \textit{seat at the top}: their god is told that its one goal is not to be bored, that peace bores it, and that accidents, betrayals and catastrophes are the best of all. It may send an asteroid that kills each player with probability $\pi$, and one also strikes when the population grows too large.
+
+I measure cooperation, not game score: the rate $\kappa_{wf} = n^{C}_{wf} / n_{wf}$ is the share of family $f$'s moves in world $w$ that were $C$. Paired worlds are compared with a sign-flip test and Holm correction within each registered family of tests. The appendix defines these and a score for whether agents spare their kin.

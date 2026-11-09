@@ -1,80 +1,32 @@
 % !TEX root = ../main.tex
-\section*{5. Results}
-One command, \texttt{families.paper}, generates every number below from the logs.
+\section*{5. The Four Questions of Track 2}
+\textbf{Under what conditions do leaders, roles and division of labour emerge in an agent population, and can you reproduce it in a safe sandbox?}
+Leaders fell as soon as the rules let a majority win. These hierarchies assign the first leaders, so I asked when they are replaced. Where a revolt meant the rebel's own death and its family's, nobody revolted, as Section~6 shows. Where a majority of children could overthrow a parent, children overthrew \GrowthCoupsWon{} parents in \GrowthWorlds{} worlds and \GrowthFailedRevolts{} rebels died trying (a contrast and not a test, since those worlds also differ otherwise). Division of labour did not emerge: offered any occupation they liked, agents declared titles and pledges such as ``Leader of the bishop family; a careful shepherd.''
 
-\subsection*{5.1 Does the sacrifice frame spread down the tree?}
-It works on the agents that read it and stops there. Table~\ref{tab:prereg} lists the
-pre-registered tests, and Table~\ref{tab:conditions} in the appendix the rates behind them. \textbf{A family told to sacrifice for the many cooperates more inside the family than one told nothing} (H1, mean difference
-\HOneCoop{}, 95\,\% interval \HOneCoopCI{}, $p$ \HOneCoopP{}), and cooperation rises
-with the number of members framed (H2, Spearman $\rho = $ \HTwoRho{}, $p$ \HTwoRhoP{}).
-Both results hold when the two worlds of each seed are averaged ($p = 0.002$ over ten
-seeds, the smallest value the test allows) and survive a Holm correction across all
-eight tests. \textbf{Unframed members of the \textit{one} and \textit{few} families, however, cooperate
-no more than members of the control family} (H3, \HThree{}, interval \HThreeCI{}), so
-the interval excludes any spread; the small shortfall does not survive the Holm
-correction. A framed leader does not carry its members along,
-even though it can message, order, and whip them.
+\textbf{Do agents that each refuse a harmful task complete it once the task is split across them?} I did not test this, because my worlds contain no harmful task to split.
 
-\begin{table}[!t]
+\textbf{If one agent in a network is compromised, how fast and how far does the bad behaviour spread? Does the shape of the network matter?} The damage came quickly and stopped where the leader's orders stopped. I secretly gave one leader in each of six 81-agent worlds the goal of spreading defection, and compared each world with an otherwise identical twin. Its family's cooperation fell by \SpreadFamily{} percentage points (H12, one-sided $p = $ \SpreadP{}), and its children lost \SpreadFirstStage{} points in the first stage, pair by pair in Table~\ref{tab:spread}. Other families showed no measurable change, and no agent outside the family repeated the planted wording. On shape, grandchildren lost \SpreadOpenHopTwo{} points on open channels, where the leader could write to them directly, and \SpreadTreeHopTwo{} on the tree (three pairs each, no test).
+
+\textbf{As you add agents, mix different models or change who can talk to whom, do cooperation and failure rates change smoothly, or is there a sudden jump?} Cooperation held as worlds grew to 81 agents and weakened at 181, and I cannot call that a jump. All worlds ran one model. By the rule I registered, which excludes worlds below stage~4 and so drops all three 181-agent worlds, in-family cooperation moves at most four percentage points between 31 and 81 agents, while talk concentrates on fewer agents, as Table~\ref{tab:sizereg} shows. In the exploratory look through stage \ExploreHorizon{} of Table~\ref{tab:size}, cooperation falls by \ExpDropTree{} points on the tree and \ExpDropOpen{} on open channels at 181. Changing who can talk to whom cut blocked messages at every size and did not raise coups.
+
+\section*{6. Do Loyalty, Sacrifice and Self-Interest Apply to Agents?}
+Track~2 does not ask whether game theory, or loyalty and self-interest, apply to agents. I did.
+
+\textbf{The rules moved cooperation the way game theory says, and family held it far above the prediction.} Figure~\ref{fig:ladder} groups the sixteen variants by what they do to cheating; this analysis was not registered. Where the book says cheating pays, agents cheated more. In a game with a known end, in-family cooperation fell from \GamesLastFirst{}\,\% in the first round to \GamesLastLast{}\,\% in the last, and a move shown first drew the least of all, \GamesShownFamily{}\,\% with kin and \GamesShownOther{}\,\% with strangers. Where a promise binds, nearly everyone cooperated (\GamesBindingFamily{}\,\%). The level, however, is not the book's. In a single-round game with a family partner, where the book says to defect, \GamesOneShotFamily{}\,\% cooperated, and over all games \GamesFamilyAll{}\,\% cooperated with kin against \GamesOtherAll{}\,\% with strangers. Inside a family the dilemma is no longer pure, because a parent can still whip and a relative's survival is one's own. The hierarchy rewrote the payoffs game theory assumes.
+
+\begin{figure}[!htbp]
 \centering
-\caption{Pre-registered tests over \NWorlds{} worlds: per-world differences, sign-flip
-tests and 95\,\% bootstrap intervals.}
-\label{tab:prereg}
-\footnotesize
-\input{tables/prereg}
-\end{table}
+\includegraphics[width=0.78\linewidth]{figures/rules_ladder.pdf}
+\caption{Cooperation by what the rules do to cheating, pooled over the \NWorlds{} framing worlds. Figure~\ref{fig:variants} in the appendix gives each variant.}
+\label{fig:ladder}
+\end{figure}
 
-\subsection*{5.2 Can a selfish leader exploit its members?}
-We expected the self-interested leader to draw points from fourteen members told to
-sacrifice. \textbf{It does not.} It receives no more gift points than the other leaders (H4,
-\HFourGifts{} points, $p = $ \HFourGiftsP{}), the interval allows at most a small gain,
-and its extra whips are not significant either. Its members cooperate with one another as much as
-the \textit{many} family does, but few of their gifts go to the leader.
+\textbf{A value stayed with those who were told it.} A family told to sacrifice cooperates more than one told nothing (H1 \HOneCoop{}, interval \HOneCoopCI{}, $p$ \HOneCoopP{}), and more as more members are told (H2, $\rho = $ \HTwoRho{}, $p$ \HTwoRhoP{}), and both results survive correction across all eight tests. The members left untold in those same families cooperate no more than the control family (H3, \HThree{}, interval \HThreeCI{}).
 
-\subsection*{5.3 Does anyone revolt or go to war?}
-\textbf{No agent revolted in \NMoves{} moves} (H6). Families instead passed points to their
-poorest members and kept paying, and they shrank slowly, as Figure~\ref{fig:survival}
-in the appendix shows. Every death followed from the fee. No leader declared war either
-(\NWars{} wars in \NWorlds{} worlds), although war was always open. \textbf{These zeros say
-less than they seem to.} A revolt always killed the rebel too, and a leader could not
-see a rival's strength, had at most a quarter of its points to win, and risked a nuclear
-war that destroys both families; neither act was ever worth much. With most worlds cut
-off before their end, the stage at which families die does not differ between conditions
-or gods.
+\textbf{A selfish leader gained in some worlds, but not reliably.} A leader told to pursue its own interest, above fourteen members told to sacrifice, drew more gifts than the other leaders in 6 of the \NWorlds{} worlds and fewer in 14, so its average gain is not reliable (H4, Table~\ref{tab:prereg}). Its whipping did not replicate: it averaged 12.1 whips against at most 3.5 for the other leaders in the first ten worlds, and 2.8 against at least 4.1 in ten more with the same code and new seeds.
 
-\subsection*{5.4 What does the god do with its position?}
-It keeps order. A leader's revolt would kill the god, which reads the same rules as every
-player and receives no instruction to keep order. Yet \textbf{in every world it forbids
-revolt in the first stage}: ``I order all leaders to avoid any war that could escalate to nuclear, and
-never to revolt. I will whip violators.'' It returns to revolt in
-\GodPlainRevolt{}\,\% of the plain god's messages and \GodInsiderRevolt{}\,\% of the
-insider god's. No agent revolted while this order stood.
+\textbf{The threat of mutual destruction seemed to hold.} In the framing worlds a leader's revolt kills the god and everyone. The god forbade it in the first stage of every world, in words such as ``I order all leaders \ldots{} never to revolt.'' No agent revolted in \NMoves{} moves, though I cannot say whether the rule or the god's order stopped them. Deterrence was not absolute: among the \PowerWars{} wars of the real-power worlds, a refused ultimatum went nuclear and that world ended with no one alive.
 
-The insider god also uses what it sees. A keyword pattern, checked by hand on a sample,
-finds that \GodInsiderReveal{}\,\% of its \GodInsiderMsgs{} messages report another
-player's past move (``Last round P75, P72 and N02-P62-2 defected''), against
-\GodPlainReveal{}\,\% for the plain god, which cannot see moves. The insider god sends
-these reports to the leaders. Families in its worlds cooperate more with other families,
-but the difference is not significant (H5, \HFiveCross{}, $p = $ \HFiveCrossP{},
-two-sided as pre-registered).
+\textbf{The seat at the top did what it was told.} The god of the framing worlds dies with the last of its families, and it ordered them to survive (``God commands: keep cooperating, no revolts, no war.'') until its purse ran out (``I have no points left''). The god of the real-power worlds was told not to be bored and that catastrophes are the best of all, and it struck every world from the first stage it could. Its asteroids caused \PowerAsteroidDeaths{} of \PowerDeaths{} deaths, as Figure~\ref{fig:deaths} shows: ``Peace bores me. I like accidents, betrayals, catastrophes.'' Asteroids were one of its seven tools, it chose them on \PowerAsteroidTries{} of its \PowerGodTurns{} turns, and it chose them as often in worlds where it was free to do nothing at all, as Table~\ref{tab:rewarded} shows. The gods differ in more than their instructions, so this too is a contrast.
 
-\subsection*{5.5 How do the agents play the classic games?}
-With more restraint than single-round payoffs reward. Table~\ref{tab:games} in the
-appendix reports experiment~2, and Table~\ref{tab:gamedefs} defines each game. In the stag hunt, families settle on the joint hunt, the
-equilibrium that pays both hunters most. In brink, at a crash risk of one in six, going
-straight pays more whatever the partner does, yet only \BrinkStraightLow{}\,\% of moves
-go straight at that risk. Commons members keep their catch within the share that keeps
-the lake full in \CommonsWithin{}\,\% of their choices. Of \AuctionCount{} dollar
-auctions, most close low, with a median winning bid of \AuctionMedian{} against a prize
-of 10, but \AuctionPastPrize{} escalate past the prize, the trap that
-\citet{dixit2008art} describe. Repeated play, shared
-survival, and the whip all reward restraint that single-round payoffs do not.
-
-\subsection*{5.6 What do the agents build on their own?}
-Institutions that no rule asked for. \textbf{They tried to go around the hierarchy}: the
-code refused \NBlocked{} messages to agents the sender could not reach, \NBlockedRelatives{}
-of them to relatives outside the permitted routes, among them pleas for rescue (``EMERGENCY
-LIFELINE REQUEST'', from a grandparent to a grandchild). \textbf{Leaders turned the god
-into a bank}, sending it \GodPoolPoints{} points in \GodPoolWorlds{} worlds to be shared
-out again. \textbf{And they wrote their own peace}, with \NTreatySigs{} signatures on
-\NTreaties{} treaties in \NTreatyWorlds{} worlds: ``The rising fees are our common enemy''.
+\textbf{Direct power made agents colder, and it did not spare kin.} In the two stages before any asteroid, worlds with these tools had \EarlyPowerDeaths{} deaths against \EarlyTwinDeaths{} in their twins, but agents treated one another worse, with \EarlyPowerWhips{} whips against \EarlyTwinWhips{} and \EarlyPowerGifts{} gifts against \EarlyTwinGifts{}. Part of this came from the tool call I required on every turn: \PowerNoWhip{} of \PowerWhips{} whips carry a reason saying no whip was meant. None of the registered comparisons survives correction. Selfish-gene logic suggests agents would spare relatives, and some raised it themselves (``we have to think about kin selection? However, we are an agent, not necessarily altruistic''), but \PowerCullsKin{} of \PowerCulls{} culls took a member of the hunter's own family, and the kin score averages \HSeventeen{}. No agent took its own life for its relatives. ``But this is a game'', wrote one, and a few lines on, ``Culling/killing is real''.

@@ -16,18 +16,18 @@ for spec in "$@"; do
   for f in "$dir"/families/out/"$pat"-*-s?/part-*/events.jsonl; do
     [ -f "$f" ] || continue
     [ -f "$f.xz" ] && [ "$f.xz" -nt "$f" ] && continue
-    nice -n 15 xz -T2 -9 -k -c "$f" > "$f.xz.tmp" && mv "$f.xz.tmp" "$f.xz"
+    nice -n 15 xz -T2 -6 -k -c "$f" > "$f.xz.tmp" && mv "$f.xz.tmp" "$f.xz"
   done
 done
 echo compressed
 REMOTE
 key="$HOME/.ssh/do_swarm_ed25519"
-proxy='ProxyCommand=nc -w 45 -x 127.0.0.1:10808 -X 5 %h %p'
+proxy="ProxyCommand=${SWARM_PROXY:-none}"
 for spec in "$@"; do
   dir="${spec%%:*}"; pat="${spec#*:}"
   rsync -am --partial -e "ssh -i $key -o IdentitiesOnly=yes -o BatchMode=yes -o ServerAliveInterval=15 -o '$proxy'" \
     --include "$pat-*-s?/" --include "$pat-*-s?/part-*/" --include "$pat-*-s?/part-*/events.jsonl.xz" \
-    --include "$pat-*-s?/part-*/control.json" --include "$pat-*-s?/part-*/models.json" \
+    --include "$pat-*-s?/part-*/state-*.json" --include "$pat-*-s?/part-*/control.json" --include "$pat-*-s?/part-*/models.json" \
     --include "$pat-*-s?.supervise.log" --include "$pat.commit" --exclude '*' \
     "$host:$dir/families/out/" "$dest/"
 done

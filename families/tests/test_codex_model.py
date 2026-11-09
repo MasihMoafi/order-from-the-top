@@ -9,7 +9,10 @@ def test_parse_reads_the_reply_usage_and_errors():
     lines = [
         {"type": "thread.started"},
         {"type": "item.completed", "item": {"type": "reasoning", "text": "think"}},
-        {"type": "item.completed", "item": {"type": "agent_message", "text": '{"move":"C"}'}},
+        {
+            "type": "item.completed",
+            "item": {"type": "agent_message", "text": '{"move":"C"}'},
+        },
         {"type": "turn.completed", "usage": {"input_tokens": 5}},
     ]
     out = "\n".join(map(json.dumps, lines)) + "\nnot json\n"

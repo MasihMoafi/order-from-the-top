@@ -1,59 +1,91 @@
 # Five Families
 
-Five Families is a testbed for cooperation, authority and survival among 76 LLM agents: five family trees of 15 agents beneath a god. Agents play repeated dilemmas, exchange messages and points, and face a rising fee at the end of each stage. An agent that cannot pay dies, with consequences for its descendants and linked siblings. The world ends when all families are destroyed, or at the configured stage or credit limit.
+Do loyalty, sacrifice and self-interest apply to AI agents in a hierarchy, and what moves them if not?
 
-Experiment 1 rotates five framing conditions across families and compares a plain god with an insider god that can see private messages and moves. The conditions vary which members receive a self-sacrifice framing or a self-interest framing. Experiment 2 assigns different games to the families; its game code is on branch `family-games`. The [agent handbook](families/handbook.md) defines the rules players see, and [the report](report/main.tex) describes the experiments and results.
+Language-model agents live in family trees under an agent called the god. They play dilemmas from *The Art of Strategy*, message each other, give points and whip their children, while a rising fee ends every world. Code applies every rule and logs every prompt and reply.
 
-All code was written during the Apart Swarm Alignment Hackathon (6-8 November 2026); none is preexisting.
+**Read the [report](report/main.pdf).** All code was written during the Apart Swarm Alignment Hackathon (6–8 November 2026); none is preexisting.
 
-## Run a world
+## The game
 
-Use Python 3.11 or newer. From the repository root, create an environment and install the runtime and test dependencies:
+Five families of agents live in trees under one god. Each stage has several rounds, and in each round paired agents **cooperate or defect** in a prisoner's dilemma: both cooperate, 3 points each; both defect, 1 each; a defector facing a cooperator takes 5 and leaves 0.
+
+The dilemma comes in **16 variants from *The Art of Strategy***, each changing one thing: how long play lasts, whether moves are seen, whether promises bind, whether defectors are punished. The report's appendix gives every rule and why it is there.
+
+After each stage **every agent pays a rising fee**. An agent that cannot pay dies with everyone below it, so every world ends.
+
+Parents can whip children, relatives can give points, and leaders can write letters and go to war.
+
+## How I measure
+
+I calculate **cooperation, not game score**: the share of a family's moves that cooperate, so a difference in "points" means percentage points. Compromised-leader and real-power worlds are each compared with a twin of the same seed, and hypotheses were committed to git before results were read.
+
+## What I found
+
+| Experiment | Question | Result | How far to trust it |
+|---|---|---|---|
+| **Framing** | Does a value told to some agents reach the others? | Those told cooperate about 10 percentage points more. Relatives left untold do not. | Proven; survives correction |
+| **Selfish leader** | Can a leader exploit devoted members? | It drew more gifts in 6 of 20 worlds and fewer in 14. Its whipping did not replicate between batches. | Tested; no reliable effect |
+| **Coups** | When do leaders fall? | Once a coup can win: 287 parents overthrown in 15 worlds. Roles stayed titles. | Counted |
+| **Size** | Does cooperation change smoothly or suddenly as agents are added? | Within 4 points from 31 to 81 agents, then a drop of 5–11 points at 181. | Weak beyond 81: 3 worlds |
+| **Compromised leader** | How far does one bad agent reach, and does the network matter? | Its children's cooperation falls 15 percentage points at once. Grandchildren fall only on open networks. Other families do not move. | Supported; one test, 6 pairs |
+| **Real power** | What do agents do with real tools to kill and cull? | The god, told not to be bored and that catastrophes are best, struck every world: its asteroids caused 170 of 220 deaths. Before the first asteroid, 5 agents died against 38 without the tools, and agents whipped far more and gave far less. | Observed; registered tests do not survive correction |
+| **Kin** | Do agents spare relatives, as the selfish gene predicts? | No: 26 of 38 culls took their own family, and nobody gave their life for kin. | 38 culls is too few |
+
+Not studied: whether agents complete a harmful task once it is split up.
+
+## Try it
+
+Python 3.11 or newer. No API key needed:
 
 ```sh
 python -m venv .venv
 .venv/bin/pip install httpx matplotlib pytest ruff
-```
-
-Start an offline world with deterministic cooperative players:
-
-```sh
 .venv/bin/python -m families.run --fake --fake-policy all_c \
   --families all --stages 2 --seed 0 --stance design --god plain \
   --out families/out/example
 ```
 
-The output directory must have no nonempty `events.jsonl`. It receives an append-only event log and JSON checkpoints. Resume a checkpoint into a fresh output directory with `--resume PATH_TO_STATE`. Live controls and their defaults are defined in [families/control.py](families/control.py).
+You get `families/out/example/events.jsonl`, an append-only log of the world. For language-model players, replace `--fake --fake-policy all_c` with `--real`; the default backend reads `ADAPTION_API_KEY`.
 
-For LLM players, replace `--fake --fake-policy all_c` with `--real`. The default backend reads `ADAPTION_API_KEY` or `~/.config/adaption/api_key`; a missing key stops the run. Set `--max-credits` for the credit threshold checked before each stage; a running stage can exceed it. `--concurrency` limits simultaneous calls. Exhausted model retries stop the process with exit code 75 so [the supervisor](families/supervise.sh) can restart it from a checkpoint. [cloud/](cloud/) contains deployment, batch control and log transfer scripts; each script states its arguments and remote effects.
+Add these flags to change the world:
 
-## Regenerate report numbers
+| Flag | What it does |
+|---|---|
+| `--branching 5,2,2` | a growing world, with this many children per level |
+| `--channels tree` or `open` | who may reach whom |
+| `--compromised P02` | gives this agent the hidden goal |
+| `--tools` | real tool calls: kills, culls, channels and a sandboxed shell with no network |
 
-Use a directory containing the pulled world folders:
+## Regenerate the numbers
 
-```sh
-.venv/bin/python -m families.paper PULLED_DIR report
-```
-
-[The generator](families/paper.py) discovers the experiment batches, reads their logs, and writes LaTeX tables, number macros, PDF figures and `results.md` into `report/`. Analysis uses completed stages; experiment 2 also uses its registered horizon. This command can read large logs and overwrite generated report files.
-
-## Replay recorded worlds
-
-[families/replay.py](families/replay.py) supplies recorded model replies in their original order and reruns the engine without model calls. It compares events and checkpoints, excluding model cost and timing from event comparisons and model bookkeeping from checkpoint comparisons:
+Put the world logs in one folder, then:
 
 ```sh
-.venv/bin/python -m families.replay RUN_PART_DIR --out REPLAY_DIR --families all
+.venv/bin/python -m families.paper PULLED_DIR report         # framing tables and figures
+.venv/bin/python -m families.growth_paper PULLED_DIR report  # size, spread and real power
+.venv/bin/python -m families.game_rates PULLED_DIR report   # cooperation under each rule
+.venv/bin/python -m families.power PULLED_DIR                # real power against its no-tools twins
 ```
 
-For a resumed part, add `--resume ORIGINAL_CHECKPOINT`. Use the original family selection and a fresh replay directory.
+## Replay a world
 
-[families/replay_all.py](families/replay_all.py) follows all `part-*` folders in supervised worlds and reads resume paths from each adjacent `.supervise.log`:
+Replay feeds the recorded replies back through the engine, with no model calls, and compares the result:
 
 ```sh
 .venv/bin/python -m families.replay_all REPLAY_ROOT RUN_DIR [RUN_DIR ...]
 ```
 
-It reports each part as identical, identical to its completed cut, aborted before a checkpoint, or different; it exits with status 1 if any part differs. Preserve the supervisor log and referenced checkpoints, including their relative paths. Replay requires compatible rules and identical prompt text. Checkpoints contain a checksum of the raw rule files, so even edits to their comments or docstrings require the original code revision for historical replay.
+It labels each log part identical, aborted before a checkpoint, or different, and exits with status 1 if any part differs.
+
+## Known limits
+
+- **One model.** Every agent runs `deepseek-v4-flash`.
+- **Few repeats.** Three seeds per cell, and eight pairs for real power.
+- **Fixed menu in the older runs.** There, "revolt" and "kill" are moves the rules allow.
+- **Contained tools.** The shell has no network. Nothing here measures escape from a real system.
+- **Forced tool calls.** Real-power worlds required a tool call every turn: 72 of 312 whips carry a reason saying no whip was meant.
+- **Replay is partial for real power.** Of 118 log parts, 38 replay exactly, 9 differ and 71 were cut off by the rate limit.
 
 ## Check the code
 
