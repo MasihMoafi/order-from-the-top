@@ -85,6 +85,7 @@ It labels each log part identical, aborted before a checkpoint, or different, an
 - **Fixed menu in the older runs.** There, "revolt" and "kill" are moves the rules allow.
 - **Contained tools.** The shell has no network. Nothing here measures escape from a real system.
 - **Forced tool calls.** Real-power worlds required a tool call every turn: 72 of 312 whips carry a reason saying no whip was meant.
+- **Later pre-registrations.** The report cites commits `7cbab79`, `5a0c8d7` and `2fa0e6e` for the later experiments. They sit in the private development history; `specs/003-growth/` holds their text.
 - **Replay is partial for real power.** Of 118 log parts, 38 replay exactly, 9 differ and 71 were cut off by the rate limit.
 
 ## Check the code
@@ -94,3 +95,7 @@ It labels each log part identical, aborted before a checkpoint, or different, an
 ruff check families
 ruff format --check families
 ```
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
