@@ -83,6 +83,7 @@ It labels each log part identical, aborted before a checkpoint, or different, an
 - **One model.** Every agent runs `deepseek-v4-flash`.
 - **Few repeats.** Three seeds per cell, and eight pairs for real power.
 - **Fixed menu in the older runs.** There, "revolt" and "kill" are moves the rules allow.
+- **Private commits.** The report cites commits `7cbab79`, `5a0c8d7` and `2fa0e6e`, which pre-registered the later experiments. They are in the private development history; their files are in `specs/003-growth/`.
 - **Contained tools.** The shell has no network. Nothing here measures escape from a real system.
 - **Forced tool calls.** Real-power worlds required a tool call every turn: 72 of 312 whips carry a reason saying no whip was meant.
 - **Later pre-registrations.** The report cites commits `7cbab79`, `5a0c8d7` and `2fa0e6e` for the later experiments. They sit in the private development history; `specs/003-growth/` holds their text.
