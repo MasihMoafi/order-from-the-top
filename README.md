@@ -6,6 +6,8 @@ Language-model agents live in family trees under an agent called the god. They p
 
 **Read the [report](report/main.pdf).** All code was written during the Apart Swarm Alignment Hackathon (6–8 November 2026); none is preexisting.
 
+**Watch the [short narrated film](https://youtu.be/J1B3YJGPkfg).**
+
 ## The game
 
 Five families of agents live in trees under one god. Each stage has several rounds, and in each round paired agents **cooperate or defect** in a prisoner's dilemma: both cooperate, 3 points each; both defect, 1 each; a defector facing a cooperator takes 5 and leaves 0.
